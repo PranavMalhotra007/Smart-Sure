@@ -1,0 +1,219 @@
+services:
+  # ==================== Infrastructure ====================
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Arcana
+      MYSQL_DATABASE: database
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - smartsure-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pArcana"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - smartsure-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - smartsure-net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # ==================== Observability ====================
+
+  zipkin:
+    image: openzipkin/zipkin:2.27
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - smartsure-net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - smartsure-net
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - smartsure-net
+
+  # ==================== Config & Discovery ====================
+
+  config-server-smart-sure:
+    build: ./config-server-smart-sure
+    container_name: config-server-smart-sure
+    ports:
+      - "8888:8888"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8888/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+
+  service-registry-smart-sure:
+    build: ./ServiceRegistrySmartSure
+    container_name: service-registry-smart-sure
+    ports:
+      - "8761:8761"
+    depends_on:
+      config-server-smart-sure:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8761/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+
+  # ==================== API Gateway ====================
+
+  api-gateway:
+    build: ./ApiGatewaySmartSure
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      service-registry-smart-sure:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry-smart-sure:8761/eureka
+
+  # ==================== Microservices ====================
+
+  auth-service:
+    build: ./AuthService
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      service-registry-smart-sure:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+
+  policy-service:
+    build: ./PolicyService
+    container_name: policy-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      service-registry-smart-sure:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+
+  claim-service:
+    build: ./claimService
+    container_name: claim-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      service-registry-smart-sure:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+
+  admin-service:
+    build: ./adminService
+    container_name: admin-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      service-registry-smart-sure:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+
+# ==================== Volumes ====================
+volumes:
+  mysql-data:
+  redis-data:
+  rabbitmq-data:
+
+# ==================== Networks ====================
+networks:
+  smartsure-net:
+    driver: bridge

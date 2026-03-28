@@ -1,0 +1,39 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'config-server'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['config-server-smart-sure:8888']
+
+  - job_name: 'service-registry'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['service-registry-smart-sure:8761']
+
+  - job_name: 'api-gateway'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['api-gateway:8080']
+
+  - job_name: 'auth-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['auth-service:8081']
+
+  - job_name: 'policy-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['policy-service:8082']
+
+  - job_name: 'claim-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['claim-service:8083']
+
+  - job_name: 'admin-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['admin-service:8084']

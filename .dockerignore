@@ -1,0 +1,11 @@
+target/
+!target/*.jar
+.git
+.gitignore
+.idea
+*.iml
+bin/
+.settings
+.classpath
+.project
+*.log

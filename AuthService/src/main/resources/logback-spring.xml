@@ -1,0 +1,49 @@
+<configuration>
+
+    <!-- 🔹 USER LOG FILE -->
+    <appender name="USER_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/userLogs.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/userLogs-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%X{traceId}] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 🔹 AUTH LOG FILE -->
+    <appender name="AUTH_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/authLogs.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/authLogs-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%X{traceId}] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 🔹 CONSOLE (Spring logs only) -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss} %-5level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 🔹 USER LOGGER (AOP logs only) -->
+    <logger name="USER_LOGGER" level="INFO" additivity="false">
+        <appender-ref ref="USER_FILE"/>
+    </logger>
+
+    <!-- 🔹 AUTH LOGGER (AOP logs only) -->
+    <logger name="AUTH_LOGGER" level="INFO" additivity="false">
+        <appender-ref ref="AUTH_FILE"/>
+    </logger>
+
+    <!-- 🔹 ROOT LOGGER (Spring logs → console only) -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
