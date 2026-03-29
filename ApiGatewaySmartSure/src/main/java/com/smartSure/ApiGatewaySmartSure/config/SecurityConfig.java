@@ -33,7 +33,8 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable()) 
                 .formLogin(form -> form.disable()) 
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/**", "/authService/actuator/**").permitAll()
+                        .pathMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/**", 
+                                      "/authService/**", "/policyService/**", "/claimService/**", "/adminService/**").permitAll()
 //                        .pathMatchers("/actuator/**").hasRole("ADMIN")
                         .anyExchange().authenticated()
                 )

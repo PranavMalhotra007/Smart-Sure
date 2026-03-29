@@ -9,6 +9,9 @@ import com.smartSure.adminService.feign.ClaimFeignClient;
 import com.smartSure.adminService.feign.PolicyFeignClient;
 import com.smartSure.adminService.feign.UserFeignClient;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +28,7 @@ public class AdminService {
     // ==================== CLAIM MANAGEMENT ====================
 
     // Get all claims — full admin view
+    @Cacheable(value = "admin_claims")
     public List<ClaimDTO> getAllClaims() {
         return claimFeignClient.getAllClaims();
     }
@@ -35,11 +39,16 @@ public class AdminService {
     }
 
     // Get a single claim with its linked policy and user details
+    @Cacheable(value = "admin_claim", key = "#claimId")
     public ClaimDTO getClaimById(Long claimId) {
         return claimFeignClient.getClaimById(claimId);
     }
 
     // Approve a claim — updates status in claimService and logs the action
+    @Caching(evict = {
+        @CacheEvict(value = "admin_claim", key = "#claimId"),
+        @CacheEvict(value = "admin_claims", allEntries = true)
+    })
     public ClaimDTO approveClaim(Long adminId, Long claimId, String remarks) {
         ClaimDTO updated = claimFeignClient.updateClaimStatus(claimId, "APPROVED");
         auditLogService.log(adminId, "APPROVE_CLAIM", "Claim", claimId, remarks);
@@ -72,11 +81,13 @@ public class AdminService {
     // ==================== POLICY MANAGEMENT ====================
 
     // Get all policies
+    @Cacheable(value = "admin_policies")
     public List<PolicyDTO> getAllPolicies() {
         return policyFeignClient.getAllPolicies().getContent();
     }
 
     // Get a single policy by ID — passes admin flag so policyService skips ownership check
+    @Cacheable(value = "admin_policy", key = "#policyId")
     public PolicyDTO getPolicyById(Long policyId) {
         return policyFeignClient.getPolicyById(policyId, 0L, "ADMIN");
     }

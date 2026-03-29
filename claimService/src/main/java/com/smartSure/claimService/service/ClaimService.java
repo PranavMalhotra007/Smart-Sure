@@ -18,6 +18,9 @@ import com.smartSure.claimService.repository.ClaimRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,10 +47,12 @@ public class ClaimService {
         return toResponse(claimRepository.save(claim));
     }
 
+    @Cacheable(value = "claims", key = "#claimId")
     public ClaimResponse getClaimById(Long claimId) {
         return toResponse(findOrThrow(claimId));
     }
 
+    @Cacheable(value = "allClaims")
     public List<ClaimResponse> getAllClaims() {
         return claimRepository.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
@@ -60,6 +65,10 @@ public class ClaimService {
         return policyClient.getPolicyById(findOrThrow(claimId).getPolicyId());
     }
 
+    @Caching(evict = {
+        @CacheEvict(value = "claims", key = "#claimId"),
+        @CacheEvict(value = "allClaims", allEntries = true)
+    })
     public void deleteClaim(Long claimId) {
         Claim claim = findOrThrow(claimId);
         if (claim.getStatus() != Status.DRAFT) throw new ClaimDeletionNotAllowedException(claimId);
@@ -81,6 +90,10 @@ public class ClaimService {
     }
 
     // Admin moves claim to APPROVED or REJECTED — publishes ClaimDecisionEvent via RabbitMQ
+    @Caching(evict = {
+        @CacheEvict(value = "claims", key = "#claimId"),
+        @CacheEvict(value = "allClaims", allEntries = true)
+    })
     public ClaimResponse moveToStatus(Long claimId, Status nextStatus) {
         Claim claim = findOrThrow(claimId);
         claim.setStatus(claim.getStatus().moveTo(nextStatus));
