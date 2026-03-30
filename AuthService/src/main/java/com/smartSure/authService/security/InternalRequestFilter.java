@@ -25,21 +25,14 @@ public class InternalRequestFilter extends OncePerRequestFilter {
     	
     	String path = request.getRequestURI();
     	
-    	if (path.startsWith("/api/auth") ||
-    		    path.startsWith("/swagger-ui") ||
-    		    path.startsWith("/v3/api-docs") ||
-    		    path.equals("/swagger-ui.html") ||
-    		    path.startsWith("/actuator")) {
+        // Only enforce internal secret for internal endpoints
+        if (path.contains("/internal/")) {
+            String secret = request.getHeader("X-Internal-Secret");
 
-    		    filterChain.doFilter(request, response);
-    		    return;
-    		}
-    	
-        String secret = request.getHeader("X-Internal-Secret");
-
-        if (secret == null ||!internalSecret.equals(secret)) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return;
+            if (secret == null || !internalSecret.equals(secret)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
         }
 
         filterChain.doFilter(request, response);

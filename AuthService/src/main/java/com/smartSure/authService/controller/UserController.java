@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.web.bind.annotation.RequestBody;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,7 @@ public class UserController {
 	@PostMapping("/addInfo")
 	@Operation(summary = "Adding information", description="Adding information to registered user row")
 	@ApiResponse(responseCode = "202", description = "Information added successfully")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('CUSTOMER')")
 	public ResponseEntity<UserResponseDto> addInfo(@RequestBody @Valid UserRequestDto reqDto){
 		
 		UserResponseDto resDto = service.add(reqDto);
@@ -60,6 +62,7 @@ public class UserController {
 	@GetMapping("/getInfo/{userId}")
 	@Operation(summary = "Get User", description="Get verified user with user id")
 	@ApiResponse(responseCode = "200", description = "User fetched successfully")
+	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal")
 	public ResponseEntity<UserResponseDto> getUser(@PathVariable Long userId){
 		
 		UserResponseDto resDto = service.get(userId);
@@ -70,6 +73,7 @@ public class UserController {
 	@PutMapping("/update/{userId}")
 	@Operation(summary = "Update User", description="Updating information to registered user row")
 	@ApiResponse(responseCode = "202", description = "Information updated successfully")
+	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal")
 	public ResponseEntity<UserResponseDto> updateUser(@RequestBody @Valid UserRequestDto reqDto, @PathVariable Long userId){
 		
 		UserResponseDto resDto = service.update(reqDto, userId);
@@ -80,6 +84,7 @@ public class UserController {
 	@DeleteMapping("/delete/{userId}")
 	@Operation(summary = "Delete User", description="Removing exixting user from database")
 	@ApiResponse(responseCode = "200", description = "User removed successfully")
+	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal")
 	public ResponseEntity<UserResponseDto> deleteUser(@PathVariable Long userId){
 		
 		UserResponseDto resDto = service.delete(userId);
@@ -90,6 +95,7 @@ public class UserController {
 	@PostMapping("/addAddress/{userId}")
 	@Operation(summary = "Adding User's Address", description="Adding address to registered user row")
 	@ApiResponse(responseCode = "202", description = "Address added successfully")
+	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal")
 	public ResponseEntity<AddressResponseDto> addAddress(@RequestBody @Valid AddressRequestDto reqDto, @PathVariable Long userId){
 		
 		AddressResponseDto resDto = addService.create(reqDto, userId);
@@ -100,6 +106,7 @@ public class UserController {
 	@GetMapping("/getAddress/{userId}")
 	@Operation(summary = "Get User's Address", description="Get verified user's address with user id")
 	@ApiResponse(responseCode = "200", description = "Address fetched successfully")
+	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal")
 	public ResponseEntity<AddressResponseDto> getAddress(@PathVariable Long userId){
 		
 		AddressResponseDto resDto = addService.get(userId);
@@ -110,6 +117,7 @@ public class UserController {
 	@PutMapping("/updateAddress/{userId}")
 	@Operation(summary = "Update User's Address", description="Updating address information to registered user row")
 	@ApiResponse(responseCode = "202", description = "Address updated successfully")
+	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal")
 	public ResponseEntity<AddressResponseDto> updateAddress(@RequestBody @Valid AddressRequestDto reqDto, @PathVariable Long userId){
 		
 		AddressResponseDto resDto = addService.update(reqDto, userId);
@@ -120,6 +128,7 @@ public class UserController {
 	@DeleteMapping("/deleteAddress/{userId}")
 	@Operation(summary = "Delete User's address", description="Removing exixting user's address from database")
 	@ApiResponse(responseCode = "200", description = "Address removed successfully")
+	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal")
 	public ResponseEntity<AddressResponseDto> deleteAddress(@PathVariable Long userId){
 		
 		AddressResponseDto resDto = addService.delete(userId);
@@ -130,10 +139,11 @@ public class UserController {
 	@GetMapping("/getAll")
 	@Operation(summary = "Fetching All Users(Pagination)", description="Fetching all the users from the table in pages")
 	@ApiResponse(responseCode = "200", description = "Users fetched successfully")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<PageResponse<UserResponseDto>> getAllUsersPagination(
 			@Parameter(name="Page Number")@RequestParam(defaultValue = "0") int page,
 			@Parameter(name="Page Size")@RequestParam(defaultValue = "5") int size,
-			@Parameter(name="Sort By")@RequestParam(defaultValue = "id") String sortBy,
+			@Parameter(name="Sort By")@RequestParam(defaultValue = "userId") String sortBy,
 			@Parameter(name="Direction")@RequestParam(defaultValue = "asc") String direction
 			){
 		
