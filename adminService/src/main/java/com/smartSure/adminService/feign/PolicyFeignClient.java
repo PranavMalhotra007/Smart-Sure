@@ -19,9 +19,7 @@ public interface PolicyFeignClient {
     // Passing ADMIN role so policyService skips ownership check
     @GetMapping("/api/policies/{policyId}")
     PolicyDTO getPolicyById(
-            @PathVariable Long policyId,
-            @RequestHeader("X-User-Id") Long userId,
-            @RequestHeader("X-User-Role") String role
+            @PathVariable("policyId") Long policyId
     );
 
     // PUT /api/policies/admin/{policyId}/status — correct admin cancel/status endpoint

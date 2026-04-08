@@ -9,18 +9,18 @@ public class HeaderUtils {
 
         String userId = request.getHeader("X-User-Id");
         String role = request.getHeader("X-User-Role");
-        String secret = request.getHeader("X-Internal-Secret");
 
         if (userId != null) {
             template.header("X-User-Id", userId);
         }
 
         if (role != null) {
+            // Downstream services expect ROLE_ prefix to be added by their own filters,
+            // so normalize here if the header already contains it.
+            if (role.startsWith("ROLE_")) {
+                role = role.substring("ROLE_".length());
+            }
             template.header("X-User-Role", role);
-        }
-
-        if (secret != null) {
-            template.header("X-Internal-Secret", secret);
         }
     }
 }

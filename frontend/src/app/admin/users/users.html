@@ -1,0 +1,63 @@
+<div class="pg-hdr">
+  <div class="pg-title">Registered Users</div>
+  <div class="pg-sub">Manage all active accounts registered in the SmartSure system.</div>
+</div>
+
+<!-- Toolbar: search + role filter -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="m10 10 3 3"/></svg>
+    <input class="search-inp" placeholder="Search by name, email, ID…" (input)="onSearch($event)">
+  </div>
+
+  <div class="role-filters">
+    <button class="fchip" [class.on]="roleFilter === 'all'" (click)="setRoleFilter('all')">All</button>
+    <button class="fchip" [class.on]="roleFilter === 'CUSTOMER'" (click)="setRoleFilter('CUSTOMER')">Customer</button>
+    <button class="fchip" [class.on]="roleFilter === 'ADMIN'" (click)="setRoleFilter('ADMIN')">Admin</button>
+  </div>
+
+  <button class="btn-refresh" (click)="loadUsers()" title="Refresh">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+  </button>
+</div>
+
+<div class="tbl-c">
+  @if (isLoading()) {
+    <div class="loading-state">Loading users…</div>
+  } @else if (errorMsg) {
+    <div class="error-state">{{ errorMsg }}</div>
+  } @else if (filteredUsers().length === 0) {
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <p>No users found.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Full Name</th>
+          <th>Email Address</th>
+          <th>Phone Number</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of filteredUsers(); track user.userId) {
+          <tr>
+            <td class="td-id">#U-{{ user.userId }}</td>
+            <td class="td-name">{{ user.firstName || '—' }} {{ user.lastName || '' }}</td>
+            <td class="td-email">{{ user.email }}</td>
+            <td>{{ user.phone ? user.phone : 'Not Provided' }}</td>
+            <td>
+              <span class="role-badge" [ngClass]="user.role === 'ADMIN' ? 'admin' : 'customer'">
+                {{ user.role }}
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <div class="tbl-footer">Showing {{ filteredUsers().length }} of {{ users().length }} users</div>
+  }
+</div>

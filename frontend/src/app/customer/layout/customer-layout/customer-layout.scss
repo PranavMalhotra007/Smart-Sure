@@ -1,0 +1,31 @@
+.customer-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--customer-shell-bg, linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%));
+  font-family: 'Inter', system-ui, sans-serif;
+  transition: background 0.25s ease;
+}
+
+/* Dark mode shell background */
+:host-context(html.dark) .customer-shell {
+  background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+}
+
+.customer-main {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.content-container {
+  width: 100%;
+  max-width: 1200px;
+  animation: fadeUp 0.5s ease-out forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

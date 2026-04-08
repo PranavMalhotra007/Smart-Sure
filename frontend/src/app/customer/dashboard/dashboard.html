@@ -1,0 +1,140 @@
+<div class="dashboard">
+  <!-- Hero Welcome -->
+  <div class="hero-banner">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-greeting">Welcome back, {{ userName || 'Customer' }} 👋</h1>
+        <p class="hero-sub">Manage your insurance plans, track claims and stay protected.</p>
+      </div>
+      <a routerLink="/customer/plans" class="hero-cta">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L3 7v10l9 5 9-5V7L12 2z"/><path d="M12 22V12M3 7l9 5 9-5"/></svg>
+        Explore Plans
+      </a>
+    </div>
+    <div class="hero-illustration">
+      <div class="shield-anim">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" fill="rgba(0,180,216,0.15)" stroke="#00b4d8" stroke-width="1.5"/>
+          <path d="M9 12l2 2 4-4" stroke="#00b4d8" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Skeleton -->
+  <div class="skeleton-grid" *ngIf="loading">
+    <div class="skeleton-card" *ngFor="let i of [1,2,3,4]">
+      <div class="sk sk-line" style="width:60%;height:14px;margin-bottom:12px"></div>
+      <div class="sk sk-line" style="width:40%;height:28px"></div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" *ngIf="!loading">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#00b4d8,#0077b6)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Total Policies</span>
+        <span class="stat-value">{{ stats.totalPolicies }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#06d6a0,#059669)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L3 7v10l9 5 9-5V7L12 2z"/><path d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Active Policies</span>
+        <span class="stat-value">{{ stats.activePolicies }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#f77f00,#d62828)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Total Claims</span>
+        <span class="stat-value">{{ stats.totalClaims }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#a855f7,#7c3aed)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Pending Claims</span>
+        <span class="stat-value">{{ stats.pendingClaims }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="section" *ngIf="!loading">
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="actions-grid">
+      <a *ngFor="let action of quickActions" [routerLink]="action.route" class="action-card">
+        <div class="action-icon" [style.background]="action.color + '22'" [style.color]="action.color">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <ng-container [ngSwitch]="action.icon">
+              <ng-container *ngSwitchCase="'shield-plus'"><path d="M12 2L3 7v10l9 5 9-5V7L12 2z"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></ng-container>
+              <ng-container *ngSwitchCase="'file-plus'"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></ng-container>
+              <ng-container *ngSwitchCase="'credit-card'"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></ng-container>
+              <ng-container *ngSwitchCase="'user'"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></ng-container>
+            </ng-container>
+          </svg>
+        </div>
+        <span class="action-label">{{ action.label }}</span>
+        <svg class="action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent Policies & Claims -->
+  <div class="two-col" *ngIf="!loading">
+    <!-- Recent Policies -->
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Recent Policies</h3>
+        <div style="display: flex; gap: 1rem;">
+          <a routerLink="/customer/plans" class="view-all" style="color: var(--teal);">+ Buy Plan</a>
+          <a routerLink="/customer/my-policies" class="view-all">View All</a>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div *ngIf="recentPolicies.length === 0" class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <p>No policies yet. <a routerLink="/customer/plans">Browse plans →</a></p>
+        </div>
+        <div *ngFor="let p of recentPolicies" class="list-item">
+          <div class="item-left">
+            <div class="item-title">{{ p.policyTypeName || 'Policy #' + p.id }}</div>
+            <div class="item-sub">{{ p.policyNumber }} · {{ formatDate(p.startDate) }}</div>
+          </div>
+          <span class="badge" [ngClass]="getStatusClass(p.status)">{{ p.status }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Claims -->
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Recent Claims</h3>
+        <a routerLink="/customer/my-claims" class="view-all">View All</a>
+      </div>
+      <div class="panel-body">
+        <div *ngIf="recentClaims.length === 0" class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p>No claims filed yet.</p>
+        </div>
+        <div *ngFor="let c of recentClaims" class="list-item">
+          <div class="item-left">
+            <div class="item-title">Claim #{{ c.id }}</div>
+            <div class="item-sub">{{ formatCurrency(c.amount) }} · {{ formatDate(c.timeOfCreation) }}</div>
+          </div>
+          <span class="badge" [ngClass]="getStatusClass(c.status)">{{ c.status }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,112 @@
+<div class="my-claims-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">My Claims</h1>
+      <p class="page-subtitle">Track all your filed insurance claims</p>
+    </div>
+    <a routerLink="/customer/file-claim" class="btn-primary">+ File New Claim</a>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <span class="filter-label">Filter by status:</span>
+    <button class="filter-pill" [class.active]="!filterStatus" (click)="filterStatus=''; applyFilter()">All ({{ claims.length }})</button>
+    <button *ngFor="let s of statuses" class="filter-pill" [class.active]="filterStatus===s" (click)="filterStatus=s; applyFilter()">
+      {{ s }} ({{ countByStatus(s) }})
+    </button>
+  </div>
+
+  <!-- Error -->
+  <div class="error-banner" *ngIf="error">⚠️ {{ error }}</div>
+
+  <!-- Loading -->
+  <div class="skeleton-grid" *ngIf="loading"><div class="skel-row" *ngFor="let i of [1,2,3,4,5]">
+    <div class="sk" style="height:60px;border-radius:10px"></div>
+  </div></div>
+
+  <!-- Empty -->
+  <div class="empty-state" *ngIf="!loading && filteredClaims.length === 0">
+    <div style="font-size:3rem">📭</div>
+    <h3>No Claims Found</h3>
+    <p *ngIf="filterStatus">No claims with status "{{ filterStatus }}". <button class="link-btn" (click)="filterStatus=''; applyFilter()">Show all</button></p>
+    <p *ngIf="!filterStatus">You haven't filed any claims yet.</p>
+    <a routerLink="/customer/file-claim" class="btn-primary" style="margin-top:0.5rem">File a Claim</a>
+  </div>
+
+  <!-- Claims Table -->
+  <div class="claims-table" *ngIf="!loading && filteredClaims.length > 0">
+    <div class="table-header">
+      <span>Claim ID</span><span>Policy</span><span>Amount</span><span>Status</span><span>Filed On</span><span>Docs</span><span></span>
+    </div>
+    <div class="table-row" *ngFor="let c of filteredClaims" (click)="selectClaim(c)" [class.selected]="selectedClaim?.id === c.id">
+      <span class="claim-id">#{{ c.id }}</span>
+      <span class="claim-policy">Policy #{{ c.policyId }}</span>
+      <span class="claim-amount">{{ formatCurrency(c.amount) }}</span>
+      <span><span class="badge" [ngClass]="getStatusClass(c.status)">{{ c.status }}</span></span>
+      <span class="claim-date">{{ formatDate(c.timeOfCreation) }}</span>
+      <span class="doc-flags">
+        <span class="doc-dot" [class.ok]="c.claimFormUploaded" title="Claim Form">CF</span>
+        <span class="doc-dot" [class.ok]="c.aadhaarCardUploaded" title="Aadhaar">ID</span>
+        <span class="doc-dot" [class.ok]="c.evidencesUploaded" title="Evidence">EV</span>
+      </span>
+      <span class="row-arrow">›</span>
+    </div>
+  </div>
+</div>
+
+<!-- Claim Detail Panel -->
+<div class="detail-overlay" *ngIf="selectedClaim" (click)="closeDetail()"></div>
+<div class="detail-panel" *ngIf="selectedClaim">
+  <div class="dp-header">
+    <div>
+      <h3>Claim #{{ selectedClaim.id }}</h3>
+      <div class="dp-sub">Policy #{{ selectedClaim.policyId }}</div>
+    </div>
+    <button class="dp-close" (click)="closeDetail()">✕</button>
+  </div>
+
+  <div class="dp-body">
+    <!-- Status Visual -->
+    <div class="status-hero" [ngClass]="getStatusClass(selectedClaim.status)">
+      <div class="sh-status">{{ selectedClaim.status }}</div>
+      <div class="sh-desc">{{ getStatusDescription(selectedClaim.status) }}</div>
+    </div>
+
+    <!-- Info -->
+    <div class="info-grid">
+      <div class="info-item"><span class="il">Claim Amount</span><span class="iv">{{ formatCurrency(selectedClaim.amount) }}</span></div>
+      <div class="info-item"><span class="il">Filed On</span><span class="iv">{{ formatDate(selectedClaim.timeOfCreation) }}</span></div>
+    </div>
+
+    <!-- Document Status -->
+    <div class="docs-section">
+      <h4>Document Status</h4>
+      <div class="doc-list">
+        <div class="doc-item" [class.ok]="selectedClaim.claimFormUploaded">
+          <span class="doc-check">{{ selectedClaim.claimFormUploaded ? '✅' : '❌' }}</span>
+          <span>Claim Form</span>
+        </div>
+        <div class="doc-item" [class.ok]="selectedClaim.aadhaarCardUploaded">
+          <span class="doc-check">{{ selectedClaim.aadhaarCardUploaded ? '✅' : '❌' }}</span>
+          <span>Aadhaar Card</span>
+        </div>
+        <div class="doc-item" [class.ok]="selectedClaim.evidencesUploaded">
+          <span class="doc-check">{{ selectedClaim.evidencesUploaded ? '✅' : '❌' }}</span>
+          <span>Supporting Evidence</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="error-msg" *ngIf="deleteError">⚠️ {{ deleteError }}</div>
+
+    <!-- Actions -->
+    <div class="dp-actions">
+      <a *ngIf="selectedClaim.status === 'DRAFT'" [routerLink]="['/customer/file-claim']" [queryParams]="{claimId: selectedClaim.id}" class="btn-teal">
+        Continue Upload →
+      </a>
+      <button *ngIf="selectedClaim.status === 'DRAFT'" class="btn-danger" (click)="deleteClaim(selectedClaim.id)" [disabled]="deleteLoading">
+        {{ deleteLoading ? 'Deleting...' : '🗑️ Delete Draft' }}
+      </button>
+    </div>
+  </div>
+</div>

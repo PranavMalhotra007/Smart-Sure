@@ -9,11 +9,13 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClaimResponse {
+public class ClaimResponse implements Serializable {
 
     private Long id;
     private long policyId;

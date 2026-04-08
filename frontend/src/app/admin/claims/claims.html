@@ -1,0 +1,257 @@
+<!-- LIST VIEW -->
+<div *ngIf="!selectedClaim">
+  <div class="pg-title">Claims</div>
+  <div class="pg-sub">Manage all customer claims and documents across every status.</div>
+
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="activeTab === 'all'" (click)="switchTab('all')">
+      All Claims <span class="tab-badge">{{ claims.length }}</span>
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'review'" (click)="switchTab('review')">
+      Under Review <span class="tab-badge">{{ underReviewCount }}</span>
+    </button>
+  </div>
+
+  <div class="tab-panel active">
+    <div class="toolbar">
+      <span class="filter-label">Filter</span>
+      <div class="fchip" [class.on]="activeFilter === 'all'" (click)="setFilter('all')">
+        <span class="cdot" style="background:var(--color-brand-primary)"></span>All
+      </div>
+      <div class="fchip" [class.on]="activeFilter === 'SUBMITTED'" (click)="setFilter('SUBMITTED')">
+        <span class="cdot" style="background:#7C5CFC"></span>Submitted
+      </div>
+      <div class="fchip" [class.on]="activeFilter === 'UNDER_REVIEW'" (click)="setFilter('UNDER_REVIEW')">
+        <span class="cdot" style="background:#1a4fa0"></span>Under Review
+      </div>
+      <div class="fchip" [class.on]="activeFilter === 'APPROVED'" (click)="setFilter('APPROVED')">
+        <span class="cdot" style="background:#3B6D11"></span>Approved
+      </div>
+      <div class="fchip" [class.on]="activeFilter === 'REJECTED'" (click)="setFilter('REJECTED')">
+        <span class="cdot" style="background:#A32D2D"></span>Rejected
+      </div>
+
+      <div class="search-wrap">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="m10 10 3 3"/></svg>
+        <input class="search-inp" placeholder="Search claim ID or policy…" (input)="onSearch($event)">
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" *ngIf="isLoading">Loading claims…</div>
+
+    <!-- TABLE -->
+    <div class="tbl-wrap" *ngIf="!isLoading">
+      <table *ngIf="filteredClaims.length > 0">
+        <thead>
+          <tr>
+            <th>Claim ID</th><th>Policy No.</th><th>Customer</th><th>Amount</th><th>Status</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of filteredClaims" (click)="openDetail(c)">
+            <td class="td-id">#C-{{ c.id ?? c.claimId }}</td>
+            <td class="td-policy">{{ c.policy?.policyNumber || '—' }}</td>
+            <td class="td-customer">
+              {{ c.customer?.firstName || ('User ' + (c.customerId || '—')) }} {{ c.customer?.lastName || '' }}
+            </td>
+            <td class="td-amount">{{ fmt(c.amount) }}</td>
+            <td><span class="sbadge" [ngClass]="badgeClass(c.status)"><span class="sd"></span>{{ badgeLabel(c.status) }}</span></td>
+            <td class="td-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- EMPTY STATE -->
+      <div class="empty" *ngIf="filteredClaims.length === 0 && !isLoading">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="empty-title">No claims found</div>
+        <div class="empty-sub">Try adjusting your filters or search.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL VIEW -->
+<div *ngIf="selectedClaim">
+  <div class="detail-header">
+    <button class="back-btn" (click)="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Claims
+    </button>
+    <div class="detail-header-sep"></div>
+    <div class="detail-breadcrumb">
+      Claims <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:10px;height:10px;opacity:.5"><polyline points="6 3 10 8 6 13"/></svg>
+      <span class="bc-cur">#C-{{ selectedClaim.id ?? selectedClaim.claimId }}</span>
+    </div>
+  </div>
+
+  <!-- Success / Error messages -->
+  <div class="alert alert-success" *ngIf="actionSuccess">{{ actionSuccess }}</div>
+  <div class="alert alert-error" *ngIf="actionError">{{ actionError }}</div>
+
+  <div class="chip-row">
+    <div class="info-chip">
+      <span class="ic-label">Claim ID</span><span class="ic-sep"></span>
+      <span class="ic-val">#C-{{ selectedClaim.id ?? selectedClaim.claimId }}</span>
+    </div>
+    <div class="info-chip">
+      <span class="ic-label">Claim Amount</span><span class="ic-sep"></span>
+      <span class="ic-val">{{ fmt(selectedClaim.amount) }}</span>
+    </div>
+    <div class="info-chip">
+      <span class="ic-label">Status</span><span class="ic-sep"></span>
+      <span class="sbadge" [ngClass]="badgeClass(selectedClaim.status)">
+        <span class="sd"></span>{{ badgeLabel(selectedClaim.status) }}
+      </span>
+    </div>
+    <div class="info-chip" *ngIf="selectedClaim.createdAt">
+      <span class="ic-label">Filed On</span><span class="ic-sep"></span>
+      <span class="ic-val">{{ fmtDate(selectedClaim.createdAt) }}</span>
+    </div>
+  </div>
+
+  <!-- Policy & Customer panel -->
+  <div class="policy-panel">
+    <div class="panel-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Policy &amp; Customer Details
+    </div>
+    <div class="policy-grid">
+      <div><div class="pf-label">Policy No.</div><div class="pf-val mono">{{ selectedClaim.policy?.policyNumber || '—' }}</div></div>
+      <div><div class="pf-label">Policy Type</div><div class="pf-val">{{ selectedClaim.policy?.policyType?.name || selectedClaim.policy?.policyType || '—' }}</div></div>
+      <div><div class="pf-label">Coverage</div><div class="pf-val">{{ selectedClaim.policy?.coverageAmount ? fmt(selectedClaim.policy.coverageAmount) : '—' }}</div></div>
+      <div><div class="pf-label">Customer</div>
+        <div class="pf-val">
+          {{ selectedClaim.customer?.firstName || ('User ' + (selectedClaim.customerId || '')) }}
+          {{ selectedClaim.customer?.lastName || '' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Download Documents — shown when UNDER_REVIEW -->
+  <div class="document-panel" *ngIf="selectedClaim.status === 'UNDER_REVIEW'">
+    <div class="panel-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg>
+      Claim Documents
+    </div>
+    <div class="doc-list" *ngIf="hasDocument(selectedClaim)">
+      <!-- Claim Form -->
+      <div class="doc-row" *ngIf="selectedClaim.claimFormUploaded">
+        <div class="doc-info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Claim Form</span><span class="doc-badge">Attached</span>
+        </div>
+        <button class="btn-download" (click)="downloadClaimFormFile(selectedClaim)">Download</button>
+      </div>
+      <!-- Aadhaar -->
+      <div class="doc-row" *ngIf="selectedClaim.aadhaarCardUploaded">
+        <div class="doc-info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Aadhaar Card</span><span class="doc-badge">Attached</span>
+        </div>
+        <button class="btn-download" (click)="downloadAadhaarFile(selectedClaim)">Download</button>
+      </div>
+      <!-- Evidence -->
+      <div class="doc-row" *ngIf="selectedClaim.evidencesUploaded">
+        <div class="doc-info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Supporting Evidence</span><span class="doc-badge">Attached</span>
+        </div>
+        <button class="btn-download" (click)="downloadEvidenceFile(selectedClaim)">Download</button>
+      </div>
+    </div>
+    <div *ngIf="!hasDocument(selectedClaim)" class="doc-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      No document uploaded by customer for this claim.
+    </div>
+  </div>
+
+  <!-- Admin Actions — shown based on current status -->
+  <div class="action-panel">
+    <div class="panel-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+      Admin Actions
+    </div>
+
+    <!-- SUBMITTED → Mark Under Review -->
+    <div class="action-btns" *ngIf="canMarkReview(selectedClaim)">
+      <p class="action-hint">This claim has been submitted and is awaiting review.</p>
+      <button class="btn-review" (click)="openAction('REVIEW')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        Start Review
+      </button>
+    </div>
+
+    <!-- UNDER_REVIEW → Approve or Reject -->
+    <div class="action-btns" *ngIf="canApproveOrReject(selectedClaim)">
+      <p class="action-hint">This claim is under review. You can now approve or reject it.</p>
+      <button class="btn-approve" (click)="openAction('APPROVE')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Approve Claim
+      </button>
+      <button class="btn-reject" (click)="openAction('REJECT')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Reject Claim
+      </button>
+    </div>
+
+    <!-- Terminal states -->
+    <div class="action-resolved" *ngIf="selectedClaim.status === 'APPROVED'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      This claim has been approved.
+    </div>
+    <div class="action-resolved rejected" *ngIf="selectedClaim.status === 'REJECTED'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      This claim has been rejected.
+    </div>
+    <div class="action-resolved draft" *ngIf="selectedClaim.status === 'DRAFT'">
+      Claim is in DRAFT state. Customer must upload documents and submit before admin can act.
+    </div>
+  </div>
+</div>
+
+<!-- ACTION CONFIRMATION MODAL -->
+<div class="modal-overlay" *ngIf="showActionModal" (click)="closeActionModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <ng-container *ngIf="actionType === 'APPROVE'">Approve Claim</ng-container>
+        <ng-container *ngIf="actionType === 'REJECT'">Reject Claim</ng-container>
+        <ng-container *ngIf="actionType === 'REVIEW'">Start Review</ng-container>
+      </h3>
+      <button class="btn-close" (click)="closeActionModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p *ngIf="actionType === 'REVIEW'">
+        This will move the claim to <strong>UNDER_REVIEW</strong> status.
+      </p>
+      <p *ngIf="actionType !== 'REVIEW'">
+        Please provide your remarks for this decision (required).
+      </p>
+      <textarea
+        *ngIf="actionType !== 'REVIEW'"
+        [(ngModel)]="remarksInput"
+        rows="3"
+        class="remarks-input"
+        [placeholder]="actionType === 'APPROVE' ? 'e.g. All documents verified. Claim approved.' : 'e.g. Insufficient evidence provided.'">
+      </textarea>
+      <div class="modal-error" *ngIf="actionError">{{ actionError }}</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeActionModal()" [disabled]="isActioning">Cancel</button>
+      <button
+        [class]="actionType === 'APPROVE' ? 'btn-approve' : (actionType === 'REJECT' ? 'btn-reject' : 'btn-review')"
+        (click)="confirmAction()"
+        [disabled]="isActioning || (actionType !== 'REVIEW' && !remarksInput.trim())">
+        <span *ngIf="!isActioning">Confirm</span>
+        <span *ngIf="isActioning">Processing…</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+<aside class="sidebar">
+  <div class="admin-index">
+    <div class="ai-header">
+      <span class="ai-label">Admin Index</span>
+      <div class="ai-live"><div class="live-dot"></div>Online</div>
+    </div>
+
+    <!-- Quick stats row -->
+    <div class="ai-stats">
+      <div class="ai-stat">
+        <div class="ai-stat-val red">{{ pendingClaims() }}</div>
+        <div class="ai-stat-lbl">Pending</div>
+      </div>
+      <div class="ai-stat">
+        <div class="ai-stat-val green">{{ totalPolicies() }}</div>
+        <div class="ai-stat-lbl">Policies</div>
+      </div>
+      <div class="ai-stat">
+        <div class="ai-stat-val">{{ totalUsers() }}</div>
+        <div class="ai-stat-lbl">Users</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <div class="slbl">Overview</div>
+    <a class="ni" routerLink="/admin/dashboard" routerLinkActive="active">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Dashboard
+    </a>
+    
+    <div class="slbl">Claims</div>
+    <a class="ni" routerLink="/admin/claims" routerLinkActive="active">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3h12M2 7h12M2 11h8"/></svg>
+      All Claims
+    </a>
+    
+    <div class="sdiv"></div>
+    <div class="slbl">Policies</div>
+    <a class="ni" routerLink="/admin/policies" routerLinkActive="active">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="1" width="12" height="14" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h4"/></svg>
+      All Policies
+    </a>
+    <a class="ni" routerLink="/admin/policy-types" routerLinkActive="active">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3" width="12" height="10" rx="1"/></svg>
+      Policy Types
+    </a>
+    
+    <div class="sdiv"></div>
+    <div class="slbl">Users</div>
+    <a class="ni" routerLink="/admin/users" routerLinkActive="active">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/></svg>
+      All Users
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sf-row">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+      Help &amp; docs
+    </div>
+  </div>
+</aside>

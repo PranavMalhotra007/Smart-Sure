@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import com.smartSure.adminService.dto.DashboardStatsDTO;
+import com.smartSure.adminService.util.SecurityUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -54,8 +56,8 @@ public class AdminController {
     @PutMapping("/claims/{claimId}/review")
     @Operation(summary = "Mark claim as under review")
     public ResponseEntity<ClaimDTO> markUnderReview(
-            @PathVariable("claimId") Long claimId,
-            @RequestHeader("X-User-Id") Long adminId) {
+            @PathVariable("claimId") Long claimId) {
+        Long adminId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(adminService.markUnderReview(adminId, claimId));
     }
 
@@ -64,8 +66,8 @@ public class AdminController {
     @Operation(summary = "Approve a claim")
     public ResponseEntity<ClaimDTO> approveClaim(
             @PathVariable("claimId") Long claimId,
-            @RequestHeader("X-User-Id") Long adminId,
             @RequestBody ClaimStatusUpdateRequest request) {
+            Long adminId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(adminService.approveClaim(adminId, claimId, request.getRemarks()));
     }
 
@@ -74,8 +76,8 @@ public class AdminController {
     @Operation(summary = "Reject a claim")
     public ResponseEntity<ClaimDTO> rejectClaim(
             @PathVariable("claimId") Long claimId,
-            @RequestHeader("X-User-Id") Long adminId,
             @RequestBody ClaimStatusUpdateRequest request) {
+        Long adminId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(adminService.rejectClaim(adminId, claimId, request.getRemarks()));
     }
 
@@ -98,9 +100,23 @@ public class AdminController {
     @Operation(summary = "Cancel a policy")
     public ResponseEntity<PolicyDTO> cancelPolicy(
             @PathVariable Long policyId,
-            @RequestHeader("X-User-Id") Long adminId,
             @RequestParam(required = false) String reason) {
+        Long adminId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(adminService.cancelPolicy(adminId, policyId, reason));
+    }
+
+    // Singular policy endpoint requested by user
+    @GetMapping("/policy")
+    @Operation(summary = "Get all policies (singular alias)")
+    public ResponseEntity<List<PolicyDTO>> getAllPoliciesSingular() {
+        return ResponseEntity.ok(adminService.getAllPolicies());
+    }
+
+    // Singular claim endpoint requested by user
+    @GetMapping("/claim")
+    @Operation(summary = "Get all claims (singular alias)")
+    public ResponseEntity<List<ClaimDTO>> getAllClaimsSingular() {
+        return ResponseEntity.ok(adminService.getAllClaims());
     }
 
     // ==================== USER MANAGEMENT ====================
@@ -115,6 +131,14 @@ public class AdminController {
     @Operation(summary = "Get a single user by ID")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long userId) {
         return ResponseEntity.ok(adminService.getUserById(userId));
+    }
+
+    // ==================== DASHBOARD STATS ====================
+
+    @GetMapping("/dashboard-stats")
+    @Operation(summary = "Get dashboard statistics including total users, policies, and claims")
+    public ResponseEntity<DashboardStatsDTO> getDashboardStats() {
+        return ResponseEntity.ok(adminService.getDashboardStats());
     }
 
     // ==================== AUDIT LOGS ====================

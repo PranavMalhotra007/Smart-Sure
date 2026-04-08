@@ -1,0 +1,189 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.layout { display: flex; gap: 0; min-height: 520px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+.sidebar { width: 220px; flex-shrink: 0; background: var(--color-background-secondary); border-right: 0.5px solid var(--color-border-tertiary); display: flex; flex-direction: column; padding: 0; }
+.brand { padding: 16px 16px 12px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.brand-name { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+.brand-role { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+.nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+.section-label { font-size: 10px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px 4px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 16px; cursor: pointer; font-size: 13px; color: var(--color-text-secondary); border-left: 2px solid transparent; transition: all 0.15s; position: relative; }
+.nav-item:hover { background: var(--color-background-primary); color: var(--color-text-primary); }
+.nav-item.active { background: var(--color-background-primary); color: var(--color-text-primary); border-left-color: #534AB7; font-weight: 500; }
+.nav-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
+.active .nav-icon { opacity: 1; }
+.badge { margin-left: auto; font-size: 10px; background: var(--color-background-danger); color: var(--color-text-danger); padding: 1px 6px; border-radius: 8px; font-weight: 500; }
+.badge.green { background: var(--color-background-success); color: var(--color-text-success); }
+.main { flex: 1; padding: 20px 24px; background: var(--color-background-primary); }
+.detail-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+.detail-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 14px; }
+.api-tag { display: inline-block; font-size: 10px; font-family: var(--font-mono); background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; padding: 2px 6px; margin: 2px 2px 2px 0; }
+.api-tag.get { color: var(--color-text-success); }
+.api-tag.put { color: var(--color-text-warning); }
+.api-tag.post { color: var(--color-text-info); }
+.api-tag.del { color: var(--color-text-danger); }
+.section-block { margin-bottom: 18px; }
+.section-block:last-child { margin-bottom: 0; }
+.divider { height: 0.5px; background: var(--color-border-tertiary); margin: 4px 0; }
+</style>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-name">SmartSure</div>
+      <div class="brand-role">Admin Dashboard</div>
+    </div>
+    <nav class="nav">
+      <div class="section-label">Overview</div>
+      <div class="nav-item active" onclick="show('dashboard')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        Dashboard
+      </div>
+
+      <div class="section-label">Claim Management</div>
+      <div class="nav-item" onclick="show('all-claims')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12M2 7h12M2 11h8"/></svg>
+        All Claims
+      </div>
+      <div class="nav-item" onclick="show('under-review')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Under Review
+        <span class="badge">!</span>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-label">Policy Management</div>
+      <div class="nav-item" onclick="show('policies')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="1" width="12" height="14" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h4"/></svg>
+        All Policies
+      </div>
+      <div class="nav-item" onclick="show('policy-types')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h10v2H3zM3 8h6M3 11h8"/><path d="M12 10l2 2-2 2"/></svg>
+        Policy Types
+        <span class="badge green">CRUD</span>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-label">User Management</div>
+      <div class="nav-item" onclick="show('users')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/></svg>
+        All Users
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-label">Finance</div>
+      <div class="nav-item" onclick="show('payments')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="9" rx="1.5"/><path d="M1 7h14"/></svg>
+        Payments
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-label">System</div>
+      <div class="nav-item" onclick="show('audit-logs')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h12v12H2z" rx="1"/><path d="M5 6h6M5 9h4"/><circle cx="11.5" cy="9.5" r="2.5"/></svg>
+        Audit Logs
+      </div>
+    </nav>
+  </div>
+
+  <div class="main" id="detail-panel">
+    <!-- Dashboard default -->
+    <div id="panel-dashboard">
+      <div class="detail-title">Dashboard</div>
+      <div class="detail-desc">Overview summary — pending claim count, active policies, recent activity feed. Built from <code>/api/admin/audit-logs/recent</code> and <code>/api/admin/policies/summary</code>.</div>
+    </div>
+
+    <div id="panel-all-claims" style="display:none">
+      <div class="section-block">
+        <div class="detail-title">All Claims</div>
+        <div class="detail-desc">Full claim list with status filters (DRAFT, SUBMITTED, UNDER_REVIEW, APPROVED, REJECTED). Tap any row to see claim detail with downloadable documents.</div>
+        <span class="api-tag get">GET /api/admin/claims</span>
+        <span class="api-tag get">GET /api/admin/claims/{id}</span>
+        <span class="api-tag get">GET /api/claims/{id}/download/claim-form</span>
+        <span class="api-tag get">GET /api/claims/{id}/download/aadhaar</span>
+        <span class="api-tag get">GET /api/claims/{id}/download/evidence</span>
+      </div>
+    </div>
+
+    <div id="panel-under-review" style="display:none">
+      <div class="section-block">
+        <div class="detail-title">Under Review</div>
+        <div class="detail-desc">Action queue — claims awaiting admin decision. Approve or reject with remarks directly from this view. Most time-sensitive screen for admin workflow.</div>
+        <span class="api-tag get">GET /api/admin/claims/under-review</span>
+        <span class="api-tag put">PUT /api/admin/claims/{id}/review</span>
+        <span class="api-tag put">PUT /api/admin/claims/{id}/approve</span>
+        <span class="api-tag put">PUT /api/admin/claims/{id}/reject</span>
+      </div>
+    </div>
+
+    <div id="panel-policies" style="display:none">
+      <div class="section-block">
+        <div class="detail-title">All Policies</div>
+        <div class="detail-desc">Paginated list of all customer policies. Admin can cancel a policy with optional reason, update status, and view per-policy premiums. Summary KPIs available.</div>
+        <span class="api-tag get">GET /api/policies/admin/all</span>
+        <span class="api-tag get">GET /api/admin/policies/{id}</span>
+        <span class="api-tag put">PUT /api/admin/policies/{id}/cancel</span>
+        <span class="api-tag put">PUT /api/policies/admin/{id}/status</span>
+        <span class="api-tag get">GET /api/policies/admin/summary</span>
+      </div>
+    </div>
+
+    <div id="panel-policy-types" style="display:none">
+      <div class="section-block">
+        <div class="detail-title">Policy Types (Product Catalog)</div>
+        <div class="detail-desc">Create, edit, and discontinue insurance product types. Supports filtering by insurance category. This is the only full-CRUD section exclusively for admins.</div>
+        <span class="api-tag get">GET /api/policy-types/all</span>
+        <span class="api-tag post">POST /api/policy-types</span>
+        <span class="api-tag put">PUT /api/policy-types/{id}</span>
+        <span class="api-tag del">DELETE /api/policy-types/{id}</span>
+        <span class="api-tag get">GET /api/policy-types/category/{cat}</span>
+      </div>
+    </div>
+
+    <div id="panel-users" style="display:none">
+      <div class="section-block">
+        <div class="detail-title">All Users</div>
+        <div class="detail-desc">Paginated user list with full profile lookup. Admin can view, edit, delete users and manage their addresses. Sortable by userId, name, etc.</div>
+        <span class="api-tag get">GET /user/getAll</span>
+        <span class="api-tag get">GET /user/getInfo/{id}</span>
+        <span class="api-tag put">PUT /user/update/{id}</span>
+        <span class="api-tag del">DELETE /user/delete/{id}</span>
+        <span class="api-tag get">GET /user/getAddress/{id}</span>
+      </div>
+    </div>
+
+    <div id="panel-payments" style="display:none">
+      <div class="section-block">
+        <div class="detail-title">Payments</div>
+        <div class="detail-desc">Look up any payment by transaction ID. Useful for resolving disputes or confirming premium collection. Health check indicator for payment service status.</div>
+        <span class="api-tag get">GET /api/payments/transaction/{txnId}</span>
+        <span class="api-tag get">GET /api/payments/health-check</span>
+      </div>
+    </div>
+
+    <div id="panel-audit-logs" style="display:none">
+      <div class="section-block">
+        <div class="detail-title">Audit Logs</div>
+        <div class="detail-desc">Full admin action history. Filter by date range, look up history for a specific claim or policy, or view latest N entries. Essential for compliance and debugging.</div>
+        <span class="api-tag get">GET /api/admin/audit-logs</span>
+        <span class="api-tag get">GET /api/admin/audit-logs/recent</span>
+        <span class="api-tag get">GET /api/admin/audit-logs/{entity}/{id}</span>
+        <span class="api-tag get">GET /api/admin/audit-logs/range</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const panels = ['dashboard','all-claims','under-review','policies','policy-types','users','payments','audit-logs'];
+function show(id) {
+  panels.forEach(p => {
+    const el = document.getElementById('panel-'+p);
+    if (el) el.style.display = (p === id) ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+</script>

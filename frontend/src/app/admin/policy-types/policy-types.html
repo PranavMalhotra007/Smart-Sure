@@ -1,0 +1,172 @@
+<div class="pt-container">
+  <div class="pt-header">
+    <div class="pt-title-area">
+      <h2>Policy Types</h2>
+      <p>Manage insurance coverage types — create, edit, or discontinue products.</p>
+    </div>
+    <button class="btn-primary" (click)="openAddModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Add Type
+    </button>
+  </div>
+
+  <!-- Success alert (shown outside modal, after close) -->
+  <div class="alert alert-success" *ngIf="successMsg && !showAddModal && !showEditModal">{{ successMsg }}</div>
+
+  <div class="pt-content">
+    <div *ngIf="isLoading" class="loading-state">Loading policy types…</div>
+
+    <div *ngIf="!isLoading && policyTypes.length === 0" class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <p>No policy types found. Add one to get started.</p>
+    </div>
+
+    <div class="pt-grid" *ngIf="!isLoading && policyTypes.length > 0">
+      <div class="pt-card" *ngFor="let pt of policyTypes">
+        <div class="pt-card-header">
+          <div class="pt-icon-mock"></div>
+          <span class="pt-cat-badge">{{ pt.category || 'GENERAL' }}</span>
+          <span class="pt-status-badge" [class.inactive]="!isActive(pt)">
+            {{ isActive(pt) ? 'Active' : (pt.status || 'Inactive') }}
+          </span>
+        </div>
+        <h3>{{ pt.name }}</h3>
+        <p class="pt-desc">{{ pt.description || 'No description provided.' }}</p>
+        <div class="pt-meta">
+          <div class="pt-meta-item" *ngIf="getDisplayRate(pt)">
+            <label>Base Premium</label>
+            <span>{{ getDisplayRate(pt) }}</span>
+          </div>
+          <div class="pt-meta-item" *ngIf="getDisplayMax(pt)">
+            <label>Max Coverage</label>
+            <span>{{ getDisplayMax(pt) }}</span>
+          </div>
+          <div class="pt-meta-item" *ngIf="pt.termMonths">
+            <label>Term</label>
+            <span>{{ pt.termMonths }}mo</span>
+          </div>
+        </div>
+        <div class="pt-actions">
+          <button class="btn-edit" (click)="openEditModal(pt)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit
+          </button>
+          <button class="btn-danger" (click)="deleteType(pt.id)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Discontinue
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD Modal -->
+  <div class="modal-overlay" *ngIf="showAddModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Add Policy Type</h3>
+        <button class="btn-close" (click)="closeModal()">&times;</button>
+      </div>
+      <ng-container *ngTemplateOutlet="policyTypeForm; context: { submitFn: onAddSubmit.bind(this), label: 'Add Type' }"></ng-container>
+    </div>
+  </div>
+
+  <!-- EDIT Modal -->
+  <div class="modal-overlay" *ngIf="showEditModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Edit Policy Type</h3>
+        <button class="btn-close" (click)="closeModal()">&times;</button>
+      </div>
+      <ng-container *ngTemplateOutlet="policyTypeForm; context: { submitFn: onEditSubmit.bind(this), label: 'Save Changes' }"></ng-container>
+    </div>
+  </div>
+
+  <!-- Shared Form Template -->
+  <ng-template #policyTypeForm let-submitFn="submitFn" let-label="label">
+    <form [formGroup]="form" (ngSubmit)="submitFn()">
+      <div class="form-body">
+        <div class="alert alert-error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+        <!-- Name -->
+        <div class="input-group">
+          <label>Name <span class="req">*</span></label>
+          <input type="text" formControlName="name" placeholder="e.g. Term Life Insurance">
+          <div class="field-error" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">Name is required.</div>
+        </div>
+
+        <!-- Description -->
+        <div class="input-group">
+          <label>Description</label>
+          <textarea formControlName="description" rows="2" placeholder="Describe the coverage…"></textarea>
+        </div>
+
+        <!-- Category -->
+        <div class="input-group">
+          <label>Category <span class="req">*</span></label>
+          <select formControlName="category">
+            <option value="LIFE">Life</option>
+            <option value="HEALTH">Health</option>
+            <option value="AUTO">Auto</option>
+            <option value="HOME">Home</option>
+            <option value="TRAVEL">Travel</option>
+            <option value="BUSINESS">Business</option>
+          </select>
+        </div>
+
+        <!-- Base Premium + Term -->
+        <div class="row-group">
+          <div class="input-group">
+            <label>Base Premium (₹) <span class="req">*</span></label>
+            <input type="number" min="0.01" step="0.01" formControlName="basePremium" placeholder="e.g. 5000">
+            <div class="field-error" *ngIf="form.get('basePremium')?.invalid && form.get('basePremium')?.touched">Required, min ₹0.01</div>
+          </div>
+          <div class="input-group">
+            <label>Term (months) <span class="req">*</span></label>
+            <input type="number" min="1" formControlName="termMonths" placeholder="e.g. 12">
+            <div class="field-error" *ngIf="form.get('termMonths')?.invalid && form.get('termMonths')?.touched">Min 1 month</div>
+          </div>
+        </div>
+
+        <!-- Max Coverage + Deductible -->
+        <div class="row-group">
+          <div class="input-group">
+            <label>Max Coverage (₹) <span class="req">*</span></label>
+            <input type="number" min="1000" formControlName="maxCoverageAmount" placeholder="e.g. 5000000">
+            <div class="field-error" *ngIf="form.get('maxCoverageAmount')?.invalid && form.get('maxCoverageAmount')?.touched">Min ₹1000</div>
+          </div>
+          <div class="input-group">
+            <label>Deductible (₹) <span class="req">*</span></label>
+            <input type="number" min="0" formControlName="deductibleAmount" placeholder="e.g. 0">
+          </div>
+        </div>
+
+        <!-- Age Range (optional) -->
+        <div class="row-group">
+          <div class="input-group">
+            <label>Min Age</label>
+            <input type="number" min="0" formControlName="minAge" placeholder="e.g. 18">
+          </div>
+          <div class="input-group">
+            <label>Max Age</label>
+            <input type="number" min="0" formControlName="maxAge" placeholder="e.g. 65">
+          </div>
+        </div>
+
+        <!-- Coverage Details (optional) -->
+        <div class="input-group">
+          <label>Coverage Details</label>
+          <textarea formControlName="coverageDetails" rows="2" placeholder="List what is covered…"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeModal()">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="form.invalid || isSubmitting">
+          <span *ngIf="!isSubmitting">{{ label }}</span>
+          <span *ngIf="isSubmitting">Saving…</span>
+        </button>
+      </div>
+    </form>
+  </ng-template>
+</div>

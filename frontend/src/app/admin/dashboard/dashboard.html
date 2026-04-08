@@ -1,0 +1,74 @@
+<div class="pg-hdr">
+  <div class="pg-title">Dashboard</div>
+  <div class="pg-sub">Welcome back — here's what needs your attention today.</div>
+</div>
+
+<div class="stat-grid">
+  <div class="sc">
+    <div class="sc-accent" style="background:#534AB7"></div>
+    <div class="sc-lbl">Total claims</div>
+    <div class="sc-val">{{ totalClaims() }}</div>
+    <div class="sc-delta up">All time</div>
+  </div>
+  <div class="sc">
+    <div class="sc-accent" style="background:#E24B4A"></div>
+    <div class="sc-lbl">Under review</div>
+    <div class="sc-val">{{ underReview() }}</div>
+    <div class="sc-delta warn">Needs action</div>
+  </div>
+  <div class="sc">
+    <div class="sc-accent" style="background:#1D9E75"></div>
+    <div class="sc-lbl">Active policies</div>
+    <div class="sc-val">{{ totalPolicies() }}</div>
+    <div class="sc-delta up">Total policies</div>
+  </div>
+  <div class="sc">
+    <div class="sc-accent" style="background:#BA7517"></div>
+    <div class="sc-lbl">Registered users</div>
+    <div class="sc-val">{{ totalUsers() }}</div>
+    <div class="sc-delta up">All users</div>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="card">
+    <div class="ch">
+      <span class="ch-t">Recent claims</span>
+      <span class="va">View all</span>
+    </div>
+    @if (isLoading()) {
+      <div class="cr"><span class="cn">Loading...</span></div>
+    } @else if (recentClaims().length === 0) {
+      <div class="cr"><span class="cn">No claims found</span></div>
+    } @else {
+      @for (claim of recentClaims(); track claim.id) {
+        <div class="cr">
+          <span class="cid">{{ claim.id }}</span>
+          <span class="cn">{{ claim.name }}</span>
+          <span class="pill" [ngClass]="claim.statusClass">{{ claim.status }}</span>
+          <span class="cdt">{{ claim.date }}</span>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="card">
+    <div class="ch">
+      <span class="ch-t">Recent activity</span>
+      <span class="va">View audit logs</span>
+    </div>
+    @if (isLoading()) {
+      <div class="ar"><div class="at">Loading...</div></div>
+    } @else if (activities().length === 0) {
+      <div class="ar"><div class="at">No recent activity</div></div>
+    } @else {
+      @for (act of activities(); track act.event) {
+        <div class="ar">
+          <div class="adot" [style.background]="act.color"></div>
+          <div class="at">{{ act.event }}</div>
+          <div class="atm">{{ act.time }}</div>
+        </div>
+      }
+    }
+  </div>
+</div>

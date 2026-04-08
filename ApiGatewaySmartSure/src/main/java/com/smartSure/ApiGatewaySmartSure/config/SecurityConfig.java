@@ -11,6 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import com.smartSure.ApiGatewaySmartSure.security.JwtAuthFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +33,7 @@ public class SecurityConfig {
 
         return http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {}) 
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
                 .httpBasic(httpBasic -> httpBasic.disable()) 
                 .formLogin(form -> form.disable()) 
                 .authorizeExchange(exchange -> exchange
@@ -40,6 +44,21 @@ public class SecurityConfig {
                 )
                 .addFilterAt(jwtAuthFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList(allowedOrigins));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "X-Internal-Secret"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
     }
 	
 	@Bean

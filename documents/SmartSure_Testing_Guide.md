@@ -20,11 +20,11 @@ Customers must register and obtain a JWT to interact with the system securely.
 **Body** (Raw JSON):
 ```json
 {
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "johndoe@example.com",
+  "firstName": "John1",
+  "lastName": "Doe1",
+  "email": "johndoe1@example.com",
   "password": "Password123!",
-  "phone": 9876543210,
+  "phone": 9876543219,
   "role": "CUSTOMER"
 }
 ```
@@ -34,7 +34,7 @@ Customers must register and obtain a JWT to interact with the system securely.
 **Body** (Raw JSON):
 ```json
 {
-  "email": "johndoe@example.com",
+  "email": "johndoe1@example.com",
   "password": "Password123!"
 }
 ```

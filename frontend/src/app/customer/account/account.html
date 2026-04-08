@@ -1,0 +1,129 @@
+<div class="account-page">
+  <div class="page-header">
+    <h1 class="page-title">Account Details</h1>
+    <p class="page-subtitle">Manage your personal information and address</p>
+  </div>
+
+  <div class="loading-wrap" *ngIf="loading">
+    <div class="spinner"></div><span>Loading your profile...</span>
+  </div>
+
+  <div class="account-layout" *ngIf="!loading">
+    <!-- Tabs -->
+    <div class="tab-sidebar">
+      <button class="tab-btn" [class.active]="activeTab==='profile'" (click)="activeTab='profile'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Personal Info
+      </button>
+      <button class="tab-btn" [class.active]="activeTab==='address'" (click)="activeTab='address'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Address
+      </button>
+      <button class="tab-btn" [class.active]="activeTab==='security'" (click)="activeTab='security'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Security
+      </button>
+    </div>
+
+    <div class="tab-content">
+      <!-- Personal Info Tab -->
+      <div class="tab-panel" *ngIf="activeTab==='profile'">
+        <div class="panel-hdr"><div class="panel-icon">👤</div><div><h2>Personal Information</h2><p>Update your name, contact and personal details</p></div></div>
+        <div class="success-msg" *ngIf="profileSuccess">✅ {{ profileSuccess }}</div>
+        <div class="error-msg" *ngIf="profileError">⚠️ {{ profileError }}</div>
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+          <div class="form-grid">
+            <div class="form-row">
+              <label>First Name *</label>
+              <input type="text" formControlName="firstName" class="form-input" placeholder="Arun">
+            </div>
+            <div class="form-row">
+              <label>Last Name *</label>
+              <input type="text" formControlName="lastName" class="form-input" placeholder="Sharma">
+            </div>
+            <div class="form-row">
+              <label>Phone Number</label>
+              <input type="tel" formControlName="phone" class="form-input" placeholder="9876543210">
+            </div>
+            <div class="form-row">
+              <label>Date of Birth</label>
+              <input type="date" formControlName="dateOfBirth" class="form-input">
+            </div>
+            <div class="form-row" style="grid-column:1/-1">
+              <label>Gender</label>
+              <select formControlName="gender" class="form-input">
+                <option value="">Select gender</option>
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn-save" [disabled]="profileForm.invalid || profileLoading">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            {{ profileLoading ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </form>
+      </div>
+
+      <!-- Address Tab -->
+      <div class="tab-panel" *ngIf="activeTab==='address'">
+        <div class="panel-hdr"><div class="panel-icon">📍</div><div><h2>Address</h2><p>{{ hasAddress ? 'Update your registered address' : 'Add your address' }}</p></div></div>
+        <div class="success-msg" *ngIf="addressSuccess">✅ {{ addressSuccess }}</div>
+        <div class="error-msg" *ngIf="addressError">⚠️ {{ addressError }}</div>
+        <form [formGroup]="addressForm" (ngSubmit)="saveAddress()">
+          <div class="form-grid">
+            <div class="form-row" style="grid-column:1/-1">
+              <label>Street Address *</label>
+              <input type="text" formControlName="street" class="form-input" placeholder="123 Main Street, Apartment 4B">
+            </div>
+            <div class="form-row">
+              <label>City *</label>
+              <input type="text" formControlName="city" class="form-input" placeholder="Mumbai">
+            </div>
+            <div class="form-row">
+              <label>State *</label>
+              <input type="text" formControlName="state" class="form-input" placeholder="Maharashtra">
+            </div>
+            <div class="form-row">
+              <label>PIN Code *</label>
+              <input type="text" formControlName="pincode" class="form-input" placeholder="400001">
+            </div>
+            <div class="form-row">
+              <label>Country *</label>
+              <input type="text" formControlName="country" class="form-input">
+            </div>
+          </div>
+          <button type="submit" class="btn-save" [disabled]="addressForm.invalid || addressLoading">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            {{ addressLoading ? 'Saving...' : hasAddress ? 'Update Address' : 'Save Address' }}
+          </button>
+        </form>
+      </div>
+
+      <!-- Security Tab -->
+      <div class="tab-panel" *ngIf="activeTab==='security'">
+        <div class="panel-hdr"><div class="panel-icon">🔒</div><div><h2>Security</h2><p>Account security information</p></div></div>
+        <div class="security-cards">
+          <div class="sec-card">
+            <div class="sec-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00b4d8" stroke-width="2" width="22" height="22"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <div><div class="sec-title">Password</div><div class="sec-sub">Last changed: contact support to reset</div></div>
+            </div>
+          </div>
+          <div class="sec-card">
+            <div class="sec-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#06d6a0" stroke-width="2" width="22" height="22"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <div><div class="sec-title">Account Protected</div><div class="sec-sub">JWT-secured session active</div></div>
+            </div>
+            <span class="sec-badge">Active</span>
+          </div>
+          <div class="sec-card info-card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <p>To change your password, please contact SmartSure support at <strong>support&#64;smartsure.in</strong> or call 1800-XXX-XXXX.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

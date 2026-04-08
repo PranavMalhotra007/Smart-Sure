@@ -18,7 +18,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
+        String message = ex.getMessage();
+        Throwable cause = ex.getCause();
+        if ((message == null || message.isBlank()) && cause != null) {
+            message = cause.getMessage();
+        }
+        if (message == null || message.isBlank()) {
+            message = ex.getClass().getName();
+        }
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, message);
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {

@@ -12,4 +12,10 @@ public interface PolicyClient {
     // FeignClientInterceptor forwards X-User-Id, X-User-Role, X-Internal-Secret automatically
     @GetMapping("/{policyId}")
     PolicyDTO getPolicyById(@PathVariable("policyId") Long policyId);
+
+    @org.springframework.web.bind.annotation.PutMapping("/internal/{policyId}/deduct-coverage")
+    PolicyDTO deductCoverage(@PathVariable("policyId") Long policyId, @org.springframework.web.bind.annotation.RequestParam("amount") java.math.BigDecimal amount);
+
+    @GetMapping("/internal/customer/{customerId}/policy-ids")
+    java.util.List<Long> getMyPolicyIds(@PathVariable("customerId") Long customerId);
 }

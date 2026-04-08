@@ -1,0 +1,35 @@
+<div class="ph-page">
+  <div class="ph-header">
+    <h1 class="ph-title">Premium History</h1>
+    <p class="ph-subtitle">View all your past payments across all policies.</p>
+  </div>
+
+  <div class="skeleton-grid" *ngIf="loading">
+    <div class="skel" *ngFor="let i of [1,2,3,4]"></div>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && history.length === 0">
+    <div class="empty-icon">🧾</div>
+    <h3>No Payment History</h3>
+    <p>You haven't made any premium payments yet.</p>
+  </div>
+
+  <div class="history-list" *ngIf="!loading && history.length > 0">
+    <div class="history-card" *ngFor="let item of history">
+      <div class="hc-left">
+        <div class="hc-icon">💳</div>
+        <div class="hc-info">
+          <h3>{{ formatCurrency(item.amount) }}</h3>
+          <p>{{ item.policyTypeName || 'Policy' }} • {{ item.policyNumber }}</p>
+        </div>
+      </div>
+      <div class="hc-right">
+        <div class="status-badge paid">Paid</div>
+        <div class="date-info">
+          <div><span class="lbl">Date:</span> {{ formatDate(item.paidDate) }}</div>
+          <div><span class="lbl">Ref:</span> <span class="ref">{{ item.paymentReference || '—' }}</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

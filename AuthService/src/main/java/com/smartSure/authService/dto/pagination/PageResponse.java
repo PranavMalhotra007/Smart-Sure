@@ -4,11 +4,13 @@ import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Data;
 
 @Data
 @Schema(name="Page Response Structure")
 @AllArgsConstructor
+@NoArgsConstructor
 public class PageResponse<T> {
 	
 	private List<T> content;

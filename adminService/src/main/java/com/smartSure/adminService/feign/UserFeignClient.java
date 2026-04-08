@@ -5,6 +5,7 @@ import com.smartSure.adminService.dto.PageResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -17,5 +18,5 @@ public interface UserFeignClient {
 
     // Fetch all users — used for admin user management dashboard
     @GetMapping("/user/getAll")
-    PageResponseDTO<UserDTO> getAllUsers();
+    PageResponseDTO<UserDTO> getAllUsers(@RequestParam("size") int size);
 }

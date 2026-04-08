@@ -1,0 +1,183 @@
+<div class="purchase-page">
+  <div class="page-header">
+    <a routerLink="/customer/plans" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Plans
+    </a>
+    <div>
+      <h1 class="page-title">Purchase Policy</h1>
+      <p class="page-subtitle" *ngIf="plan">{{ plan.name }} – {{ plan.category }}</p>
+    </div>
+  </div>
+
+  <!-- Loading plan -->
+  <div class="loading-wrap" *ngIf="planLoading">
+    <div class="spinner"></div> Loading plan details...
+  </div>
+
+  <!-- No plan -->
+  <div class="empty-state" *ngIf="!planLoading && !plan">
+    <div style="font-size:3rem">❌</div>
+    <h3>Plan Not Found</h3>
+    <a routerLink="/customer/plans" class="btn-teal">Browse Plans</a>
+  </div>
+
+  <div class="purchase-layout" *ngIf="!planLoading && plan">
+    <!-- Steps -->
+    <div class="stepper">
+      <div class="step-item" [class.active]="step>=1" [class.done]="step>1">
+        <div class="sc">{{ step > 1 ? '✓' : '1' }}</div>
+        <span>Details</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" [class.active]="step>=2" [class.done]="step>2">
+        <div class="sc">{{ step > 2 ? '✓' : '2' }}</div>
+        <span>Review</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" [class.active]="step>=3">
+        <div class="sc">3</div>
+        <span>Done</span>
+      </div>
+    </div>
+
+    <div class="purchase-grid">
+      <!-- Main Form / Review / Success -->
+      <div class="main-col">
+        <!-- STEP 1 -->
+        <div class="card" *ngIf="step === 1">
+          <h2 class="card-title">📋 Policy Details</h2>
+          <form [formGroup]="form">
+            <div class="form-grid">
+              <div class="form-row">
+                <label>Coverage Amount (₹) *</label>
+                <input type="number" formControlName="coverageAmount" class="form-input"
+                  [placeholder]="plan.minCoverage || 100000"
+                  [min]="plan.minCoverage" [max]="plan.maxCoverage">
+                <span class="hint">Range: {{ formatCurrency(plan.minCoverage) }} – {{ formatCurrency(plan.maxCoverage) }}</span>
+              </div>
+              <div class="form-row">
+                <label>Your Age *</label>
+                <input type="number" formControlName="customerAge" class="form-input" placeholder="30" min="18" max="80">
+              </div>
+              <div class="form-row">
+                <label>Payment Frequency *</label>
+                <select formControlName="paymentFrequency" class="form-input">
+                  <option value="MONTHLY">Monthly</option>
+                  <option value="QUARTERLY">Quarterly</option>
+                  <option value="ANNUAL">Annually</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label>Start Date *</label>
+                <input type="date" formControlName="startDate" class="form-input" [min]="today">
+              </div>
+              <div class="form-row">
+                <label>Nominee Name *</label>
+                <input type="text" formControlName="nomineeName" class="form-input" placeholder="Full name of nominee">
+              </div>
+              <div class="form-row">
+                <label>Nominee Relation *</label>
+                <select formControlName="nomineeRelation" class="form-input">
+                  <option value="">Select relation</option>
+                  <option value="SPOUSE">Spouse</option>
+                  <option value="CHILD">Child</option>
+                  <option value="PARENT">Parent</option>
+                  <option value="SIBLING">Sibling</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+            </div>
+          </form>
+          <button class="btn-teal" (click)="nextStep()" [disabled]="form.invalid">
+            Preview Premium →
+          </button>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="card" *ngIf="step === 2">
+          <h2 class="card-title">💰 Premium Preview & Confirm</h2>
+
+          <div class="loading-inline" *ngIf="calcLoading">Calculating premium...</div>
+
+          <div class="preview-block" *ngIf="calcResult">
+            <div class="preview-row">
+              <span>Estimated Premium</span>
+              <strong class="highlight-amount">{{ formatCurrency(calcResult.estimatedPremium) }} / {{ form.value.paymentFrequency | lowercase }}</strong>
+            </div>
+            <div class="preview-row">
+              <span>Annual Premium</span>
+              <strong>{{ formatCurrency(calcResult.annualPremium) }}</strong>
+            </div>
+            <div class="preview-row">
+              <span>Coverage Amount</span>
+              <strong>{{ formatCurrency(calcResult.coverageAmount) }}</strong>
+            </div>
+          </div>
+
+          <div class="summary-block">
+            <h3>Order Summary</h3>
+            <div class="sum-row"><span>Plan</span><strong>{{ plan.name }}</strong></div>
+            <div class="sum-row"><span>Category</span><strong>{{ plan.category }}</strong></div>
+            <div class="sum-row"><span>Coverage</span><strong>{{ formatCurrency(form.value.coverageAmount) }}</strong></div>
+            <div class="sum-row"><span>Start Date</span><strong>{{ formatDate(form.value.startDate) }}</strong></div>
+            <div class="sum-row"><span>Frequency</span><strong>{{ form.value.paymentFrequency }}</strong></div>
+            <div class="sum-row"><span>Nominee</span><strong>{{ form.value.nomineeName }} ({{ form.value.nomineeRelation }})</strong></div>
+          </div>
+
+          <div class="error-msg" *ngIf="submitError">⚠️ {{ submitError }}</div>
+
+          <div class="btn-row">
+            <button class="btn-outline" (click)="prevStep()">← Modify</button>
+            <button class="btn-teal" (click)="confirmPurchase()" [disabled]="submitLoading">
+              {{ submitLoading ? 'Processing...' : '🚀 Confirm Purchase' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3 SUCCESS -->
+        <div class="card success-card" *ngIf="step === 3">
+          <div class="success-icon">🎉</div>
+          <h2>Policy Purchased!</h2>
+          <p>Congratulations! Your policy has been activated successfully.</p>
+          <div class="success-details" *ngIf="purchasedPolicy">
+            <div class="sd-row"><span>Policy Number</span><strong>{{ purchasedPolicy.policyNumber }}</strong></div>
+            <div class="sd-row"><span>Status</span><span class="badge badge-success">{{ purchasedPolicy.status }}</span></div>
+            <div class="sd-row"><span>Coverage</span><strong>{{ formatCurrency(purchasedPolicy.coverageAmount) }}</strong></div>
+            <div class="sd-row"><span>Premium</span><strong>{{ formatCurrency(purchasedPolicy.premiumAmount) }} / {{ purchasedPolicy.paymentFrequency | lowercase }}</strong></div>
+          </div>
+          <p class="email-note">📧 A confirmation email has been sent to your registered email address.</p>
+          <div class="success-actions">
+            <a routerLink="/customer/my-policies" class="btn-teal">View My Policies</a>
+            <a routerLink="/customer/dashboard" class="btn-outline">Dashboard</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Plan Info -->
+      <div class="side-col" *ngIf="step < 3">
+        <div class="plan-info-card">
+          <h3>{{ plan.name }}</h3>
+          <span class="cat-badge">{{ plan.category }}</span>
+          <p>{{ plan.description }}</p>
+          <div class="plan-meta">
+            <div class="pm-row"><span>Min Coverage</span><strong>{{ formatCurrency(plan.minCoverage) }}</strong></div>
+            <div class="pm-row"><span>Max Coverage</span><strong>{{ formatCurrency(plan.maxCoverage) }}</strong></div>
+            <div class="pm-row" *ngIf="plan.durationMonths"><span>Duration</span><strong>{{ plan.durationMonths }} months</strong></div>
+            <div class="pm-row"><span>Base Rate</span><strong>{{ plan.baseRate }}%</strong></div>
+          </div>
+        </div>
+
+        <div class="tips-card">
+          <h4>💡 Tips</h4>
+          <ul>
+            <li>Higher coverage = better protection but higher premium</li>
+            <li>Annual payments often come with discounts</li>
+            <li>Choose a nominee carefully — this person receives the benefit</li>
+            <li>Your age affects the premium calculation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

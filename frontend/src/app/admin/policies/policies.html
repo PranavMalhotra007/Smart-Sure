@@ -1,0 +1,188 @@
+<!-- LIST VIEW -->
+<div *ngIf="!selectedPolicy">
+  <div class="pg-title">All Policies</div>
+  <div class="pg-sub">View and manage all customer policies across every status.</div>
+
+  <!-- Filter chips -->
+  <div class="toolbar">
+    <span class="filter-label">Filter</span>
+    <div class="fchip" [class.on]="activeFilter==='all'"       (click)="setFilter('all')">
+      <span class="cdot" style="background:var(--color-brand-primary)"></span>All
+      <span class="fcount">{{ countByStatus('all') }}</span>
+    </div>
+    <div class="fchip" [class.on]="activeFilter==='ACTIVE'"    (click)="setFilter('ACTIVE')">
+      <span class="cdot" style="background:#16a34a"></span>Active
+      <span class="fcount">{{ countByStatus('ACTIVE') }}</span>
+    </div>
+    <div class="fchip" [class.on]="activeFilter==='CREATED'"   (click)="setFilter('CREATED')">
+      <span class="cdot" style="background:#7C5CFC"></span>Created
+      <span class="fcount">{{ countByStatus('CREATED') }}</span>
+    </div>
+    <div class="fchip" [class.on]="activeFilter==='EXPIRED'"   (click)="setFilter('EXPIRED')">
+      <span class="cdot" style="background:#92400e"></span>Expired
+      <span class="fcount">{{ countByStatus('EXPIRED') }}</span>
+    </div>
+    <div class="fchip" [class.on]="activeFilter==='CANCELLED'" (click)="setFilter('CANCELLED')">
+      <span class="cdot" style="background:#991b1b"></span>Cancelled
+      <span class="fcount">{{ countByStatus('CANCELLED') }}</span>
+    </div>
+
+    <div class="search-wrap">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="m10 10 3 3"/></svg>
+      <input class="search-inp" placeholder="Search policy no. or customer…" (input)="onSearch($event)">
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="isLoading">Loading policies…</div>
+
+  <!-- Table -->
+  <div class="tbl-wrap" *ngIf="!isLoading">
+    <table *ngIf="filteredPolicies.length > 0">
+      <thead>
+        <tr>
+          <th>Policy No.</th>
+          <th>Type</th>
+          <th>Coverage</th>
+          <th>Premium</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of filteredPolicies" (click)="openDetail(p)">
+          <td class="td-policy">{{ p.policyNumber || '—' }}</td>
+          <td class="td-type">{{ p.policyType?.name || p.policyTypeName || '—' }}</td>
+          <td class="td-amount">{{ fmt(p.coverageAmount) }}</td>
+          <td class="td-premium">{{ fmt(p.premiumAmount) }}</td>
+          <td class="td-date">{{ fmtDate(p.startDate) }}</td>
+          <td class="td-date">{{ fmtDate(p.endDate) }}</td>
+          <td>
+            <span class="sbadge" [ngClass]="statusClass(p.status)">
+              <span class="sd"></span>{{ p.status }}
+            </span>
+          </td>
+          <td class="td-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty state -->
+    <div class="empty" *ngIf="filteredPolicies.length === 0">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div class="empty-title">No policies found</div>
+      <div class="empty-sub">Try adjusting your filters or search.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL VIEW -->
+<div *ngIf="selectedPolicy">
+  <div class="detail-header">
+    <button class="back-btn" (click)="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Policies
+    </button>
+    <div class="detail-header-sep"></div>
+    <div class="detail-breadcrumb">
+      Policies
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:10px;height:10px;opacity:.5"><polyline points="6 3 10 8 6 13"/></svg>
+      <span class="bc-cur">{{ selectedPolicy.policyNumber }}</span>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div class="alert alert-success" *ngIf="actionSuccess">{{ actionSuccess }}</div>
+  <div class="alert alert-error"   *ngIf="actionError">{{ actionError }}</div>
+
+  <!-- Info chips -->
+  <div class="chip-row">
+    <div class="info-chip">
+      <span class="ic-label">Policy No.</span><span class="ic-sep"></span>
+      <span class="ic-val mono">{{ selectedPolicy.policyNumber }}</span>
+    </div>
+    <div class="info-chip">
+      <span class="ic-label">Coverage</span><span class="ic-sep"></span>
+      <span class="ic-val">{{ fmt(selectedPolicy.coverageAmount) }}</span>
+    </div>
+    <div class="info-chip">
+      <span class="ic-label">Premium</span><span class="ic-sep"></span>
+      <span class="ic-val">{{ fmt(selectedPolicy.premiumAmount) }}</span>
+    </div>
+    <div class="info-chip">
+      <span class="ic-label">Status</span><span class="ic-sep"></span>
+      <span class="sbadge" [ngClass]="statusClass(selectedPolicy.status)">
+        <span class="sd"></span>{{ selectedPolicy.status }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Policy details panel -->
+  <div class="policy-panel">
+    <div class="panel-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+      Policy Details
+    </div>
+    <div class="policy-grid">
+      <div><div class="pf-label">Type</div><div class="pf-val">{{ selectedPolicy.policyType?.name || selectedPolicy.policyTypeName || '—' }}</div></div>
+      <div><div class="pf-label">Customer ID</div><div class="pf-val mono">{{ selectedPolicy.customerId }}</div></div>
+      <div><div class="pf-label">Start Date</div><div class="pf-val">{{ fmtDate(selectedPolicy.startDate) }}</div></div>
+      <div><div class="pf-label">End Date</div><div class="pf-val">{{ fmtDate(selectedPolicy.endDate) }}</div></div>
+      <div><div class="pf-label">Frequency</div><div class="pf-val">{{ selectedPolicy.paymentFrequency || '—' }}</div></div>
+      <div><div class="pf-label">Nominee</div><div class="pf-val">{{ selectedPolicy.nomineeName || '—' }}</div></div>
+      <div *ngIf="selectedPolicy.cancellationReason"><div class="pf-label">Cancel Reason</div><div class="pf-val">{{ selectedPolicy.cancellationReason }}</div></div>
+    </div>
+  </div>
+
+  <!-- Admin Actions -->
+  <div class="action-panel">
+    <div class="panel-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+      Admin Actions
+    </div>
+    <div class="action-btns" *ngIf="canCancel(selectedPolicy)">
+      <p class="action-hint">This policy is active. You can cancel it on the customer's behalf.</p>
+      <button class="btn-cancel" (click)="openCancelModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        Cancel Policy
+      </button>
+    </div>
+    <div class="action-resolved" *ngIf="selectedPolicy.status === 'CANCELLED'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      This policy has been cancelled.
+    </div>
+    <div class="action-resolved expired" *ngIf="selectedPolicy.status === 'EXPIRED'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 2"/></svg>
+      This policy has expired.
+    </div>
+  </div>
+</div>
+
+<!-- CANCEL MODAL -->
+<div class="modal-overlay" *ngIf="showCancelModal" (click)="closeCancelModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Cancel Policy</h3>
+      <button class="btn-close" (click)="closeCancelModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>Provide a reason for cancelling this policy (optional but recommended).</p>
+      <textarea [(ngModel)]="cancelReason" rows="3" class="remarks-input"
+        placeholder="e.g. Customer request — moving to a new plan."></textarea>
+      <div class="modal-error" *ngIf="actionError">{{ actionError }}</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeCancelModal()" [disabled]="isCancelling">Cancel</button>
+      <button class="btn-cancel-confirm" (click)="confirmCancel()" [disabled]="isCancelling">
+        <span *ngIf="!isCancelling">Confirm Cancel</span>
+        <span *ngIf="isCancelling">Processing…</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -9,6 +9,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.smartSure.adminService.dto.PolicyDTO;
+import com.smartSure.adminService.dto.UserDTO;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,4 +26,8 @@ public class ClaimDTO {
     private boolean claimFormUploaded;
     private boolean aadhaarCardUploaded;
     private boolean evidencesUploaded;
+
+    // Enriched fields for admin UI.
+    private PolicyDTO policy;
+    private UserDTO customer;
 }

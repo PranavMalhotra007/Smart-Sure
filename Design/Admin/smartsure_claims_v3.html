@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartSure – Claims</title>
+<style>
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f7f8;
+  --bg-tertiary: #f0f0f2;
+  --border-t: #e4e4e7;
+  --border-s: #d1d1d6;
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  --text-tertiary: #a1a1aa;
+  --font: 'Inter', system-ui, sans-serif;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --brand: #534AB7;
+  --brand-light: #EEEDFE;
+  --brand-mid: #AFA9EC;
+  --green: #3B6D11; --green-bg: #EEF6E6; --green-b: #b3d98c;
+  --red: #A32D2D;   --red-bg: #FCEBEB;   --red-b: #f5baba;
+  --amber: #7A4D0A; --amber-bg: #FEF6E7; --amber-b: #f5d498;
+  --blue: #1a4fa0;  --blue-bg: #EBF2FE;  --blue-b: #a8c8f8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg-tertiary);color:var(--text-primary);font-size:13px;min-height:100vh;padding:24px 28px}
+
+/* ─── Views ─── */
+#view-list{display:block}
+#view-detail{display:none}
+
+/* ─── Page header ─── */
+.pg-title{font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:2px}
+.pg-sub{font-size:12px;color:var(--text-tertiary);margin-bottom:16px}
+
+/* ─── Back header (detail view) ─── */
+.detail-header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.back-btn{display:flex;align-items:center;gap:6px;padding:5px 12px 5px 8px;border-radius:7px;border:0.5px solid var(--border-t);background:var(--bg-primary);font-size:12px;font-weight:500;color:var(--text-secondary);cursor:pointer;font-family:var(--font);transition:all .12s;flex-shrink:0}
+.back-btn:hover{background:var(--bg-secondary);border-color:var(--border-s);color:var(--text-primary)}
+.back-btn svg{width:14px;height:14px}
+.detail-header-sep{width:0.5px;height:18px;background:var(--border-t)}
+.detail-breadcrumb{font-size:12px;color:var(--text-tertiary);display:flex;align-items:center;gap:5px}
+.detail-breadcrumb .bc-cur{color:var(--text-secondary);font-weight:500}
+
+/* ─── Tab bar ─── */
+.tab-bar{display:flex;align-items:center;gap:2px;background:var(--bg-primary);border:0.5px solid var(--border-t);border-radius:var(--radius-md);padding:3px;width:fit-content;margin-bottom:14px}
+.tab-btn{display:flex;align-items:center;gap:6px;padding:5px 14px;border-radius:6px;border:none;background:transparent;font-size:12px;font-weight:500;color:var(--text-tertiary);cursor:pointer;font-family:var(--font);transition:all .12s}
+.tab-btn.active{background:var(--brand);color:#fff}
+.tab-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;background:rgba(255,255,255,.22)}
+.tab-btn:not(.active) .tab-badge{background:var(--bg-tertiary);color:var(--text-secondary)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ─── Toolbar ─── */
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.filter-label{font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em}
+.fchip{display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;border:0.5px solid var(--border-t);background:var(--bg-primary);font-size:11px;font-weight:500;color:var(--text-secondary);cursor:pointer;user-select:none;transition:all .12s}
+.fchip:hover{border-color:var(--brand-mid);color:var(--brand)}
+.fchip.on{border-color:var(--brand);background:var(--brand-light);color:var(--brand)}
+.fchip .cdot{width:6px;height:6px;border-radius:50%}
+.fchip .ccount{font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;background:var(--bg-tertiary);color:var(--text-tertiary)}
+.fchip.on .ccount{background:rgba(83,74,183,.12);color:var(--brand)}
+.search-wrap{margin-left:auto;position:relative}
+.search-wrap svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--text-tertiary);pointer-events:none}
+.search-inp{padding:6px 10px 6px 28px;border:0.5px solid var(--border-t);border-radius:6px;font-size:12px;background:var(--bg-primary);color:var(--text-primary);outline:none;width:220px;font-family:var(--font);transition:border-color .12s}
+.search-inp:focus{border-color:var(--brand)}
+.search-inp::placeholder{color:var(--text-tertiary)}
+
+/* ─── Table ─── */
+.tbl-wrap{background:var(--bg-primary);border:0.5px solid var(--border-t);border-radius:var(--radius-lg);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--bg-secondary)}
+thead th{padding:11px 16px;text-align:left;font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;border-bottom:0.5px solid var(--border-t);white-space:nowrap}
+tbody tr{border-bottom:0.5px solid var(--border-t);cursor:pointer;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg-secondary)}
+td{padding:13px 16px;font-size:12.5px;color:var(--text-secondary);vertical-align:middle}
+td.td-id{font-family:'SF Mono','Fira Code',monospace;font-size:12px;color:var(--brand);font-weight:600}
+td.td-policy{font-family:'SF Mono','Fira Code',monospace;font-size:11.5px;color:var(--text-tertiary)}
+td.td-customer{font-weight:600;color:var(--text-primary)}
+td.td-amount{font-weight:600;color:var(--text-primary)}
+td.td-date{color:var(--text-tertiary);font-size:12px}
+.docs-dots{display:flex;align-items:center;gap:5px}
+.ddot{width:9px;height:9px;border-radius:50%}
+.ddot.ok{background:#639922}
+.ddot.miss{background:var(--border-s)}
+.sbadge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.02em;border:0.5px solid transparent;white-space:nowrap}
+.sbadge .sd{width:5px;height:5px;border-radius:50%}
+.b-pending{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-b)}.b-pending .sd{background:var(--amber)}
+.b-review{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-b)}.b-review .sd{background:var(--blue)}
+.b-approved{background:var(--green-bg);color:var(--green);border-color:var(--green-b)}.b-approved .sd{background:var(--green)}
+.b-rejected{background:var(--red-bg);color:var(--red);border-color:var(--red-b)}.b-rejected .sd{background:var(--red)}
+td.td-arrow{width:32px;text-align:center}
+td.td-arrow svg{width:13px;height:13px;color:var(--text-tertiary)}
+tbody tr:hover td.td-arrow svg{color:var(--brand)}
+
+/* ─── Pagination ─── */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-top:0.5px solid var(--border-t)}
+.pg-info{font-size:12px;color:var(--text-tertiary)}
+.pg-btns{display:flex;align-items:center;gap:4px}
+.pg-btn{width:30px;height:30px;border-radius:6px;border:0.5px solid var(--border-t);background:var(--bg-primary);font-size:12px;font-weight:500;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font);transition:all .12s}
+.pg-btn:hover{background:var(--bg-secondary)}
+.pg-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.pg-btn:disabled{opacity:.35;cursor:not-allowed}
+.pg-btn svg{width:12px;height:12px}
+
+/* ─── Empty ─── */
+.empty{text-align:center;padding:56px;background:var(--bg-primary);border:0.5px solid var(--border-t);border-radius:var(--radius-lg)}
+.empty-icon{width:42px;height:42px;border-radius:10px;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.empty-icon svg{width:20px;height:20px;color:var(--text-tertiary)}
+.empty-title{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:4px}
+.empty-sub{font-size:12px;color:var(--text-tertiary)}
+
+/* ═══════════════════════════════════
+   DETAIL VIEW
+═══════════════════════════════════ */
+
+/* Chip row */
+.chip-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.info-chip{display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:24px;background:var(--bg-primary);border:0.5px solid var(--border-t)}
+.ic-label{font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.05em}
+.ic-sep{width:1px;height:13px;background:var(--border-t)}
+.ic-val{font-size:13px;font-weight:700;color:var(--text-primary)}
+
+/* Doc panel */
+.doc-panel{display:grid;grid-template-columns:1fr 1fr 1fr;border:0.5px solid var(--border-t);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg-primary);margin-bottom:14px}
+.doc-cell{padding:24px 16px;display:flex;flex-direction:column;align-items:center;gap:9px}
+.doc-cell:not(:last-child){border-right:0.5px solid var(--border-t)}
+.doc-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:0.5px solid var(--border-t);background:var(--bg-secondary)}
+.doc-icon.up{background:var(--brand-light);border-color:var(--brand-mid)}
+.doc-icon.miss{background:var(--red-bg);border-color:var(--red-b)}
+.doc-icon svg{width:22px;height:22px}
+.doc-icon.up svg{color:var(--brand)}
+.doc-icon.miss svg{color:var(--red)}
+.doc-name{font-size:12px;font-weight:600;color:var(--text-secondary);text-align:center}
+.doc-tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px}
+.doc-tag.ok{background:var(--green-bg);color:var(--green)}
+.doc-tag.miss{background:var(--red-bg);color:var(--red)}
+.doc-dl{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;background:var(--bg-primary);border:0.5px solid var(--border-t);color:var(--brand);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font);transition:all .12s;margin-top:2px}
+.doc-dl svg{width:13px;height:13px}
+.doc-dl:hover{background:var(--brand-light);border-color:var(--brand-mid)}
+.doc-dl.disabled{color:var(--text-tertiary);background:var(--bg-secondary);pointer-events:none;border-color:var(--border-t)}
+
+/* Policy panel */
+.policy-panel{background:var(--bg-primary);border:0.5px solid var(--border-t);border-radius:var(--radius-lg);padding:18px;margin-bottom:14px}
+.panel-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.panel-label svg{width:13px;height:13px;opacity:.6}
+.policy-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.pf-label{font-size:10px;color:var(--text-tertiary);font-weight:500;margin-bottom:4px}
+.pf-val{font-size:13px;font-weight:600;color:var(--text-primary)}
+.pf-val.mono{font-family:'SF Mono','Fira Code',monospace;font-size:12px;color:var(--brand)}
+.pf-sub{font-size:9.5px;color:var(--text-tertiary);font-weight:400;margin-left:3px}
+
+/* Decision bar */
+.decision-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;background:var(--bg-primary);border:0.5px solid var(--border-t);border-radius:var(--radius-lg);margin-bottom:14px;flex-wrap:wrap}
+.decision-label{font-size:11px;font-weight:600;color:var(--text-tertiary);margin-right:2px}
+.btn-approve{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:6px;background:var(--green-bg);border:0.5px solid var(--green-b);color:var(--green);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .12s}
+.btn-approve:hover{background:#d4edbb}
+.btn-approve svg{width:13px;height:13px}
+.btn-reject{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:6px;background:var(--red-bg);border:0.5px solid var(--red-b);color:var(--red);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .12s}
+.btn-reject:hover{background:#fbd5d5}
+.btn-reject svg{width:13px;height:13px}
+.remarks-inp{flex:1;padding:7px 12px;border:0.5px solid var(--border-t);border-radius:6px;font-size:12px;background:var(--bg-secondary);color:var(--text-primary);outline:none;font-family:var(--font);max-width:340px;transition:border-color .12s}
+.remarks-inp:focus{border-color:var(--brand);background:var(--bg-primary)}
+.remarks-inp::placeholder{color:var(--text-tertiary)}
+.cust-chip{margin-left:auto;display:flex;align-items:center;gap:7px;padding:5px 12px 5px 6px;border-radius:20px;background:var(--bg-secondary);border:0.5px solid var(--border-t)}
+.cust-av{width:24px;height:24px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--brand);flex-shrink:0;border:1px solid var(--brand-mid)}
+.cust-name{font-size:11.5px;font-weight:500;color:var(--text-secondary)}
+.cust-email{font-size:10px;color:var(--text-tertiary)}
+
+/* ─── Modal ─── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:500;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--bg-primary);border:0.5px solid var(--border-s);border-radius:var(--radius-lg);padding:22px;width:400px;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+.modal-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--text-tertiary);margin-bottom:14px}
+.modal-textarea{width:100%;padding:9px 11px;border:0.5px solid var(--border-t);border-radius:6px;font-size:12px;font-family:var(--font);outline:none;background:var(--bg-secondary);resize:vertical;min-height:72px;transition:border-color .12s}
+.modal-textarea:focus{border-color:var(--brand);background:var(--bg-primary)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.btn-cancel{padding:7px 14px;border-radius:6px;border:0.5px solid var(--border-t);background:transparent;font-size:12px;font-weight:500;color:var(--text-secondary);cursor:pointer;font-family:var(--font)}
+.btn-cancel:hover{background:var(--bg-secondary)}
+.btn-confirm{padding:7px 18px;border-radius:6px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);color:#fff}
+.btn-confirm.approve{background:#3B6D11}
+.btn-confirm.reject{background:#A32D2D}
+
+/* ─── Toast ─── */
+#toast{display:none;position:fixed;bottom:24px;right:24px;background:#18181b;color:#fff;font-size:12px;font-weight:500;padding:10px 18px;border-radius:8px;z-index:9999;animation:fadeUp .15s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     LIST VIEW
+══════════════════════════════════ -->
+<div id="view-list">
+  <div class="pg-title">Claims</div>
+  <div class="pg-sub">Manage all customer claims and documents across every status.</div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('all',this)">
+      All Claims <span class="tab-badge">6</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('review',this)">
+      Under Review <span class="tab-badge">2</span>
+    </button>
+  </div>
+
+  <!-- All Claims -->
+  <div id="tab-all" class="tab-panel active">
+    <div class="toolbar">
+      <span class="filter-label">Filter</span>
+      <div class="fchip on" onclick="setFilter('all','all',this)"><span class="cdot" style="background:var(--brand)"></span>All<span class="ccount">6</span></div>
+      <div class="fchip" onclick="setFilter('all','PENDING',this)"><span class="cdot" style="background:#C97A1A"></span>Pending<span class="ccount">2</span></div>
+      <div class="fchip" onclick="setFilter('all','UNDER_REVIEW',this)"><span class="cdot" style="background:#1a4fa0"></span>Under Review<span class="ccount">2</span></div>
+      <div class="fchip" onclick="setFilter('all','APPROVED',this)"><span class="cdot" style="background:#3B6D11"></span>Approved<span class="ccount">1</span></div>
+      <div class="fchip" onclick="setFilter('all','REJECTED',this)"><span class="cdot" style="background:#A32D2D"></span>Rejected<span class="ccount">1</span></div>
+      <div class="search-wrap">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="m10 10 3 3"/></svg>
+        <input class="search-inp" placeholder="Search claim ID or policy…" oninput="onSearch('all',this.value)">
+      </div>
+    </div>
+    <div id="all-tbl"></div>
+  </div>
+
+  <!-- Under Review -->
+  <div id="tab-review" class="tab-panel">
+    <div class="toolbar">
+      <div class="search-wrap" style="margin-left:0">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="m10 10 3 3"/></svg>
+        <input class="search-inp" placeholder="Search claim ID or policy…" oninput="onSearch('review',this.value)">
+      </div>
+    </div>
+    <div id="review-tbl"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     DETAIL VIEW
+══════════════════════════════════ -->
+<div id="view-detail">
+  <!-- Back header -->
+  <div class="detail-header">
+    <button class="back-btn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Claims
+    </button>
+    <div class="detail-header-sep"></div>
+    <div class="detail-breadcrumb">
+      Claims <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:10px;height:10px;opacity:.5"><polyline points="6 3 10 8 6 13"/></svg>
+      <span class="bc-cur" id="detail-breadcrumb-id"></span>
+    </div>
+  </div>
+
+  <!-- Detail content injected here -->
+  <div id="detail-content"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-sub" id="m-sub"></div>
+    <textarea class="modal-textarea" id="m-remarks" placeholder="Remarks (optional)…"></textarea>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-confirm" id="m-confirm" onclick="confirmAction()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── Data ──
+const CLAIMS = [
+  { id:41, policyId:1021, amount:120000, status:'UNDER_REVIEW', timeOfCreation:'2026-03-31T10:23:00',
+    claimFormUploaded:true, aadhaarCardUploaded:true, evidencesUploaded:true,
+    policy:{policyNumber:'POL-00120',policyType:'Health',coverageAmount:500000,premiumAmount:3800,paymentFrequency:'MONTHLY',startDate:'2021-06-01',endDate:'2026-06-01',status:'ACTIVE',nomineeName:'Priya Sharma',premiumsPaid:12},
+    customer:{userId:301,firstName:'Rohan',lastName:'Verma',email:'rohan.v@email.com',phone:'9876543210'}},
+  { id:40, policyId:1034, amount:80000, status:'PENDING', timeOfCreation:'2026-03-30T14:11:00',
+    claimFormUploaded:true, aadhaarCardUploaded:true, evidencesUploaded:true,
+    policy:{policyNumber:'POL-00115',policyType:'Life',coverageAmount:400000,premiumAmount:2900,paymentFrequency:'QUARTERLY',startDate:'2022-01-15',endDate:'2027-01-15',status:'ACTIVE',nomineeName:'Sunita Mehta',premiumsPaid:8},
+    customer:{userId:312,firstName:'Priya',lastName:'Singh',email:'priya.s@email.com',phone:'9811234567'}},
+  { id:39, policyId:1008, amount:250000, status:'APPROVED', timeOfCreation:'2026-03-29T09:44:00',
+    claimFormUploaded:true, aadhaarCardUploaded:true, evidencesUploaded:true,
+    policy:{policyNumber:'POL-00089',policyType:'Vehicle',coverageAmount:600000,premiumAmount:4200,paymentFrequency:'ANNUAL',startDate:'2023-03-10',endDate:'2028-03-10',status:'ACTIVE',nomineeName:'Ravi Nair',premiumsPaid:3},
+    customer:{userId:289,firstName:'Amit',lastName:'Verma',email:'amit.v@email.com',phone:'9944112233'}},
+  { id:38, policyId:1101, amount:45000, status:'REJECTED', timeOfCreation:'2026-03-28T16:05:00',
+    claimFormUploaded:true, aadhaarCardUploaded:false, evidencesUploaded:false,
+    policy:{policyNumber:'POL-00101',policyType:'Term',coverageAmount:200000,premiumAmount:1500,paymentFrequency:'MONTHLY',startDate:'2020-03-10',endDate:'2025-03-10',status:'EXPIRED',nomineeName:'Ravi Nair',premiumsPaid:5},
+    customer:{userId:289,firstName:'Sunita',lastName:'Kumari',email:'sunita.k@email.com',phone:'9944112299'}},
+  { id:37, policyId:1098, amount:95000, status:'UNDER_REVIEW', timeOfCreation:'2026-03-27T11:30:00',
+    claimFormUploaded:true, aadhaarCardUploaded:true, evidencesUploaded:false,
+    policy:{policyNumber:'POL-00098',policyType:'Health',coverageAmount:300000,premiumAmount:2100,paymentFrequency:'MONTHLY',startDate:'2022-09-20',endDate:'2027-09-20',status:'ACTIVE',nomineeName:'Meena Patel',premiumsPaid:18},
+    customer:{userId:278,firstName:'Karan',lastName:'Patel',email:'karan.p@email.com',phone:'9823456789'}},
+  { id:36, policyId:1055, amount:420000, status:'PENDING', timeOfCreation:'2026-03-26T08:55:00',
+    claimFormUploaded:false, aadhaarCardUploaded:false, evidencesUploaded:false,
+    policy:{policyNumber:'POL-00087',policyType:'Health',coverageAmount:750000,premiumAmount:5200,paymentFrequency:'ANNUAL',startDate:'2023-08-01',endDate:'2028-08-01',status:'ACTIVE',nomineeName:'Ananya Iyer',premiumsPaid:2},
+    customer:{userId:345,firstName:'Kiran',lastName:'Iyer',email:'kiran.i@email.com',phone:'9765432198'}},
+];
+
+const state = {
+  all:    { filter:'all', search:'' },
+  review: { filter:'all', search:'' },
+  activeTab: 'all',
+};
+
+let pendingAction = null;
+let toastTimer = null;
+
+// ── Helpers ──
+const fmt    = n => '₹' + Number(n).toLocaleString('en-IN');
+const fmtDate = s => new Date(s).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+const initials = c => (c.firstName[0]+c.lastName[0]).toUpperCase();
+
+function badgeClass(s){ return {PENDING:'b-pending',UNDER_REVIEW:'b-review',APPROVED:'b-approved',REJECTED:'b-rejected'}[s]||'b-pending'; }
+function badgeLabel(s){ return {PENDING:'Pending',UNDER_REVIEW:'Under Review',APPROVED:'Approved',REJECTED:'Rejected'}[s]||s; }
+
+function getFiltered(tab) {
+  const s = state[tab];
+  const src = tab==='review' ? CLAIMS.filter(c=>c.status==='UNDER_REVIEW') : CLAIMS;
+  return src.filter(c => {
+    if(s.filter!=='all' && c.status!==s.filter) return false;
+    if(s.search){
+      const q=s.search.toLowerCase();
+      if(!('c-'+String(c.id).padStart(4,'0')).includes(q) &&
+         !c.policy.policyNumber.toLowerCase().includes(q) &&
+         !(c.customer.firstName+' '+c.customer.lastName).toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+// ── Render list table ──
+function renderTable(tab) {
+  const list = getFiltered(tab);
+  const el = document.getElementById(tab+'-tbl');
+  if(!list.length){
+    el.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="empty-title">No claims found</div><div class="empty-sub">Try adjusting your filters or search.</div></div>`;
+    return;
+  }
+  const rows = list.map(c => {
+    const cid = '#C-'+String(c.id).padStart(4,'0');
+    const dots = [c.claimFormUploaded,c.evidencesUploaded,c.aadhaarCardUploaded]
+      .map(d=>`<span class="ddot ${d?'ok':'miss'}"></span>`).join('');
+    return `<tr onclick="openDetail(${c.id})">
+      <td class="td-id">${cid}</td>
+      <td class="td-policy">${c.policy.policyNumber}</td>
+      <td class="td-customer">${c.customer.firstName} ${c.customer.lastName}</td>
+      <td class="td-amount">${fmt(c.amount)}</td>
+      <td class="td-date">${fmtDate(c.timeOfCreation)}</td>
+      <td><div class="docs-dots">${dots}</div></td>
+      <td><span class="sbadge ${badgeClass(c.status)}"><span class="sd"></span>${badgeLabel(c.status)}</span></td>
+      <td class="td-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML = `
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Claim ID</th><th>Policy No.</th><th>Customer</th><th>Amount</th><th>Created</th><th>Docs</th><th>Status</th><th></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="pagination">
+      <span class="pg-info">Showing 1–${list.length} of ${list.length} claims</span>
+      <div class="pg-btns">
+        <button class="pg-btn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="pg-btn active">1</button>
+        <button class="pg-btn">2</button>
+        <button class="pg-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Open detail page ──
+function openDetail(id) {
+  const c = CLAIMS.find(x=>x.id===id);
+  if(!c) return;
+
+  // Build detail content
+  const cid = '#C-'+String(c.id).padStart(4,'0');
+  document.getElementById('detail-breadcrumb-id').textContent = cid;
+
+  const docCell = (uploaded, name, key) => `
+    <div class="doc-cell">
+      <div class="doc-icon ${uploaded?'up':'miss'}">
+        ${uploaded
+          ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 12 18 15 15"/><line x1="12" y1="18" x2="12" y2="10"/></svg>`
+          : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/></svg>`}
+      </div>
+      <div class="doc-name">${name}</div>
+      <span class="doc-tag ${uploaded?'ok':'miss'}">${uploaded?'Uploaded':'Missing'}</span>
+      ${uploaded
+        ? `<button class="doc-dl" onclick="dlDoc(${c.id},'${key}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>`
+        : `<button class="doc-dl disabled" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Not Uploaded</button>`}
+    </div>`;
+
+  const decisionBar = c.status === 'UNDER_REVIEW' ? `
+    <div class="decision-bar">
+      <span class="decision-label">Decision:</span>
+      <button class="btn-approve" onclick="openModal(${c.id},'approve')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Approve
+      </button>
+      <button class="btn-reject" onclick="openModal(${c.id},'reject')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Reject
+      </button>
+      <input class="remarks-inp" placeholder="Remarks (optional)…" id="ri-${c.id}">
+      <div class="cust-chip">
+        <div class="cust-av">${initials(c.customer)}</div>
+        <div>
+          <div class="cust-name">${c.customer.firstName} ${c.customer.lastName}</div>
+          <div class="cust-email">${c.customer.email}</div>
+        </div>
+      </div>
+    </div>` : '';
+
+  document.getElementById('detail-content').innerHTML = `
+    <!-- Chip row -->
+    <div class="chip-row">
+      <div class="info-chip">
+        <span class="ic-label">Claim ID</span><span class="ic-sep"></span>
+        <span class="ic-val">${cid}</span>
+      </div>
+      <div class="info-chip">
+        <span class="ic-label">Claim Amount</span><span class="ic-sep"></span>
+        <span class="ic-val">${fmt(c.amount)}</span>
+      </div>
+      <div class="info-chip">
+        <span class="ic-label">Status</span><span class="ic-sep"></span>
+        <span class="sbadge ${badgeClass(c.status)}"><span class="sd"></span>${badgeLabel(c.status)}</span>
+      </div>
+    </div>
+
+    <!-- Decision bar (UNDER_REVIEW only) -->
+    ${decisionBar}
+
+    <!-- Documents -->
+    <div class="doc-panel">
+      ${docCell(c.claimFormUploaded,'Claim Form','claimForm')}
+      ${docCell(c.evidencesUploaded,'Evidence PDF','evidence')}
+      ${docCell(c.aadhaarCardUploaded,'Aadhaar Card PDF','aadhaar')}
+    </div>
+
+    <!-- Policy details -->
+    <div class="policy-panel">
+      <div class="panel-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Policy Details
+      </div>
+      <div class="policy-grid">
+        <div><div class="pf-label">Policy No.</div><div class="pf-val mono">${c.policy.policyNumber}</div></div>
+        <div><div class="pf-label">Policy Type</div><div class="pf-val">${c.policy.policyType}</div></div>
+        <div><div class="pf-label">Coverage Amount</div><div class="pf-val">${fmt(c.policy.coverageAmount)}</div></div>
+        <div><div class="pf-label">Premium</div><div class="pf-val">${fmt(c.policy.premiumAmount)}<span class="pf-sub">${c.policy.paymentFrequency}</span></div></div>
+        <div><div class="pf-label">Start Date</div><div class="pf-val">${c.policy.startDate}</div></div>
+        <div><div class="pf-label">End Date</div><div class="pf-val">${c.policy.endDate}</div></div>
+        <div><div class="pf-label">Policy Status</div><div class="pf-val">${c.policy.status}</div></div>
+        <div><div class="pf-label">Premiums Paid</div><div class="pf-val">${c.policy.premiumsPaid}</div></div>
+        <div><div class="pf-label">Nominee</div><div class="pf-val">${c.policy.nomineeName}</div></div>
+        <div><div class="pf-label">Customer ID</div><div class="pf-val mono">#${c.customer.userId}</div></div>
+        <div><div class="pf-label">Email</div><div class="pf-val" style="font-size:12px">${c.customer.email}</div></div>
+        <div><div class="pf-label">Phone</div><div class="pf-val">${c.customer.phone}</div></div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('view-list').style.display = 'none';
+  document.getElementById('view-detail').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+// ── Go back ──
+function goBack() {
+  document.getElementById('view-detail').style.display = 'none';
+  document.getElementById('view-list').style.display = 'block';
+}
+
+// ── Tab switching ──
+function switchTab(tab, btn) {
+  state.activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+// ── Filter chips ──
+function setFilter(tab, filter, el) {
+  state[tab].filter = filter;
+  document.querySelectorAll(`#tab-${tab} .fchip`).forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  renderTable(tab);
+}
+
+// ── Search ──
+function onSearch(tab, val) {
+  state[tab].search = val;
+  renderTable(tab);
+}
+
+// ── Download ──
+const docLabels = {claimForm:'Claim Form',evidence:'Evidence PDF',aadhaar:'Aadhaar Card PDF'};
+function dlDoc(claimId, key) {
+  showToast(`Downloading ${docLabels[key]} for #C-${String(claimId).padStart(4,'0')}…`);
+}
+
+// ── Modal ──
+function openModal(claimId, action) {
+  pendingAction = {claimId, action};
+  const isApp = action==='approve';
+  document.getElementById('m-title').textContent = (isApp?'Approve':'Reject')+' Claim #C-'+String(claimId).padStart(4,'0');
+  document.getElementById('m-sub').textContent = isApp
+    ? 'This claim will be marked as APPROVED.'
+    : 'This claim will be marked as REJECTED. Provide a reason below.';
+  document.getElementById('m-remarks').value='';
+  const btn=document.getElementById('m-confirm');
+  btn.textContent = isApp?'Approve':'Reject';
+  btn.className = 'btn-confirm '+(isApp?'approve':'reject');
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  pendingAction=null;
+}
+function confirmAction(){
+  if(!pendingAction) return;
+  const {claimId,action}=pendingAction;
+  showToast(`Claim #C-${String(claimId).padStart(4,'0')} ${action==='approve'?'Approved':'Rejected'} successfully`);
+  closeModal();
+}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+
+// ── Toast ──
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.display='block';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.style.display='none',3000);
+}
+
+// ── Init ──
+renderTable('all');
+renderTable('review');
+</script>
+</body>
+</html>

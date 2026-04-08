@@ -8,14 +8,17 @@ import com.smartSure.claimService.entity.Status;
 import com.smartSure.claimService.service.ClaimService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 //import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -34,7 +37,7 @@ public class ClaimController {
     @PostMapping
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ClaimResponse> createClaim(@RequestBody ClaimRequest request) {
-        return ResponseEntity.ok(claimService.createClaim(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(claimService.createClaim(request));
     }
 
     // GET /api/claims/{id}
@@ -43,6 +46,14 @@ public class ClaimController {
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
     public ResponseEntity<ClaimResponse> getClaimById(@PathVariable Long id) {
         return ResponseEntity.ok(claimService.getClaimById(id));
+    }
+
+    // GET /api/claims/my
+    // Customer fetches all their own claims.
+    @GetMapping("/my")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<List<ClaimResponse>> getMyClaims() {
+        return ResponseEntity.ok(claimService.getMyClaimsForCustomer());
     }
 
     // GET /api/claims
@@ -119,6 +130,29 @@ public class ClaimController {
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) throws IOException {
         return ResponseEntity.ok(claimService.uploadClaimForm(id, file));
+    }
+
+    // POST /api/claims/{id}/upload/claim-form/generate
+    // Customer sends claim fields + a digital signature image; server generates the claim-form PDF and stores it.
+    @PostMapping(value = "/{id}/upload/claim-form/generate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<ClaimResponse> generateClaimFormPdf(
+            @PathVariable Long id,
+            @RequestParam("policyNumber") String policyNumber,
+            @RequestParam("dateClaimFiled") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateClaimFiled,
+            @RequestParam("dateIncidentHappen") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateIncidentHappen,
+            @RequestParam("reasonForClaim") String reasonForClaim,
+            @RequestPart("digitalSignature") MultipartFile digitalSignature) throws IOException {
+        return ResponseEntity.ok(
+                claimService.uploadClaimFormFromMultipart(
+                        id,
+                        policyNumber,
+                        dateClaimFiled,
+                        dateIncidentHappen,
+                        reasonForClaim,
+                        digitalSignature
+                )
+        );
     }
 
     // POST /api/claims/{id}/upload/aadhaar

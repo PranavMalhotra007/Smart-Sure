@@ -10,6 +10,9 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Component
 public class FeignInterceptor implements RequestInterceptor {
@@ -23,16 +26,27 @@ public class FeignInterceptor implements RequestInterceptor {
 
         template.header("X-Internal-Secret", internalSecret);
 
+        // Always derive X-User-* from Spring Security context.
+        // This avoids relying on servlet request context existing inside Feign execution.
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() != null) {
+            template.header("X-User-Id", String.valueOf(auth.getPrincipal()));
 
-        ServletRequestAttributes attributes =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            String role = null;
+            for (GrantedAuthority ga : auth.getAuthorities()) {
+                if (ga != null && ga.getAuthority() != null) {
+                    role = ga.getAuthority();
+                    break;
+                }
+            }
 
-        if (attributes == null) {
-            return;
+            // Strip ROLE_ prefix if present (e.g. ROLE_ADMIN -> ADMIN)
+            if (role != null) {
+                if (role.startsWith("ROLE_")) {
+                    role = role.substring("ROLE_".length());
+                }
+                template.header("X-User-Role", role);
+            }
         }
-
-        HttpServletRequest request = attributes.getRequest();
-
-        HeaderUtils.copyHeaders(request, template);
     }
 }

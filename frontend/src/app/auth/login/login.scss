@@ -1,0 +1,193 @@
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--color-background-tertiary);
+  padding: 20px;
+}
+
+.login-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  justify-content: center;
+  
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--color-brand-primary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .logo-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    span { color: var(--color-brand-primary); }
+  }
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+  
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+  }
+  
+  p {
+    font-size: 14px;
+    color: var(--color-text-tertiary);
+  }
+}
+
+.error-msg {
+  background: var(--color-background-danger);
+  color: var(--color-text-danger);
+  padding: 12px;
+  border-radius: var(--border-radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  text-align: center;
+  border: 1px solid var(--red-b);
+}
+
+.input-group {
+  margin-bottom: 20px;
+  
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+  }
+  
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    
+    svg {
+      position: absolute;
+      left: 12px;
+      width: 16px;
+      height: 16px;
+      color: var(--color-text-tertiary);
+      pointer-events: none;
+    }
+    
+    input {
+      width: 100%;
+      padding: 10px 40px;
+      border: 1px solid var(--color-border-primary);
+      border-radius: var(--border-radius-md);
+      font-size: 14px;
+      transition: all 0.2s;
+      outline: none;
+      
+      &:focus {
+        border-color: var(--color-brand-primary);
+        box-shadow: 0 0 0 3px var(--color-brand-secondary);
+      }
+    }
+    
+    .btn-icon {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--color-text-tertiary);
+      
+      &:hover { color: var(--color-text-primary); }
+      
+      svg {
+        position: static;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        pointer-events: auto;
+      }
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+  
+  .forgot-link {
+    font-size: 13px;
+    color: var(--color-brand-primary);
+    text-decoration: none;
+    font-weight: 500;
+    
+    &:hover { text-decoration: underline; }
+  }
+}
+
+.btn-login {
+  width: 100%;
+  padding: 12px;
+  background: var(--color-brand-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover:not([disabled]) {
+    background: #463ea1;
+  }
+  
+  &[disabled] {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  .spinner {
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

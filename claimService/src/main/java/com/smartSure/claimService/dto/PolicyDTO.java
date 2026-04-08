@@ -15,6 +15,7 @@ public class PolicyDTO {
     private String policyNumber;
     private Long customerId;
     private BigDecimal coverageAmount;
+    private BigDecimal leftoverCoverageAmount;
     private BigDecimal premiumAmount;
     private String paymentFrequency;
     private String status;

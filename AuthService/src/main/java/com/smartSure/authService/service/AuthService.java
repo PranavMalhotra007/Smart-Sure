@@ -29,7 +29,11 @@ public class AuthService {
 	public String register(RegisterRequestDto request) {
 		User user = modelMapper.map(request, User.class);
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
-		user.setRole(Role.valueOf(request.getRole().toUpperCase()));
+		String normalizedRole = request.getRole().toUpperCase();
+		if (normalizedRole.startsWith("ROLE_")) {
+			normalizedRole = normalizedRole.substring("ROLE_".length());
+		}
+		user.setRole(Role.valueOf(normalizedRole));
 		
 		if(repo.findByEmail(request.getEmail()).isPresent()) {
 			throw new RuntimeException("Email already registered");

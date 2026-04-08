@@ -1,0 +1,209 @@
+/* You can add global styles to this file, and also import other style files */
+
+:root {
+  /* Colors */
+  --color-brand-primary: #534AB7;
+  --color-brand-secondary: #EEEDFE;
+  --color-brand-tertiary: #AFA9EC;
+
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f7f7f8;
+  --color-background-tertiary: #f0f0f2;
+
+  --color-border-primary: #d1d1d6;
+  --color-border-secondary: #e4e4e7;
+  --color-border-tertiary: #e4e4e7;
+
+  --color-text-primary: #18181b;
+  --color-text-secondary: #52525b;
+  --color-text-tertiary: #a1a1aa;
+
+  --color-text-success: var(--green);
+  --color-text-warning: var(--amber);
+  --color-text-danger: var(--red);
+
+  --color-background-danger: var(--red-bg);
+
+  --green: #3B6D11;
+  --green-bg: #EEF6E6;
+  --green-b: #b3d98c;
+
+  --red: #A32D2D;
+  --red-bg: #FCEBEB;
+  --red-b: #f5baba;
+
+  --amber: #7A4D0A;
+  --amber-bg: #FEF6E7;
+  --amber-b: #f5d498;
+
+  --blue: #1a4fa0;
+  --blue-bg: #EBF2FE;
+  --blue-b: #a8c8f8;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', monospace;
+
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+
+  /* ── Footer tokens (light) ── */
+  --footer-bg:            #1a1c23;
+  --footer-border:        #2a2d38;
+  --footer-text-primary:  #e2e4ec;
+  --footer-text-muted:    #6b7280;
+  --footer-link-color:    #9ca3af;
+  --footer-link-hover:    #e2e4ec;
+  --footer-sep-color:     #374151;
+  --footer-accent:        #818cf8;
+  --footer-logo-bg:       #2d2f3d;
+  --footer-logo-color:    #818cf8;
+  --footer-status-bg:     rgba(74, 222, 128, 0.07);
+  --footer-status-border: rgba(74, 222, 128, 0.18);
+  --footer-status-text:   #6ee7b7;
+
+  /* ── Dark mode toggle ── */
+  --toggle-track-bg:    #3f3f46;
+  --toggle-track-active:#6366f1;
+  --toggle-thumb:       #ffffff;
+}
+
+/* ═══════════════════════════════════════
+   DARK MODE — applied via html.dark
+   ═══════════════════════════════════════ */
+html.dark {
+  --color-background-primary:   #18181b;
+  --color-background-secondary: #1e1e24;
+  --color-background-tertiary:  #141418;
+
+  --color-border-primary:  #3f3f46;
+  --color-border-secondary:#2d2d35;
+  --color-border-tertiary: #2d2d35;
+
+  --color-text-primary:   #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-text-tertiary:  #52525b;
+
+  --green:    #63c128;
+  --green-bg: #1a2d0e;
+  --green-b:  #3a6317;
+
+  --red:    #f87171;
+  --red-bg: #2d1515;
+  --red-b:  #7f1d1d;
+
+  --amber:    #fbbf24;
+  --amber-bg: #2d1f00;
+  --amber-b:  #78350f;
+
+  --blue:    #60a5fa;
+  --blue-bg: #0f1e3d;
+  --blue-b:  #1e3a6e;
+
+  /* Footer dark overrides */
+  --footer-bg:            #111115;
+  --footer-border:        #202028;
+  --footer-text-primary:  #e2e4ec;
+  --footer-text-muted:    #52525b;
+  --footer-link-color:    #71717a;
+  --footer-link-hover:    #d4d4d8;
+  --footer-sep-color:     #27272a;
+  --footer-accent:        #818cf8;
+  --footer-logo-bg:       #1e1e26;
+  --footer-logo-color:    #818cf8;
+  --footer-status-bg:     rgba(74, 222, 128, 0.05);
+  --footer-status-border: rgba(74, 222, 128, 0.12);
+  --footer-status-text:   #6ee7b7;
+
+  --toggle-track-bg:    #52525b;
+  --toggle-track-active:#6366f1;
+  --toggle-thumb:       #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-background-tertiary);
+  color: var(--color-text-primary);
+  font-size: 13px;
+  min-height: 100vh;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input, textarea {
+  font-family: inherit;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Base styles for shells */
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+  font-family: var(--font-sans);
+}
+
+/* ── Shared Dark Mode Toggle Pill ── */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.theme-toggle .toggle-track {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  border-radius: 20px;
+  background: var(--toggle-track-bg);
+  transition: background 0.25s ease;
+  flex-shrink: 0;
+}
+
+.theme-toggle .toggle-track.active {
+  background: var(--toggle-track-active);
+}
+
+.theme-toggle .toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--toggle-thumb);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle .toggle-thumb.active {
+  transform: translateX(16px);
+}
+
+.theme-toggle .toggle-icon {
+  font-size: 13px;
+  line-height: 1;
+}

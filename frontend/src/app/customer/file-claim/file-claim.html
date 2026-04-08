@@ -1,0 +1,151 @@
+<div class="file-claim-page">
+  <div class="page-header">
+    <h1 class="page-title">File a Claim</h1>
+    <p class="page-subtitle">Follow the steps to submit your insurance claim</p>
+  </div>
+
+  <!-- Stepper -->
+  <div class="stepper">
+    <div class="step" *ngFor="let s of [1,2,3,4]; let i = index" [class.active]="step === s" [class.done]="step > s">
+      <div class="step-circle">
+        <svg *ngIf="step > s" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+        <span *ngIf="step <= s">{{ s }}</span>
+      </div>
+      <div class="step-label">{{ ['Claim Details','Upload Docs','Review','Done'][i] }}</div>
+      <div class="step-line" *ngIf="i < 3"></div>
+    </div>
+  </div>
+
+  <!-- Error Banner -->
+  <div class="error-banner" *ngIf="error">⚠️ {{ error }}</div>
+
+  <!-- STEP 1: Create Claim -->
+  <div class="step-card" *ngIf="step === 1">
+    <h2 class="step-title">📋 Claim Details</h2>
+    <p class="step-desc">Select the policy and enter the claim amount.</p>
+    <form [formGroup]="claimForm" (ngSubmit)="createClaim()">
+      <div class="form-row">
+        <label>Select Active Policy *</label>
+        <select formControlName="policyId" class="form-input">
+          <option value="">-- Select a Policy --</option>
+          <option *ngFor="let p of policies" [value]="p.id">
+            {{ p.policyTypeName || 'Policy' }} – {{ p.policyNumber }} (Coverage: ₹{{ p.leftoverCoverageAmount || p.coverageAmount | number }})
+          </option>
+        </select>
+        <span class="field-hint" *ngIf="policies.length === 0">No active policies found. <a routerLink="/customer/plans">Buy a plan</a> first.</span>
+      </div>
+      <div class="form-row">
+        <label>Claim Amount (₹) *</label>
+        <input type="number" formControlName="amount" class="form-input" placeholder="Enter amount" [max]="selectedPolicy?.leftoverCoverageAmount || selectedPolicy?.coverageAmount">
+        <div class="field-error" *ngIf="claimForm.get('amount')?.touched && claimForm.get('amount')?.errors?.['max']">
+          ⚠️ Amount cannot exceed leftover coverage ({{ formatCurrency(selectedPolicy?.leftoverCoverageAmount || selectedPolicy?.coverageAmount) }})
+        </div>
+      </div>
+      <button type="submit" class="btn-teal" [disabled]="claimForm.invalid || loading || policies.length === 0">
+        {{ loading ? 'Creating...' : 'Create Claim →' }}
+      </button>
+    </form>
+  </div>
+
+  <!-- STEP 2: Upload Documents -->
+  <div class="step-card" *ngIf="step === 2">
+    <h2 class="step-title">📎 Upload Documents</h2>
+    <p class="step-desc">Upload all 3 required documents for Claim #{{ claimId }}. Each can be uploaded independently.</p>
+
+    <!-- Claim Form -->
+    <div class="doc-block">
+      <div class="doc-header">
+        <div class="doc-icon" [class.uploaded]="claimFormUploaded">
+          <span *ngIf="!claimFormUploaded">1</span>
+          <svg *ngIf="claimFormUploaded" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <div class="doc-title">Claim Form {{ claimFormUploaded ? '✅' : ''}}</div>
+          <div class="doc-sub">Fill digitally with signature, or upload an existing PDF/image</div>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <button type="button" class="toggle-btn" [class.active]="!useGenerateForm" (click)="useGenerateForm=false">Upload File</button>
+        <button type="button" class="toggle-btn" [class.active]="useGenerateForm" (click)="useGenerateForm=true">Generate Digitally</button>
+      </div>
+      <div *ngIf="!useGenerateForm">
+        <input type="file" (change)="onFileSelect($event,'claimForm')" class="file-input" accept=".pdf,.jpg,.jpeg,.png">
+        <button class="btn-upload" (click)="uploadClaimForm()" [disabled]="!claimFormFile || uploadingClaimForm || claimFormUploaded">
+          {{ uploadingClaimForm ? 'Uploading...' : claimFormUploaded ? 'Uploaded ✓' : 'Upload' }}
+        </button>
+      </div>
+      <div *ngIf="useGenerateForm" [formGroup]="generateForm">
+        <div class="form-grid">
+          <div class="form-row"><label>Policy Number</label><input type="text" formControlName="policyNumber" class="form-input"></div>
+          <div class="form-row"><label>Date Claim Filed</label><input type="date" formControlName="dateClaimFiled" class="form-input"></div>
+          <div class="form-row"><label>Date of Incident</label><input type="date" formControlName="dateIncidentHappen" class="form-input"></div>
+          <div class="form-row" style="grid-column:1/-1"><label>Reason for Claim</label><textarea formControlName="reasonForClaim" class="form-input" rows="2"></textarea></div>
+          <div class="form-row" style="grid-column:1/-1"><label>Digital Signature (image) *</label><input type="file" (change)="onSignatureSelect($event)" class="file-input" accept=".jpg,.jpeg,.png"></div>
+        </div>
+        <button class="btn-upload" (click)="uploadClaimForm()" [disabled]="generateForm.invalid || !signatureFile || uploadingClaimForm || claimFormUploaded">
+          {{ uploadingClaimForm ? 'Generating...' : claimFormUploaded ? 'Generated ✓' : 'Generate & Upload' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Aadhaar -->
+    <div class="doc-block">
+      <div class="doc-header">
+        <div class="doc-icon" [class.uploaded]="aadhaarUploaded"><span *ngIf="!aadhaarUploaded">2</span><svg *ngIf="aadhaarUploaded" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div><div class="doc-title">Aadhaar Card {{ aadhaarUploaded ? '✅' : ''}}</div><div class="doc-sub">Government issued photo ID</div></div>
+      </div>
+      <input type="file" (change)="onFileSelect($event,'aadhaar')" class="file-input" accept=".pdf,.jpg,.jpeg,.png">
+      <button class="btn-upload" (click)="uploadAadhaar()" [disabled]="!aadhaarFile || uploadingAadhaar || aadhaarUploaded">
+        {{ uploadingAadhaar ? 'Uploading...' : aadhaarUploaded ? 'Uploaded ✓' : 'Upload' }}
+      </button>
+    </div>
+
+    <!-- Evidence -->
+    <div class="doc-block">
+      <div class="doc-header">
+        <div class="doc-icon" [class.uploaded]="evidenceUploaded"><span *ngIf="!evidenceUploaded">3</span><svg *ngIf="evidenceUploaded" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div><div class="doc-title">Supporting Evidence {{ evidenceUploaded ? '✅' : ''}}</div><div class="doc-sub">Medical bills, photos, FIR copy, or any related documents</div></div>
+      </div>
+      <input type="file" (change)="onFileSelect($event,'evidence')" class="file-input" accept=".pdf,.jpg,.jpeg,.png">
+      <button class="btn-upload" (click)="uploadEvidence()" [disabled]="!evidenceFile || uploadingEvidence || evidenceUploaded">
+        {{ uploadingEvidence ? 'Uploading...' : evidenceUploaded ? 'Uploaded ✓' : 'Upload' }}
+      </button>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn-outline" (click)="step=1">← Back</button>
+      <button class="btn-teal" (click)="step=3" [disabled]="!canProceedStep3">Review Claim →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Review & Submit -->
+  <div class="step-card" *ngIf="step === 3">
+    <h2 class="step-title">✅ Review & Submit</h2>
+    <p class="step-desc">Confirm all details before submitting your claim.</p>
+    <div class="review-grid">
+      <div class="review-item"><span class="rl">Claim ID</span><span class="rv">#{{ claimId }}</span></div>
+      <div class="review-item"><span class="rl">Policy</span><span class="rv">{{ claimForm.value.policyId }}</span></div>
+      <div class="review-item"><span class="rl">Claim Amount</span><span class="rv">{{ formatCurrency(claimForm.value.amount) }}</span></div>
+      <div class="review-item"><span class="rl">Claim Form</span><span class="rv rv-ok">✅ Uploaded</span></div>
+      <div class="review-item"><span class="rl">Aadhaar Card</span><span class="rv rv-ok">✅ Uploaded</span></div>
+      <div class="review-item"><span class="rl">Evidence</span><span class="rv rv-ok">✅ Uploaded</span></div>
+    </div>
+    <p class="review-note">By submitting, your claim enters <strong>Under Review</strong> status. Our team will assess it within 7–15 business days.</p>
+    <div class="step-actions">
+      <button class="btn-outline" (click)="step=2">← Modify Docs</button>
+      <button class="btn-teal" (click)="submitClaim()" [disabled]="submitting">{{ submitting ? 'Submitting...' : '🚀 Submit Claim' }}</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Success -->
+  <div class="step-card success-card" *ngIf="step === 4">
+    <div class="success-icon">🎉</div>
+    <h2>Claim Submitted Successfully!</h2>
+    <p>Your claim <strong>#{{ claimId }}</strong> has been submitted and is now <strong>Under Review</strong>.</p>
+    <p>You'll receive an email notification when a decision is made.</p>
+    <div class="success-actions">
+      <a routerLink="/customer/my-claims" class="btn-teal">View My Claims</a>
+      <a routerLink="/customer/dashboard" class="btn-outline">Go to Dashboard</a>
+    </div>
+  </div>
+</div>

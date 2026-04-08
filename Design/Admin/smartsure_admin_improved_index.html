@@ -1,0 +1,411 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.shell{display:flex;flex-direction:column;min-height:720px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;font-family:var(--font-sans)}
+
+.header{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:12px}
+.logo-mark{width:28px;height:28px;background:#534AB7;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.logo-text span{color:#534AB7}
+.hd{width:0.5px;height:20px;background:var(--color-border-tertiary)}
+.breadcrumb{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--color-text-tertiary)}
+.breadcrumb .cur{color:var(--color-text-secondary)}
+.header-right{display:flex;align-items:center;gap:8px}
+.hbtn{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:transparent;cursor:pointer;color:var(--color-text-secondary);position:relative}
+.hbtn:hover{background:var(--color-background-secondary)}
+.hbtn .ndot{position:absolute;top:6px;right:6px;width:6px;height:6px;background:#E24B4A;border-radius:50%;border:1.5px solid var(--color-background-primary)}
+.hav{display:flex;align-items:center;gap:7px;padding:4px 8px 4px 4px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);cursor:pointer;background:transparent}
+.hav:hover{background:var(--color-background-secondary)}
+.av-circle{width:26px;height:26px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#534AB7;flex-shrink:0}
+.hav-name{font-size:12px;color:var(--color-text-primary);font-weight:500}
+.hav svg{width:12px;height:12px;color:var(--color-text-tertiary);transition:transform .15s}
+.hav.open svg{transform:rotate(180deg)}
+
+.body{display:flex;flex:1;min-height:0;position:relative}
+
+.sidebar{width:218px;flex-shrink:0;background:var(--color-background-secondary);border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;position:relative;z-index:10}
+
+/* ── IMPROVED ADMIN INDEX ── */
+.admin-index{border-bottom:0.5px solid var(--color-border-tertiary);padding:12px}
+.ai-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.ai-label{font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em}
+.ai-live{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--color-text-tertiary)}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#639922;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.admin-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;overflow:visible;position:relative}
+.admin-card-top{display:flex;align-items:center;gap:9px;padding:9px 10px}
+.admin-card-top:hover{background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.admin-av{width:32px;height:32px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#534AB7;flex-shrink:0;border:1.5px solid #AFA9EC}
+.admin-info{flex:1;min-width:0}
+.admin-info-name{font-size:12.5px;font-weight:500;color:var(--color-text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-info-role{font-size:10px;color:var(--color-text-tertiary);margin-top:1px}
+.admin-card-chevron{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.online-pip{width:7px;height:7px;background:#639922;border-radius:50%;border:1.5px solid var(--color-background-primary)}
+.chev{width:12px;height:12px;color:var(--color-text-tertiary);transition:transform .15s}
+.admin-card.open .chev{transform:rotate(180deg)}
+
+/* Quick stats row */
+.ai-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 10px 10px}
+.ai-stat{text-align:center;padding:6px 4px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);cursor:pointer;border:0.5px solid transparent;transition:border-color .12s}
+.ai-stat:hover{border-color:var(--color-border-tertiary)}
+.ai-stat-val{font-size:16px;font-weight:500;color:var(--color-text-primary);line-height:1}
+.ai-stat-lbl{font-size:9px;color:var(--color-text-tertiary);margin-top:3px}
+.ai-stat-val.red{color:#A32D2D}
+.ai-stat-val.green{color:#3B6D11}
+
+/* Dropdown */
+.admin-dropdown{display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);overflow:hidden;z-index:100}
+.admin-card.open .admin-dropdown{display:block}
+.dd-profile-top{padding:12px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:10px}
+.dd-av-lg{width:40px;height:40px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#534AB7;flex-shrink:0;border:1.5px solid #AFA9EC}
+.dd-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.dd-email{font-size:11px;color:var(--color-text-tertiary);margin-top:1px}
+.dd-role-badge{display:inline-block;margin-top:4px;font-size:9px;font-weight:500;background:#EEEDFE;color:#3C3489;padding:2px 7px;border-radius:6px}
+.dd-section{padding:4px 0}
+.dd-item{display:flex;align-items:center;gap:9px;padding:7px 12px;cursor:pointer;font-size:12.5px;color:var(--color-text-secondary);transition:background .1s}
+.dd-item:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.dd-item svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
+.dd-item:hover svg{opacity:1}
+.dd-item.danger{color:var(--color-text-danger)}
+.dd-item.danger svg{opacity:.7}
+.dd-item.danger:hover{background:var(--color-background-danger)}
+.dd-divider{height:0.5px;background:var(--color-border-tertiary);margin:2px 0}
+.dd-item-badge{margin-left:auto;font-size:9px;font-weight:500;padding:2px 6px;border-radius:6px;background:#FCEBEB;color:#A32D2D}
+
+.nav{flex:1;padding:8px 0;overflow-y:auto}
+.slbl{font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;padding:10px 14px 3px}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 14px;cursor:pointer;font-size:12.5px;color:var(--color-text-secondary);border-left:2px solid transparent;transition:all .12s}
+.ni:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.ni.active{background:var(--color-background-primary);color:#534AB7;border-left-color:#534AB7;font-weight:500}
+.ni svg{width:14px;height:14px;flex-shrink:0;opacity:.65}
+.ni.active svg{opacity:1}
+.nb{margin-left:auto;font-size:9px;padding:1px 5px;border-radius:6px;font-weight:500}
+.nb.red{background:#FCEBEB;color:#A32D2D}
+.nb.purple{background:#EEEDFE;color:#534AB7}
+.sdiv{height:0.5px;background:var(--color-border-tertiary);margin:4px 0}
+
+.sidebar-footer{padding:10px 12px;border-top:0.5px solid var(--color-border-tertiary)}
+.sf-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--color-text-tertiary);cursor:pointer;padding:4px 0;border-radius:4px}
+.sf-row:hover{color:var(--color-text-secondary)}
+.sf-row svg{width:13px;height:13px;flex-shrink:0}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--color-background-tertiary)}
+.main-hdr{padding:14px 20px 0}
+.pg-title{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.pg-sub{font-size:12px;color:var(--color-text-tertiary);margin-top:2px}
+.main-body{flex:1;padding:14px 20px 20px;overflow-y:auto}
+.stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.sc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 14px;cursor:pointer}
+.sc:hover{border-color:var(--color-border-secondary)}
+.sc-accent{width:24px;height:3px;border-radius:2px;margin-bottom:8px}
+.sc-lbl{font-size:11px;color:var(--color-text-tertiary);margin-bottom:5px}
+.sc-val{font-size:22px;font-weight:500;color:var(--color-text-primary);line-height:1}
+.sc-delta{font-size:10px;margin-top:4px}
+.up{color:var(--color-text-success)}.warn{color:var(--color-text-warning)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.ch-t{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.va{font-size:11px;color:#534AB7;cursor:pointer}
+.cr{display:flex;align-items:center;gap:9px;padding:7px 14px;border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer}
+.cr:last-child{border-bottom:none}
+.cr:hover{background:var(--color-background-secondary)}
+.cid{font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);width:52px;flex-shrink:0}
+.cn{font-size:12px;color:var(--color-text-primary);flex:1}
+.cdt{font-size:10px;color:var(--color-text-tertiary);flex-shrink:0}
+.pill{font-size:9px;font-weight:500;padding:2px 7px;border-radius:8px;flex-shrink:0}
+.pill.rv{background:#FAEEDA;color:#633806}
+.pill.ap{background:#EAF3DE;color:#3B6D11}
+.pill.rj{background:#FCEBEB;color:#A32D2D}
+.pill.sb{background:#EEEDFE;color:#3C3489}
+.ar{display:flex;align-items:flex-start;gap:10px;padding:7px 14px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.ar:last-child{border-bottom:none}
+.adot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.at{font-size:12px;color:var(--color-text-primary);line-height:1.4;flex:1}
+.atm{font-size:10px;color:var(--color-text-tertiary);flex-shrink:0;margin-top:1px}
+
+.footer{height:38px;background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0}
+.fl{display:flex;align-items:center;gap:14px}
+.flink{font-size:11px;color:var(--color-text-tertiary);cursor:pointer}
+.flink:hover{color:var(--color-text-secondary)}
+.fr{font-size:11px;color:var(--color-text-tertiary)}
+.svc{display:flex;align-items:center;gap:4px}
+.svcd{width:5px;height:5px;border-radius:50%;background:#639922}
+</style>
+
+<div class="shell">
+
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8a5 5 0 1 1 10 0A5 5 0 0 1 3 8Z" fill="white" fill-opacity="0.3"/><path d="M8 4v4l3 2" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="logo-text">Smart<span>Sure</span></span>
+      <div class="hd"></div>
+      <div class="breadcrumb">
+        <span>Admin</span>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 2l3 3-3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span class="cur" id="bc">Dashboard</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="hbtn" title="Search">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14" stroke-linecap="round"/></svg>
+      </button>
+      <button class="hbtn" title="Notifications" style="position:relative">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2a4 4 0 0 1 4 4v3l1 1.5H3L4 9V6a4 4 0 0 1 4-4Z"/><path d="M6.5 13a1.5 1.5 0 0 0 3 0"/></svg>
+        <span class="ndot"></span>
+      </button>
+      <button class="hbtn" title="Settings">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2"/><path d="M8 2v1M8 13v1M2 8h1M13 8h1M3.5 3.5l.7.7M11.8 11.8l.7.7M11.8 4.2l-.7.7M4.2 11.8l-.7.7"/></svg>
+      </button>
+      <div class="hav" id="hav" onclick="toggleHav()">
+        <div class="av-circle">AD</div>
+        <span class="hav-name">Admin</span>
+        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3l3 3 3-3" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <div class="body">
+    <aside class="sidebar">
+
+      <!-- IMPROVED ADMIN INDEX -->
+      <div class="admin-index">
+        <div class="ai-header">
+          <span class="ai-label">Admin Index</span>
+          <div class="ai-live"><div class="live-dot"></div>Online</div>
+        </div>
+
+        <!-- Admin card with dropdown -->
+        <div class="admin-card" id="adminCard" onclick="toggleDropdown(event)">
+          <div class="admin-card-top">
+            <div class="admin-av">AD</div>
+            <div class="admin-info">
+              <div class="admin-info-name">Admin User</div>
+              <div class="admin-info-role">Super Admin &nbsp;·&nbsp; ID #1</div>
+            </div>
+            <div class="admin-card-chevron">
+              <div class="online-pip"></div>
+              <svg class="chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+
+          <!-- Dropdown -->
+          <div class="admin-dropdown" onclick="event.stopPropagation()">
+            <div class="dd-profile-top">
+              <div class="dd-av-lg">AD</div>
+              <div>
+                <div class="dd-name">Admin User</div>
+                <div class="dd-email">admin@smartsure.in</div>
+                <span class="dd-role-badge">Super Admin</span>
+              </div>
+            </div>
+            <div class="dd-section">
+              <div class="dd-item" onclick="ddAction('profile')">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5.5" r="2.5"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
+                View profile
+              </div>
+              <div class="dd-item" onclick="ddAction('edit')">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M11 2l3 3-8 8H3v-3L11 2Z"/></svg>
+                Edit profile
+              </div>
+              <div class="dd-item" onclick="ddAction('password')">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/><circle cx="8" cy="11" r="1" fill="currentColor"/></svg>
+                Change password
+              </div>
+            </div>
+            <div class="dd-divider"></div>
+            <div class="dd-section">
+              <div class="dd-item" onclick="ddAction('activity')">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 8h2l1.5-3 1.5 5L11 8h2"/></svg>
+                My activity log
+                <span class="dd-item-badge">3 new</span>
+              </div>
+              <div class="dd-item" onclick="ddAction('notifications')">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2a4 4 0 0 1 4 4v3l1 1.5H3L4 9V6a4 4 0 0 1 4-4Z"/><path d="M6.5 13a1.5 1.5 0 0 0 3 0"/></svg>
+                Notification settings
+              </div>
+            </div>
+            <div class="dd-divider"></div>
+            <div class="dd-section">
+              <div class="dd-item danger" onclick="ddAction('logout')">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 3h3v10h-3M7 11l4-4-4-4M11 8H3"/></svg>
+                Sign out
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick stats row -->
+        <div class="ai-stats">
+          <div class="ai-stat" onclick="navTo('review')">
+            <div class="ai-stat-val red">3</div>
+            <div class="ai-stat-lbl">Pending</div>
+          </div>
+          <div class="ai-stat" onclick="navTo('policies')">
+            <div class="ai-stat-val green">89</div>
+            <div class="ai-stat-lbl">Policies</div>
+          </div>
+          <div class="ai-stat" onclick="navTo('users')">
+            <div class="ai-stat-val">317</div>
+            <div class="ai-stat-lbl">Users</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <div class="slbl">Overview</div>
+        <div class="ni active" onclick="navItem(this,'Dashboard','dashboard')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+          Dashboard
+        </div>
+        <div class="slbl">Claims</div>
+        <div class="ni" onclick="navItem(this,'All Claims','claims')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3h12M2 7h12M2 11h8"/></svg>
+          All Claims
+        </div>
+        <div class="ni" onclick="navItem(this,'Under Review','review')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+          Under Review
+          <span class="nb red">3</span>
+        </div>
+        <div class="sdiv"></div>
+        <div class="slbl">Policies</div>
+        <div class="ni" onclick="navItem(this,'All Policies','policies')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="1" width="12" height="14" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h4"/></svg>
+          All Policies
+        </div>
+        <div class="ni" onclick="navItem(this,'Policy Types','ptypes')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 4h12v2H2zM2 9h8M2 12h6"/></svg>
+          Policy Types
+          <span class="nb purple">CRUD</span>
+        </div>
+        <div class="sdiv"></div>
+        <div class="slbl">Users</div>
+        <div class="ni" onclick="navItem(this,'All Users','users')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/></svg>
+          All Users
+        </div>
+        <div class="sdiv"></div>
+        <div class="slbl">Finance</div>
+        <div class="ni" onclick="navItem(this,'Payments','payments')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="4" width="14" height="9" rx="1.5"/><path d="M1 7h14"/></svg>
+          Payments
+        </div>
+        <div class="sdiv"></div>
+        <div class="slbl">System</div>
+        <div class="ni" onclick="navItem(this,'Audit Logs','audit')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 9h4"/></svg>
+          Audit Logs
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sf-row">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+          Help &amp; docs
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="main-hdr">
+        <div class="pg-title" id="ptitle">Dashboard</div>
+        <div class="pg-sub" id="psub">Welcome back — here's what needs your attention today.</div>
+      </div>
+      <div class="main-body">
+        <div class="stat-grid">
+          <div class="sc"><div class="sc-accent" style="background:#534AB7"></div><div class="sc-lbl">Total claims</div><div class="sc-val">142</div><div class="sc-delta up">+8 this week</div></div>
+          <div class="sc"><div class="sc-accent" style="background:#E24B4A"></div><div class="sc-lbl">Under review</div><div class="sc-val">3</div><div class="sc-delta warn">Needs action</div></div>
+          <div class="sc"><div class="sc-accent" style="background:#1D9E75"></div><div class="sc-lbl">Active policies</div><div class="sc-val">89</div><div class="sc-delta up">+2 today</div></div>
+          <div class="sc"><div class="sc-accent" style="background:#BA7517"></div><div class="sc-lbl">Registered users</div><div class="sc-val">317</div><div class="sc-delta up">+12 this month</div></div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="ch"><span class="ch-t">Recent claims</span><span class="va">View all</span></div>
+            <div class="cr"><span class="cid">#C-0041</span><span class="cn">Rohan Mehta</span><span class="pill rv">Under review</span><span class="cdt">31 Mar</span></div>
+            <div class="cr"><span class="cid">#C-0040</span><span class="cn">Priya Sharma</span><span class="pill sb">Submitted</span><span class="cdt">30 Mar</span></div>
+            <div class="cr"><span class="cid">#C-0039</span><span class="cn">Amit Verma</span><span class="pill ap">Approved</span><span class="cdt">29 Mar</span></div>
+            <div class="cr"><span class="cid">#C-0038</span><span class="cn">Sunita Rao</span><span class="pill rj">Rejected</span><span class="cdt">28 Mar</span></div>
+          </div>
+          <div class="card">
+            <div class="ch"><span class="ch-t">Recent activity</span><span class="va">View audit logs</span></div>
+            <div class="ar"><div class="adot" style="background:#E24B4A"></div><div class="at">Claim #C-0041 marked under review</div><div class="atm">2m ago</div></div>
+            <div class="ar"><div class="adot" style="background:#639922"></div><div class="at">Policy #P-0120 approved and activated</div><div class="atm">18m ago</div></div>
+            <div class="ar"><div class="adot" style="background:#534AB7"></div><div class="at">New policy type "Term Life Plus" created</div><div class="atm">1h ago</div></div>
+            <div class="ar"><div class="adot" style="background:#E24B4A"></div><div class="at">Claim #C-0038 rejected — missing docs</div><div class="atm">3h ago</div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="fl">
+      <span class="flink">Privacy policy</span>
+      <span class="flink">Terms of use</span>
+      <span class="flink">Support</span>
+      <div class="svc"><div class="svcd"></div><span class="flink" style="cursor:default">All services operational</span></div>
+    </div>
+    <div class="fr">SmartSure Admin v1.0 &nbsp;·&nbsp; &copy; 2026</div>
+  </footer>
+</div>
+
+<div id="toast" style="display:none;position:absolute;bottom:20px;right:20px;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 14px;font-size:12px;color:var(--color-text-primary);z-index:999"></div>
+
+<script>
+const pages={dashboard:{t:'Dashboard',s:"Welcome back — here's what needs your attention today."},claims:{t:'All Claims',s:'Browse and filter all claims across every status.'},review:{t:'Under Review',s:'Claims awaiting your approval or rejection decision.'},policies:{t:'All Policies',s:'View, cancel, and update status for customer policies.'},ptypes:{t:'Policy Types',s:'Manage your insurance product catalog.'},users:{t:'All Users',s:'Paginated user list with full profile management.'},payments:{t:'Payments',s:'Look up transactions and verify payment service health.'},audit:{t:'Audit Logs',s:'Full admin action history — filter by date, entity, or admin.'}};
+
+function navItem(el,label,key){
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  const p=pages[key];
+  document.getElementById('ptitle').textContent=p.t;
+  document.getElementById('psub').textContent=p.s;
+  document.getElementById('bc').textContent=p.t;
+  closeDropdown();
+}
+
+function navTo(key){
+  const items=document.querySelectorAll('.ni');
+  const map={review:2,policies:3,users:5};
+  if(map[key]!==undefined){
+    items.forEach(n=>n.classList.remove('active'));
+    items[map[key]].classList.add('active');
+  }
+  const p=pages[key];
+  if(p){document.getElementById('ptitle').textContent=p.t;document.getElementById('psub').textContent=p.s;document.getElementById('bc').textContent=p.t;}
+}
+
+function toggleDropdown(e){
+  e.stopPropagation();
+  document.getElementById('adminCard').classList.toggle('open');
+}
+function closeDropdown(){
+  document.getElementById('adminCard').classList.remove('open');
+}
+document.addEventListener('click',function(){closeDropdown();closeHav();});
+
+function toggleHav(){
+  document.getElementById('hav').classList.toggle('open');
+}
+function closeHav(){document.getElementById('hav').classList.remove('open');}
+
+function ddAction(action){
+  const msgs={profile:'Opening admin profile...',edit:'Opening edit profile form...',password:'Opening password change screen...',activity:'Opening my activity log...',notifications:'Opening notification settings...',logout:'Signing out of SmartSure...'};
+  showToast(msgs[action]||action);
+  closeDropdown();
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.display='block';
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.style.display='none',2200);
+}
+</script>

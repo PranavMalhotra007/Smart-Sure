@@ -1,0 +1,328 @@
+.pt-container {
+  padding: 24px 32px;
+}
+
+.pt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.pt-title-area h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--color-text-primary);
+}
+
+.pt-title-area p {
+  color: var(--color-text-tertiary);
+  font-size: 14px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-brand-primary);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  svg { width: 16px; height: 16px; }
+  &:hover { opacity: 0.9; }
+}
+
+// ── Alert ──────────────────────────────────────────────────────────────────
+.alert {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  &.alert-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+  &.alert-error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+}
+
+// ── Grid ───────────────────────────────────────────────────────────────────
+.pt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+// ── Card ───────────────────────────────────────────────────────────────────
+.pt-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.15s, border-color 0.15s;
+
+  &:hover {
+    border-color: var(--color-brand-primary);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+  }
+}
+
+// Card header: icon | category badge | status badge (right-aligned)
+.pt-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pt-icon-mock {
+  width: 36px;
+  height: 36px;
+  background: var(--color-background-secondary);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.pt-cat-badge {
+  font-size: 11px;
+  background: #e0e7ff;
+  color: #4338ca;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+// Status badge: Active / Inactive — was missing entirely
+.pt-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: #f0fdf4;
+  color: #166534;
+  border: 0.5px solid #bbf7d0;
+  margin-left: auto; // push to far right of the header row
+
+  &.inactive {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #fde68a;
+  }
+}
+
+.pt-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--color-text-primary);
+}
+
+.pt-desc {
+  font-size: 13px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 16px;
+  flex-grow: 1;
+  line-height: 1.5;
+}
+
+.pt-meta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding-top: 14px;
+  border-top: 0.5px solid var(--color-border-tertiary);
+  flex-wrap: wrap;
+}
+
+.pt-meta-item {
+  label {
+    display: block;
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    margin-bottom: 2px;
+    font-weight: 500;
+  }
+
+  span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+}
+
+// ── Card action buttons ────────────────────────────────────────────────────
+.pt-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.12s;
+  svg { width: 13px; height: 13px; }
+  &:hover { background: var(--color-background-tertiary); color: var(--color-text-primary); }
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #ef4444;
+  background: #fee2e2;
+  border: 0.5px solid #fca5a5;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s;
+  svg { width: 13px; height: 13px; }
+  &:hover { background: #fecaca; }
+}
+
+// ── Loading / Empty states ─────────────────────────────────────────────────
+.loading-state, .empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-text-tertiary);
+  svg {
+    width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.5;
+    display: block; margin-left: auto; margin-right: auto;
+  }
+}
+
+// ── Modal ──────────────────────────────────────────────────────────────────
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: 12px;
+  width: 100%; max-width: 520px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 20px;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  h3 { font-size: 16px; font-weight: 700; color: var(--color-text-primary); }
+}
+
+.btn-close {
+  background: none; border: none; font-size: 22px; cursor: pointer;
+  color: var(--color-text-tertiary);
+  line-height: 1;
+  &:hover { color: var(--color-text-primary); }
+}
+
+.form-body {
+  padding: 20px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.input-group {
+  margin-bottom: 16px;
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: 7px;
+    font-size: 13px;
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.12s, box-shadow 0.12s;
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: var(--color-brand-primary);
+      box-shadow: 0 0 0 3px var(--color-brand-secondary, rgba(99,90,235,0.12));
+    }
+  }
+
+  select { cursor: pointer; }
+  textarea { resize: vertical; }
+}
+
+.row-group {
+  display: flex;
+  gap: 14px;
+
+  .input-group { flex: 1; }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 0.5px solid var(--color-border-tertiary);
+}
+
+.btn-secondary {
+  padding: 8px 16px;
+  border: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.12s;
+  &:hover { background: var(--color-background-tertiary); }
+}
+
+// ── Form validation feedback ───────────────────────────────────────────────
+.field-error {
+  font-size: 11px;
+  color: #dc2626;
+  margin-top: 4px;
+}
+
+.req {
+  color: #dc2626;
+  margin-left: 2px;
+}
+
+.pt-content {
+  // ensure the grid area has min height to avoid layout shift
+  min-height: 200px;
+}
+

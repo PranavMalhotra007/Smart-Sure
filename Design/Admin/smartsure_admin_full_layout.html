@@ -1,0 +1,314 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.shell{display:flex;flex-direction:column;min-height:680px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;font-family:var(--font-sans)}
+
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:12px}
+.logo-mark{width:28px;height:28px;background:#534AB7;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.logo-text{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.logo-text span{color:#534AB7}
+.header-divider{width:0.5px;height:20px;background:var(--color-border-tertiary)}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-tertiary)}
+.breadcrumb .current{color:var(--color-text-secondary)}
+.header-right{display:flex;align-items:center;gap:8px}
+.hbtn{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:transparent;cursor:pointer;color:var(--color-text-secondary)}
+.hbtn:hover{background:var(--color-background-secondary)}
+.notif-dot{position:relative}
+.notif-dot::after{content:'';position:absolute;top:6px;right:6px;width:6px;height:6px;background:#E24B4A;border-radius:50%;border:1.5px solid var(--color-background-primary)}
+.avatar{width:32px;height:32px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#534AB7;cursor:pointer;border:0.5px solid #AFA9EC}
+
+/* BODY */
+.body{display:flex;flex:1;min-height:0}
+
+/* SIDEBAR */
+.sidebar{width:210px;flex-shrink:0;background:var(--color-background-secondary);border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column}
+.admin-index{padding:10px 12px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.admin-index-label{font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.admin-card{display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer}
+.admin-avatar{width:28px;height:28px;border-radius:50%;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#534AB7;flex-shrink:0}
+.admin-info p{font-size:12px;font-weight:500;color:var(--color-text-primary);line-height:1.2}
+.admin-info span{font-size:10px;color:var(--color-text-tertiary)}
+.online-dot{width:7px;height:7px;background:#639922;border-radius:50%;margin-left:auto;flex-shrink:0}
+
+.nav{flex:1;padding:8px 0;overflow-y:auto}
+.sec-lbl{font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.06em;padding:10px 14px 3px}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 14px;cursor:pointer;font-size:12.5px;color:var(--color-text-secondary);border-left:2px solid transparent;transition:all .12s}
+.ni:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.ni.active{background:var(--color-background-primary);color:#534AB7;border-left-color:#534AB7;font-weight:500}
+.ni svg{width:14px;height:14px;flex-shrink:0;opacity:.65}
+.ni.active svg{opacity:1}
+.nbadge{margin-left:auto;font-size:9px;padding:1px 5px;border-radius:6px;font-weight:500}
+.nbadge.red{background:#FCEBEB;color:#A32D2D}
+.nbadge.green{background:#EAF3DE;color:#3B6D11}
+.nbadge.purple{background:#EEEDFE;color:#534AB7}
+.sdivider{height:0.5px;background:var(--color-border-tertiary);margin:4px 0}
+
+.sidebar-footer{padding:10px 12px;border-top:0.5px solid var(--color-border-tertiary)}
+.sf-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--color-text-tertiary);cursor:pointer;padding:4px 0}
+.sf-row:hover{color:var(--color-text-secondary)}
+.sf-row svg{width:13px;height:13px;flex-shrink:0}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--color-background-tertiary)}
+.main-header{padding:14px 20px 0;background:var(--color-background-tertiary)}
+.page-title{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+.page-sub{font-size:12px;color:var(--color-text-tertiary);margin-top:2px}
+.main-content{flex:1;padding:14px 20px 20px;overflow-y:auto}
+
+.stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.stat-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 14px;cursor:pointer}
+.stat-card:hover{border-color:var(--color-border-secondary)}
+.stat-label{font-size:11px;color:var(--color-text-tertiary);margin-bottom:6px}
+.stat-val{font-size:22px;font-weight:500;color:var(--color-text-primary);line-height:1}
+.stat-delta{font-size:10px;margin-top:4px}
+.stat-delta.up{color:var(--color-text-success)}
+.stat-delta.warn{color:var(--color-text-warning)}
+.stat-accent{width:28px;height:3px;border-radius:2px;margin-bottom:8px}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.card-head-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.view-all{font-size:11px;color:#534AB7;cursor:pointer}
+.claim-row{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer}
+.claim-row:last-child{border-bottom:none}
+.claim-row:hover{background:var(--color-background-secondary)}
+.claim-id{font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);width:52px;flex-shrink:0}
+.claim-name{font-size:12px;color:var(--color-text-primary);flex:1}
+.claim-date{font-size:10px;color:var(--color-text-tertiary);flex-shrink:0}
+.pill{font-size:9px;font-weight:500;padding:2px 7px;border-radius:8px;flex-shrink:0}
+.pill.review{background:#FAEEDA;color:#633806}
+.pill.approved{background:#EAF3DE;color:#3B6D11}
+.pill.rejected{background:#FCEBEB;color:#A32D2D}
+.pill.submitted{background:#EEEDFE;color:#3C3489}
+
+.activity-row{display:flex;align-items:flex-start;gap:10px;padding:8px 14px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.activity-row:last-child{border-bottom:none}
+.act-dot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.act-text{font-size:12px;color:var(--color-text-primary);line-height:1.4;flex:1}
+.act-time{font-size:10px;color:var(--color-text-tertiary);flex-shrink:0;margin-top:1px}
+
+/* FOOTER */
+.footer{height:38px;background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0}
+.footer-left{display:flex;align-items:center;gap:16px}
+.footer-link{font-size:11px;color:var(--color-text-tertiary);cursor:pointer}
+.footer-link:hover{color:var(--color-text-secondary)}
+.footer-right{font-size:11px;color:var(--color-text-tertiary)}
+.service-row{display:flex;align-items:center;gap:5px}
+.svc-dot{width:5px;height:5px;border-radius:50%}
+</style>
+
+<div class="shell">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-mark">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 8a5 5 0 1 1 10 0A5 5 0 0 1 3 8Z" fill="white" fill-opacity="0.3"/><path d="M8 4v4l3 2" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="logo-text">Smart<span>Sure</span></span>
+      <div class="header-divider"></div>
+      <div class="breadcrumb">
+        <span>Admin</span>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 2l3 3-3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span class="current" id="bc-current">Dashboard</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="hbtn notif-dot" title="Notifications">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2a4 4 0 0 1 4 4v3l1 1.5H3L4 9V6a4 4 0 0 1 4-4Z"/><path d="M6.5 13a1.5 1.5 0 0 0 3 0"/></svg>
+      </button>
+      <button class="hbtn" title="Settings">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2"/><path d="M8 2v1M8 13v1M2 8h1M13 8h1M3.5 3.5l.7.7M11.8 11.8l.7.7M11.8 4.2l-.7.7M4.2 11.8l-.7.7"/></svg>
+      </button>
+      <div class="avatar" title="Admin profile">AD</div>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="admin-index">
+        <div class="admin-index-label">Admin Index</div>
+        <div class="admin-card">
+          <div class="admin-avatar">AD</div>
+          <div class="admin-info">
+            <p>Admin User</p>
+            <span>Super Admin</span>
+          </div>
+          <div class="online-dot"></div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <div class="sec-lbl">Overview</div>
+        <div class="ni active" onclick="nav(this,'Dashboard','dashboard')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+          Dashboard
+        </div>
+
+        <div class="sec-lbl">Claims</div>
+        <div class="ni" onclick="nav(this,'All Claims','claims')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3h12M2 7h12M2 11h8"/></svg>
+          All Claims
+        </div>
+        <div class="ni" onclick="nav(this,'Under Review','review')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+          Under Review
+          <span class="nbadge red">3</span>
+        </div>
+
+        <div class="sdivider"></div>
+        <div class="sec-lbl">Policies</div>
+        <div class="ni" onclick="nav(this,'All Policies','policies')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="1" width="12" height="14" rx="1.5"/><path d="M5 6h6M5 9h6M5 12h4"/></svg>
+          All Policies
+        </div>
+        <div class="ni" onclick="nav(this,'Policy Types','ptypes')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 4h12v2H2zM2 9h8M2 12h6"/><path d="M13 9l2 2-2 2"/></svg>
+          Policy Types
+          <span class="nbadge purple">CRUD</span>
+        </div>
+
+        <div class="sdivider"></div>
+        <div class="sec-lbl">Users</div>
+        <div class="ni" onclick="nav(this,'All Users','users')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/></svg>
+          All Users
+        </div>
+
+        <div class="sdivider"></div>
+        <div class="sec-lbl">Finance</div>
+        <div class="ni" onclick="nav(this,'Payments','payments')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="4" width="14" height="9" rx="1.5"/><path d="M1 7h14"/></svg>
+          Payments
+        </div>
+
+        <div class="sdivider"></div>
+        <div class="sec-lbl">System</div>
+        <div class="ni" onclick="nav(this,'Audit Logs','audit')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 9h4"/></svg>
+          Audit Logs
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sf-row">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+          Help &amp; docs
+        </div>
+        <div class="sf-row">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M10 3h3v3M13 3l-5 5M6 4H3v9h9v-3"/></svg>
+          Sign out
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <div class="main-header">
+        <div class="page-title" id="page-title">Dashboard</div>
+        <div class="page-sub" id="page-sub">Welcome back — here's what needs your attention today.</div>
+      </div>
+      <div class="main-content" id="main-content">
+
+        <!-- STAT CARDS -->
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-accent" style="background:#534AB7"></div>
+            <div class="stat-label">Total claims</div>
+            <div class="stat-val">142</div>
+            <div class="stat-delta up">+8 this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-accent" style="background:#E24B4A"></div>
+            <div class="stat-label">Under review</div>
+            <div class="stat-val">3</div>
+            <div class="stat-delta warn">Needs action</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-accent" style="background:#1D9E75"></div>
+            <div class="stat-label">Active policies</div>
+            <div class="stat-val">89</div>
+            <div class="stat-delta up">+2 today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-accent" style="background:#BA7517"></div>
+            <div class="stat-label">Registered users</div>
+            <div class="stat-val">317</div>
+            <div class="stat-delta up">+12 this month</div>
+          </div>
+        </div>
+
+        <!-- TWO COL -->
+        <div class="two-col">
+          <div class="card">
+            <div class="card-head">
+              <span class="card-head-title">Recent claims</span>
+              <span class="view-all">View all</span>
+            </div>
+            <div class="claim-row"><span class="claim-id">#C-0041</span><span class="claim-name">Rohan Mehta</span><span class="pill review">Under review</span><span class="claim-date">31 Mar</span></div>
+            <div class="claim-row"><span class="claim-id">#C-0040</span><span class="claim-name">Priya Sharma</span><span class="pill submitted">Submitted</span><span class="claim-date">30 Mar</span></div>
+            <div class="claim-row"><span class="claim-id">#C-0039</span><span class="claim-name">Amit Verma</span><span class="pill approved">Approved</span><span class="claim-date">29 Mar</span></div>
+            <div class="claim-row"><span class="claim-id">#C-0038</span><span class="claim-name">Sunita Rao</span><span class="pill rejected">Rejected</span><span class="claim-date">28 Mar</span></div>
+            <div class="claim-row"><span class="claim-id">#C-0037</span><span class="claim-name">Karan Patel</span><span class="pill review">Under review</span><span class="claim-date">27 Mar</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="card-head-title">Recent activity</span>
+              <span class="view-all">View audit logs</span>
+            </div>
+            <div class="activity-row"><div class="act-dot" style="background:#E24B4A"></div><div class="act-text">Claim #C-0041 marked under review by admin</div><div class="act-time">2m ago</div></div>
+            <div class="activity-row"><div class="act-dot" style="background:#639922"></div><div class="act-text">Policy #P-0120 approved and activated</div><div class="act-time">18m ago</div></div>
+            <div class="activity-row"><div class="act-dot" style="background:#534AB7"></div><div class="act-text">New policy type "Term Life Plus" created</div><div class="act-time">1h ago</div></div>
+            <div class="activity-row"><div class="act-dot" style="background:#E24B4A"></div><div class="act-text">Claim #C-0038 rejected — insufficient docs</div><div class="act-time">3h ago</div></div>
+            <div class="activity-row"><div class="act-dot" style="background:#BA7517"></div><div class="act-text">User #317 registered via auth service</div><div class="act-time">5h ago</div></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-left">
+      <span class="footer-link">Privacy policy</span>
+      <span class="footer-link">Terms of use</span>
+      <span class="footer-link">Support</span>
+      <div class="service-row">
+        <div class="svc-dot" style="background:#639922"></div>
+        <span class="footer-link" style="cursor:default">All services operational</span>
+      </div>
+    </div>
+    <div class="footer-right">SmartSure Admin v1.0 &nbsp;·&nbsp; &copy; 2026</div>
+  </footer>
+
+</div>
+
+<script>
+const pages = {
+  dashboard: { title:'Dashboard', sub:'Welcome back — here\'s what needs your attention today.' },
+  claims:    { title:'All Claims', sub:'Browse and filter all claims across every status.' },
+  review:    { title:'Under Review', sub:'Claims awaiting your approval or rejection decision.' },
+  policies:  { title:'All Policies', sub:'View, cancel, and update status for customer policies.' },
+  ptypes:    { title:'Policy Types', sub:'Manage your insurance product catalog — create, edit, discontinue.' },
+  users:     { title:'All Users', sub:'Paginated user list with full profile and address management.' },
+  payments:  { title:'Payments', sub:'Look up transactions and verify payment service health.' },
+  audit:     { title:'Audit Logs', sub:'Full admin action history — filter by date, entity, or admin.' }
+};
+function nav(el, label, key) {
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  const p = pages[key];
+  document.getElementById('page-title').textContent = p.title;
+  document.getElementById('page-sub').textContent = p.sub;
+  document.getElementById('bc-current').textContent = p.title;
+}
+</script>
