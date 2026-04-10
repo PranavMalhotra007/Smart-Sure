@@ -1,45 +1,64 @@
 <div class="my-policies-page">
+
   <!-- Page Header -->
   <div class="page-header">
     <div>
       <h1 class="page-title">My Policies</h1>
-      <p class="page-subtitle">{{ total }} {{ total === 1 ? 'policy' : 'policies' }} in your portfolio</p>
+      <p class="page-subtitle">View and manage all your insurance policies</p>
     </div>
     <a routerLink="/customer/plans" class="btn-primary">+ Buy New Plan</a>
   </div>
 
-  <!-- Loading -->
+  <!-- Loading Skeleton -->
   <div class="skeleton-grid" *ngIf="loading">
     <div class="skel-card" *ngFor="let i of [1,2,3]">
-      <div class="sk" style="height:16px;width:50%;margin-bottom:10px"></div>
-      <div class="sk" style="height:24px;width:75%;margin-bottom:16px"></div>
-      <div class="sk" style="height:12px;width:90%;margin-bottom:6px"></div>
-      <div class="sk" style="height:12px;width:65%"></div>
+      <div class="sk" style="height:20px;width:60%"></div>
+      <div class="sk" style="height:14px;width:40%;margin-top:6px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">
+        <div class="sk" style="height:36px"></div>
+        <div class="sk" style="height:36px"></div>
+        <div class="sk" style="height:36px"></div>
+        <div class="sk" style="height:36px"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Empty -->
+  <!-- Empty State -->
   <div class="empty-state" *ngIf="!loading && policies.length === 0">
-    <div style="font-size:3rem">📋</div>
+    <div class="empty-icon">📄</div>
     <h3>No Policies Yet</h3>
-    <p>Start protecting your future by purchasing your first insurance plan.</p>
+    <p>You haven't purchased any insurance policies. Get started with our plans!</p>
     <a routerLink="/customer/plans" class="btn-primary">Browse Plans</a>
   </div>
 
-  <!-- Policy List -->
+  <!-- Policy Grid -->
   <div class="policy-grid" *ngIf="!loading && policies.length > 0">
-    <div class="policy-card" *ngFor="let p of policies" (click)="selectPolicy(p)" [class.selected]="selectedPolicy?.id === p.id">
+    <div class="policy-card" *ngFor="let p of policies"
+         [class.selected]="selectedPolicy?.id === p.id"
+         (click)="selectPolicy(p)">
       <div class="pc-top">
-        <div class="pc-icon">🛡️</div>
+        <div class="pc-icon">{{ getPolicyIcon(p.status) }}</div>
         <span class="badge" [ngClass]="getStatusClass(p.status)">{{ p.status }}</span>
       </div>
-      <h3 class="pc-name">{{ p.policyTypeName || 'Policy' }}</h3>
+      <div class="pc-name">{{ p.policyTypeName || 'Insurance Policy' }}</div>
       <div class="pc-number">{{ p.policyNumber }}</div>
       <div class="pc-meta">
-        <div class="meta-item"><span class="meta-label">Coverage</span><span class="meta-val">{{ formatCurrency(p.coverageAmount) }}</span></div>
-        <div class="meta-item"><span class="meta-label">Premium</span><span class="meta-val">{{ formatCurrency(p.premiumAmount) }}</span></div>
-        <div class="meta-item"><span class="meta-label">Start</span><span class="meta-val">{{ formatDate(p.startDate) }}</span></div>
-        <div class="meta-item"><span class="meta-label">End</span><span class="meta-val">{{ formatDate(p.endDate) }}</span></div>
+        <div class="meta-item">
+          <span class="meta-label">Coverage</span>
+          <span class="meta-val">{{ formatCurrency(p.coverageAmount) }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Premium</span>
+          <span class="meta-val">{{ formatCurrency(p.premiumAmount) }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Start</span>
+          <span class="meta-val">{{ formatDate(p.startDate) }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">End</span>
+          <span class="meta-val">{{ formatDate(p.endDate) }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -52,131 +71,266 @@
   </div>
 </div>
 
-<!-- Policy Detail Side Panel -->
+<!-- ═════════════════════════════════════════════════════════ -->
+<!-- Policy Detail Side Panel                                 -->
+<!-- ═════════════════════════════════════════════════════════ -->
 <div class="detail-overlay" *ngIf="selectedPolicy" (click)="closeDetail()"></div>
 <div class="detail-panel" *ngIf="selectedPolicy">
+
+  <!-- Header -->
   <div class="dp-header">
-    <div>
-      <h3>{{ selectedPolicy.policyTypeName || 'Policy Detail' }}</h3>
-      <div class="dp-num">{{ selectedPolicy.policyNumber }}</div>
+    <div class="dp-header-left">
+      <div class="dp-plan-icon">{{ getPolicyIcon(selectedPolicy.status) }}</div>
+      <div>
+        <h3>{{ selectedPolicy.policyTypeName || 'Policy Detail' }}</h3>
+        <div class="dp-num">{{ selectedPolicy.policyNumber }}</div>
+      </div>
     </div>
     <div class="dp-actions">
       <span class="badge" [ngClass]="getStatusClass(selectedPolicy.status)">{{ selectedPolicy.status }}</span>
-      <button class="dp-close" (click)="closeDetail()">✕</button>
+      <button class="dp-close" (click)="closeDetail()" title="Close">✕</button>
     </div>
   </div>
 
   <div class="dp-body">
+
     <!-- Info Grid -->
-    <div class="info-grid">
-      <div class="info-item"><span class="info-label">Coverage Amount</span><span class="info-val">{{ formatCurrency(selectedPolicy.coverageAmount) }}</span></div>
-      <div class="info-item"><span class="info-label">Premium Amount</span><span class="info-val">{{ formatCurrency(selectedPolicy.premiumAmount) }}</span></div>
-      <div class="info-item"><span class="info-label">Leftover Coverage</span><span class="info-val">{{ formatCurrency(selectedPolicy.leftoverCoverageAmount) }}</span></div>
-      <div class="info-item"><span class="info-label">Frequency</span><span class="info-val">{{ selectedPolicy.paymentFrequency }}</span></div>
-      <div class="info-item"><span class="info-label">Start Date</span><span class="info-val">{{ formatDate(selectedPolicy.startDate) }}</span></div>
-      <div class="info-item"><span class="info-label">End Date</span><span class="info-val">{{ formatDate(selectedPolicy.endDate) }}</span></div>
-      <div class="info-item"><span class="info-label">Nominee</span><span class="info-val">{{ selectedPolicy.nomineeName || '—' }}</span></div>
-      <div class="info-item"><span class="info-label">Relation</span><span class="info-val">{{ selectedPolicy.nomineeRelation || '—' }}</span></div>
+    <div class="info-section">
+      <div class="section-label">Policy Information</div>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Coverage Amount</span>
+          <span class="info-val coverage-val">{{ formatCurrency(selectedPolicy.coverageAmount) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Premium Amount</span>
+          <span class="info-val premium-val">{{ formatCurrency(selectedPolicy.premiumAmount) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Leftover Coverage</span>
+          <span class="info-val">{{ formatCurrency(selectedPolicy.leftoverCoverageAmount) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Frequency</span>
+          <span class="info-val">{{ selectedPolicy.paymentFrequency }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Start Date</span>
+          <span class="info-val">{{ formatDate(selectedPolicy.startDate) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">End Date</span>
+          <span class="info-val">{{ formatDate(selectedPolicy.endDate) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Nominee</span>
+          <span class="info-val">{{ selectedPolicy.nomineeName || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Relation</span>
+          <span class="info-val">{{ selectedPolicy.nomineeRelation || '—' }}</span>
+        </div>
+      </div>
     </div>
 
     <!-- Premium Schedule -->
     <div class="prem-section">
-      <h4>Premium Schedule</h4>
-      <div class="loading-inline" *ngIf="premiumsLoading">Loading...</div>
+      <div class="section-label">
+        Upcoming Premiums
+        <span class="prem-count" *ngIf="pendingPremiums.length > 0">{{ pendingPremiums.length }} due</span>
+      </div>
+      <div class="loading-inline" *ngIf="premiumsLoading">
+        <div class="mini-spinner"></div> Loading...
+      </div>
       <div class="prem-list" *ngIf="!premiumsLoading">
-        <div class="prem-row" *ngFor="let pr of premiums">
+        <div class="prem-row" *ngFor="let pr of premiums" [class.overdue]="pr.status==='OVERDUE'">
           <div class="prem-left">
             <div class="prem-amount">{{ formatCurrency(pr.amount) }}</div>
             <div class="prem-date">Due: {{ formatDate(pr.dueDate) }}</div>
           </div>
           <div class="prem-right">
             <span class="badge" [ngClass]="getStatusClass(pr.status)">{{ pr.status }}</span>
-            <div class="prem-paid" *ngIf="pr.paidDate">Paid: {{ formatDate(pr.paidDate) }}</div>
           </div>
         </div>
-        <div class="empty-inline" *ngIf="premiums.length === 0">No premium schedule available.</div>
+        <div class="empty-inline" *ngIf="premiums.length === 0">
+          <span>✅ No pending premiums</span>
+        </div>
       </div>
     </div>
 
     <!-- Action Buttons -->
-    <div class="dp-btn-row">
-      <button class="btn-teal" *ngIf="selectedPolicy.status === 'ACTIVE'" (click)="openPayModal()" [disabled]="pendingPremiums.length === 0">
-        💳 Pay Premium
+    <div class="dp-btn-group">
+      <button class="action-btn btn-pay-premium"
+              *ngIf="selectedPolicy.status === 'ACTIVE'"
+              (click)="openPayModal()"
+              [disabled]="pendingPremiums.length === 0">
+        <span class="action-icon">💳</span>
+        Pay Premium
+        <span class="action-badge" *ngIf="pendingPremiums.length > 0">{{ pendingPremiums.length }}</span>
       </button>
-      <button class="btn-outline-danger" *ngIf="selectedPolicy.status === 'ACTIVE' || selectedPolicy.status === 'CREATED'" (click)="openCancelModal()">
-        ✕ Cancel
+
+      <button class="action-btn btn-file-claim"
+              *ngIf="selectedPolicy.status === 'ACTIVE'"
+              (click)="fileClaimForPolicy()">
+        <span class="action-icon">📝</span>
+        File Claim
       </button>
-      <button class="btn-outline" *ngIf="selectedPolicy.status === 'EXPIRED'" (click)="openRenewModal()">
-        🔄 Renew
+
+      <button class="action-btn btn-renew-policy"
+              *ngIf="selectedPolicy.status === 'EXPIRED'"
+              (click)="openRenewModal()">
+        <span class="action-icon">🔄</span>
+        Renew Policy
       </button>
-      <button class="btn-outline" *ngIf="selectedPolicy.status === 'ACTIVE'" (click)="fileClaimForPolicy()">
-        📋 File Claim
+
+      <button class="action-btn btn-cancel-policy"
+              *ngIf="selectedPolicy.status === 'ACTIVE' || selectedPolicy.status === 'CREATED'"
+              (click)="openCancelModal()">
+        <span class="action-icon">✕</span>
+        Cancel Policy
       </button>
     </div>
+
   </div>
 </div>
 
-<!-- Pay Premium Modal -->
+<!-- ═════════════════════════════════════════════════════════ -->
+<!-- Pay Premium Modal — Razorpay                             -->
+<!-- ═════════════════════════════════════════════════════════ -->
 <div class="modal-overlay" *ngIf="payModalOpen" (click)="payModalOpen=false">
   <div class="modal-card" (click)="$event.stopPropagation()">
-    <div class="modal-hdr"><h3>💳 Pay Premium</h3><button (click)="payModalOpen=false" class="close-x">✕</button></div>
-    <form [formGroup]="payForm" (ngSubmit)="submitPayment()" class="modal-body">
-      <div class="success-msg" *ngIf="paySuccess">✅ {{ paySuccess }}</div>
-      <div class="error-msg" *ngIf="payError">⚠️ {{ payError }}</div>
-      <div class="form-row">
-        <label>Select Installment</label>
-        <select formControlName="premiumId" class="form-input">
-          <option *ngFor="let pr of pendingPremiums" [value]="pr.id">{{ formatCurrency(pr.amount) }} – Due: {{ formatDate(pr.dueDate) }} ({{ pr.status }})</option>
-        </select>
+    <div class="modal-hdr">
+      <div class="modal-hdr-left">
+        <span class="modal-hdr-icon">💳</span>
+        <h3>Pay Premium</h3>
       </div>
-      <div class="form-row">
-        <label>Payment Method</label>
-        <select formControlName="paymentMethod" class="form-input">
-          <option value="ONLINE">Online (UPI/Net Banking)</option>
-          <option value="NEFT">NEFT/RTGS</option>
-          <option value="CHEQUE">Cheque</option>
-          <option value="CASH">Cash</option>
-        </select>
+      <button (click)="payModalOpen=false" class="close-x">✕</button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- SUCCESS state -->
+      <div class="payment-result-box result-success" *ngIf="paymentStatus === 'success'">
+        <div class="pr-icon">✅</div>
+        <div class="pr-content">
+          <strong>Payment Successful!</strong>
+          <p>{{ paymentMessage }}</p>
+          <code class="txn-code" *ngIf="paymentTxnId">ID: {{ paymentTxnId }}</code>
+        </div>
       </div>
-      <div class="form-row">
-        <label>Reference Number (optional)</label>
-        <input type="text" formControlName="paymentReference" class="form-input" placeholder="TXN123...">
+
+      <!-- FAILED state -->
+      <div class="payment-result-box result-failed" *ngIf="paymentStatus === 'failed'">
+        <div class="pr-icon">✗</div>
+        <div class="pr-content">
+          <strong>Payment Failed</strong>
+          <p>{{ paymentMessage }}</p>
+        </div>
       </div>
-      <button type="submit" class="btn-teal" [disabled]="payForm.invalid || payLoading">{{ payLoading ? 'Processing...' : 'Confirm Payment' }}</button>
-    </form>
+      
+      <!-- Retry after failure -->
+      <button class="btn-retry" *ngIf="paymentStatus === 'failed'" (click)="paymentStatus='idle'; payError=''" style="margin-top: 1rem;">
+        Try Again
+      </button>
+
+      <!-- Normal state — show premium selector -->
+      <ng-container *ngIf="paymentStatus === 'idle' || paymentStatus === 'processing'">
+        <div class="prem-selector" *ngIf="pendingPremiums.length > 1">
+          <div class="form-label">Select Installment</div>
+          <div class="prem-options">
+            <div class="prem-option" *ngFor="let pr of pendingPremiums"
+                 [class.selected]="selectedPremium?.id === pr.id"
+                 (click)="selectPremiumToPlay(pr)">
+              <div class="po-amount">{{ formatCurrency(pr.amount) }}</div>
+              <div class="po-due">Due: {{ formatDate(pr.dueDate) }}</div>
+              <span class="badge" [ngClass]="getStatusClass(pr.status)">{{ pr.status }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="prem-selected-summary" *ngIf="selectedPremium">
+          <div class="pss-row"><span>Amount to Pay</span><strong class="pss-amount">{{ formatCurrency(selectedPremium.amount) }}</strong></div>
+          <div class="pss-row"><span>Due Date</span><strong>{{ formatDate(selectedPremium.dueDate) }}</strong></div>
+          <div class="pss-row"><span>Status</span><span class="badge" [ngClass]="getStatusClass(selectedPremium.status)">{{ selectedPremium.status }}</span></div>
+        </div>
+
+        <div class="secure-note">🔒 Secured by Razorpay — UPI, Cards, Net Banking & more</div>
+
+        <button class="btn-razorpay" (click)="payWithRazorpay()" [disabled]="!selectedPremium || payLoading">
+          <span *ngIf="!payLoading">
+            💳 Pay {{ selectedPremium ? formatCurrency(selectedPremium.amount) : '' }} via Razorpay
+          </span>
+          <span *ngIf="payLoading" class="btn-loading-inner">
+            <span class="btn-spin"></span> Opening Payment...
+          </span>
+        </button>
+      </ng-container>
+
+    </div>
   </div>
 </div>
 
-<!-- Cancel Modal -->
+<!-- ═════════════════════════════════════════════════════════ -->
+<!-- Cancel Policy Modal                                      -->
+<!-- ═════════════════════════════════════════════════════════ -->
 <div class="modal-overlay" *ngIf="cancelModalOpen" (click)="cancelModalOpen=false">
-  <div class="modal-card" (click)="$event.stopPropagation()">
-    <div class="modal-hdr"><h3>❌ Cancel Policy</h3><button (click)="cancelModalOpen=false" class="close-x">✕</button></div>
-    <div class="modal-body">
-      <p class="warn-text">Are you sure you want to cancel this policy? This cannot be undone.</p>
-      <div class="error-msg" *ngIf="cancelError">⚠️ {{ cancelError }}</div>
-      <div class="form-row">
-        <label>Reason for Cancellation</label>
-        <textarea [(ngModel)]="cancelReason" class="form-input" rows="3" placeholder="Optional reason..."></textarea>
+  <div class="modal-card cancel-modal" (click)="$event.stopPropagation()">
+    <div class="modal-hdr cancel-hdr">
+      <div class="modal-hdr-left">
+        <span class="cancel-modal-icon">⚠️</span>
+        <h3>Cancel Policy</h3>
       </div>
-      <div class="btn-row-modal">
-        <button class="btn-outline" (click)="cancelModalOpen=false">Keep Policy</button>
-        <button class="btn-danger" (click)="cancelPolicy()" [disabled]="cancelLoading">{{ cancelLoading ? 'Cancelling...' : 'Yes, Cancel' }}</button>
+      <button (click)="cancelModalOpen=false" class="close-x">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="cancel-warning">
+        <div class="cw-icon">⚠</div>
+        <div>
+          <strong>Are you sure you want to cancel this policy?</strong>
+          <p>This action is permanent and cannot be undone. Your coverage will end immediately.</p>
+        </div>
+      </div>
+
+      <div class="error-msg" *ngIf="cancelError">{{ cancelError }}</div>
+
+      <div class="form-row">
+        <label class="form-label">Reason for Cancellation <span class="optional">(optional)</span></label>
+        <textarea [(ngModel)]="cancelReason" class="form-input form-textarea" rows="3"
+                  placeholder="Tell us why you're cancelling…"></textarea>
+      </div>
+
+      <div class="cancel-modal-actions">
+        <button class="btn-keep" (click)="cancelModalOpen=false">Keep Policy</button>
+        <button class="btn-cancel-confirm" (click)="cancelPolicy()" [disabled]="cancelLoading">
+          <span *ngIf="!cancelLoading">✕ Cancel Policy</span>
+          <span *ngIf="cancelLoading" class="btn-loading-inner"><span class="btn-spin"></span> Cancelling...</span>
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Renew Modal -->
+<!-- ═════════════════════════════════════════════════════════ -->
+<!-- Renew Policy Modal                                       -->
+<!-- ═════════════════════════════════════════════════════════ -->
 <div class="modal-overlay" *ngIf="renewModalOpen" (click)="renewModalOpen=false">
   <div class="modal-card" (click)="$event.stopPropagation()">
-    <div class="modal-hdr"><h3>🔄 Renew Policy</h3><button (click)="renewModalOpen=false" class="close-x">✕</button></div>
+    <div class="modal-hdr">
+      <div class="modal-hdr-left">
+        <span class="modal-hdr-icon">🔄</span>
+        <h3>Renew Policy</h3>
+      </div>
+      <button (click)="renewModalOpen=false" class="close-x">✕</button>
+    </div>
     <form [formGroup]="renewForm" (ngSubmit)="submitRenew()" class="modal-body">
-      <div class="error-msg" *ngIf="renewError">⚠️ {{ renewError }}</div>
+      <div class="error-msg" *ngIf="renewError">{{ renewError }}</div>
       <div class="form-row">
-        <label>New Start Date</label>
+        <label class="form-label">New Start Date</label>
         <input type="date" formControlName="newStartDate" class="form-input">
       </div>
-      <button type="submit" class="btn-teal" [disabled]="renewForm.invalid || renewLoading">{{ renewLoading ? 'Renewing...' : 'Renew Policy' }}</button>
+      <button type="submit" class="btn-teal" [disabled]="renewForm.invalid || renewLoading">
+        {{ renewLoading ? 'Renewing...' : '🔄 Renew Policy' }}
+      </button>
     </form>
   </div>
 </div>

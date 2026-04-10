@@ -24,7 +24,7 @@ export interface PremiumPaymentRequest {
   policyId: number;
   premiumId?: number;
   amount?: number;
-  paymentMethod?: 'ONLINE' | 'NEFT' | 'CHEQUE' | 'CASH';
+  paymentMethod?: 'CREDIT_CARD' | 'DEBIT_CARD' | 'NET_BANKING' | 'UPI' | 'WALLET' | 'CHEQUE';
   paymentReference?: string;
 }
 

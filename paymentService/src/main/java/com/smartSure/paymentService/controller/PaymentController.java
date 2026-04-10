@@ -1,5 +1,6 @@
 package com.smartSure.paymentService.controller;
 
+import com.smartSure.paymentService.dto.*;
 import com.smartSure.paymentService.entity.Payment;
 import com.smartSure.paymentService.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,31 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
+    // ─────────────────────────────────────────────────────────────
+    // Step 1: Frontend calls this to get a Razorpay Order ID
+    // ─────────────────────────────────────────────────────────────
+    @PostMapping("/create-order")
+    @Operation(summary = "Create a Razorpay order for policy purchase or premium payment")
+    public ResponseEntity<RazorpayOrderResponse> createOrder(
+            @RequestBody RazorpayOrderRequest request) {
+        return ResponseEntity.ok(paymentService.createRazorpayOrder(request));
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Step 2: After Razorpay checkout success, frontend calls this
+    //         to verify signature and record the payment
+    // ─────────────────────────────────────────────────────────────
+    @PostMapping("/verify")
+    @Operation(summary = "Verify Razorpay payment signature and record result")
+    public ResponseEntity<PaymentResult> verifyPayment(
+            @RequestBody RazorpayVerifyRequest request) {
+        PaymentResult result = paymentService.verifyAndRecordPayment(request);
+        return ResponseEntity.ok(result);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Lookup by transaction ID
+    // ─────────────────────────────────────────────────────────────
     @GetMapping("/transaction/{transactionId}")
     @Operation(summary = "Get payment details by transaction ID")
     public ResponseEntity<Payment> getPayment(@PathVariable String transactionId) {

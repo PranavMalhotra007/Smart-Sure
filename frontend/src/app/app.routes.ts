@@ -64,6 +64,10 @@ export const routes: Routes = [
         loadComponent: () => import('./customer/premium-history/premium-history').then(m => m.PremiumHistory)
       },
       {
+        path: 'payment-history',
+        loadComponent: () => import('./customer/payment-history/payment-history').then(m => m.PaymentHistory)
+      },
+      {
         path: 'account',
         loadComponent: () => import('./customer/account/account').then(m => m.CustomerAccount)
       },

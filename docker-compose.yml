@@ -57,6 +57,20 @@ services:
 
   # ==================== Observability ====================
 
+  sonarqube:
+    image: sonarqube:9.9.5-community
+    container_name: sonarqube
+    ports:
+      - "9010:9000"
+    environment:
+      - SONAR_FORCEAUTHENTICATION=false
+    networks:
+      - smartsure-net
+    volumes:
+      - sonarqube-data:/opt/sonarqube/data
+      - sonarqube-logs:/opt/sonarqube/logs
+      - sonarqube-extensions:/opt/sonarqube/extensions
+
   zipkin:
     image: openzipkin/zipkin:2.27
     container_name: zipkin
@@ -210,12 +224,32 @@ services:
     networks:
       - smartsure-net
 
+  payment-service:
+    build: ./paymentService
+    container_name: payment-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      service-registry-smart-sure:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+
 # ==================== Volumes ====================
 volumes:
   mysql-data:
   redis-data:
   rabbitmq-data:
   grafana-data:
+  sonarqube-data:
+  sonarqube-logs:
+  sonarqube-extensions:
 
 # ==================== Networks ====================
 networks:

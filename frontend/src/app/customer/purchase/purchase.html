@@ -1,29 +1,24 @@
 <div class="purchase-page">
   <div class="page-header">
-    <a routerLink="/customer/plans" class="back-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
-      Back to Plans
-    </a>
-    <div>
-      <h1 class="page-title">Purchase Policy</h1>
-      <p class="page-subtitle" *ngIf="plan">{{ plan.name }} – {{ plan.category }}</p>
-    </div>
+    <a routerLink="/customer/plans" class="back-link">← Browse Plans</a>
+    <h1 class="page-title">Purchase Policy</h1>
+    <p class="page-subtitle">Complete your policy purchase in a few easy steps</p>
   </div>
 
-  <!-- Loading plan -->
+  <!-- Loading -->
   <div class="loading-wrap" *ngIf="planLoading">
     <div class="spinner"></div> Loading plan details...
   </div>
 
-  <!-- No plan -->
+  <!-- Plan not found -->
   <div class="empty-state" *ngIf="!planLoading && !plan">
-    <div style="font-size:3rem">❌</div>
+    <div style="font-size:3rem">🔍</div>
     <h3>Plan Not Found</h3>
     <a routerLink="/customer/plans" class="btn-teal">Browse Plans</a>
   </div>
 
   <div class="purchase-layout" *ngIf="!planLoading && plan">
-    <!-- Steps -->
+    <!-- Stepper -->
     <div class="stepper">
       <div class="step-item" [class.active]="step>=1" [class.done]="step>1">
         <div class="sc">{{ step > 1 ? '✓' : '1' }}</div>
@@ -42,9 +37,10 @@
     </div>
 
     <div class="purchase-grid">
-      <!-- Main Form / Review / Success -->
+      <!-- Main Column -->
       <div class="main-col">
-        <!-- STEP 1 -->
+
+        <!-- STEP 1 — Details -->
         <div class="card" *ngIf="step === 1">
           <h2 class="card-title">📋 Policy Details</h2>
           <form [formGroup]="form">
@@ -94,9 +90,9 @@
           </button>
         </div>
 
-        <!-- STEP 2 -->
+        <!-- STEP 2 — Review & Pay -->
         <div class="card" *ngIf="step === 2">
-          <h2 class="card-title">💰 Premium Preview & Confirm</h2>
+          <h2 class="card-title">💳 Review & Pay</h2>
 
           <div class="loading-inline" *ngIf="calcLoading">Calculating premium...</div>
 
@@ -125,36 +121,78 @@
             <div class="sum-row"><span>Nominee</span><strong>{{ form.value.nomineeName }} ({{ form.value.nomineeRelation }})</strong></div>
           </div>
 
-          <div class="error-msg" *ngIf="submitError">⚠️ {{ submitError }}</div>
+          <!-- Payment failed message (stays on step 2) -->
+          <div class="payment-failed-banner" *ngIf="paymentStatus === 'failed'">
+            <div class="pf-icon">✗</div>
+            <div class="pf-body">
+              <strong>Payment Failed</strong>
+              <p>{{ paymentMessage }}</p>
+              <p class="pf-hint">Your policy has NOT been purchased. Please try again.</p>
+            </div>
+          </div>
 
           <div class="btn-row">
-            <button class="btn-outline" (click)="prevStep()">← Modify</button>
-            <button class="btn-teal" (click)="confirmPurchase()" [disabled]="submitLoading">
-              {{ submitLoading ? 'Processing...' : '🚀 Confirm Purchase' }}
+            <button class="btn-outline" (click)="prevStep()" [disabled]="submitLoading">← Modify</button>
+            <button class="btn-pay" (click)="confirmPurchase()" [disabled]="submitLoading">
+              <span *ngIf="!submitLoading">
+                <span class="rzp-logo">💳</span>
+                {{paymentStatus === 'failed' ? 'Retry Payment' : 'Pay & Purchase'}}
+              </span>
+              <span *ngIf="submitLoading" class="btn-loading-inner">
+                <span class="btn-spinner"></span> Processing...
+              </span>
             </button>
+          </div>
+
+          <div class="secure-note">
+            🔒 Payments secured by <strong>Razorpay</strong> — UPI, Cards, Net Banking & more
           </div>
         </div>
 
-        <!-- STEP 3 SUCCESS -->
-        <div class="card success-card" *ngIf="step === 3">
-          <div class="success-icon">🎉</div>
-          <h2>Policy Purchased!</h2>
-          <p>Congratulations! Your policy has been activated successfully.</p>
-          <div class="success-details" *ngIf="purchasedPolicy">
-            <div class="sd-row"><span>Policy Number</span><strong>{{ purchasedPolicy.policyNumber }}</strong></div>
-            <div class="sd-row"><span>Status</span><span class="badge badge-success">{{ purchasedPolicy.status }}</span></div>
-            <div class="sd-row"><span>Coverage</span><strong>{{ formatCurrency(purchasedPolicy.coverageAmount) }}</strong></div>
-            <div class="sd-row"><span>Premium</span><strong>{{ formatCurrency(purchasedPolicy.premiumAmount) }} / {{ purchasedPolicy.paymentFrequency | lowercase }}</strong></div>
-          </div>
-          <p class="email-note">📧 A confirmation email has been sent to your registered email address.</p>
-          <div class="success-actions">
-            <a routerLink="/customer/my-policies" class="btn-teal">View My Policies</a>
-            <a routerLink="/customer/dashboard" class="btn-outline">Dashboard</a>
-          </div>
+        <!-- STEP 3 — Result (Success or Failed) -->
+        <div class="card result-card" *ngIf="step === 3">
+
+          <!-- SUCCESS -->
+          <ng-container *ngIf="paymentStatus === 'success'">
+            <div class="result-icon success-icon">✅</div>
+            <h2 class="result-title success-text">Payment Successful!</h2>
+            <p class="result-sub">Your policy has been purchased and activated.</p>
+
+            <div class="result-details" *ngIf="purchasedPolicy">
+              <div class="rd-row"><span>Policy Number</span><strong>{{ purchasedPolicy.policyNumber }}</strong></div>
+              <div class="rd-row"><span>Status</span><span class="badge badge-success">{{ purchasedPolicy.status }}</span></div>
+              <div class="rd-row"><span>Coverage</span><strong>{{ formatCurrency(purchasedPolicy.coverageAmount) }}</strong></div>
+              <div class="rd-row"><span>Premium</span><strong>{{ formatCurrency(purchasedPolicy.premiumAmount) }} / {{ purchasedPolicy.paymentFrequency | lowercase }}</strong></div>
+              <div class="rd-row" *ngIf="paymentTxnId"><span>Payment ID</span><code class="txn-id">{{ paymentTxnId }}</code></div>
+            </div>
+
+            <div class="note-box note-success">
+              <p>{{ paymentMessage }}</p>
+              <p>✉ A confirmation email will be sent to your registered address.</p>
+            </div>
+
+            <div class="result-actions">
+              <a routerLink="/customer/my-policies" class="btn-teal">View My Policies</a>
+              <a routerLink="/customer/dashboard" class="btn-outline">Dashboard</a>
+            </div>
+          </ng-container>
+
+          <!-- FAILED on step 3 (edge case) -->
+          <ng-container *ngIf="paymentStatus === 'failed'">
+            <div class="result-icon fail-icon">✗</div>
+            <h2 class="result-title fail-text">Payment Failed</h2>
+            <p class="result-sub">Your policy was not purchased.</p>
+            <div class="note-box note-danger">{{ paymentMessage }}</div>
+            <div class="result-actions">
+              <button class="btn-pay" (click)="step=2; paymentStatus='idle'">Try Again</button>
+              <a routerLink="/customer/plans" class="btn-outline">Browse Plans</a>
+            </div>
+          </ng-container>
+
         </div>
       </div>
 
-      <!-- Sidebar Plan Info -->
+      <!-- Sidebar -->
       <div class="side-col" *ngIf="step < 3">
         <div class="plan-info-card">
           <h3>{{ plan.name }}</h3>
@@ -173,9 +211,20 @@
           <ul>
             <li>Higher coverage = better protection but higher premium</li>
             <li>Annual payments often come with discounts</li>
-            <li>Choose a nominee carefully — this person receives the benefit</li>
+            <li>Choose a nominee carefully – this person receives the benefit</li>
             <li>Your age affects the premium calculation</li>
           </ul>
+        </div>
+
+        <div class="payment-methods-card">
+          <h4>Accepted Payment Methods</h4>
+          <div class="pm-icons">
+            <span class="pm-chip">UPI</span>
+            <span class="pm-chip">Debit Card</span>
+            <span class="pm-chip">Credit Card</span>
+            <span class="pm-chip">Net Banking</span>
+            <span class="pm-chip">Wallets</span>
+          </div>
         </div>
       </div>
     </div>
