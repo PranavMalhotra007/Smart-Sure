@@ -15,6 +15,10 @@ export class CustomerPlans implements OnInit {
   loading = true;
   allPlans: any[] = [];
   filteredPlans: any[] = [];
+  pagedPlans: any[] = [];
+  currentPage = 0;
+  readonly pageSize = 9;
+  totalPages = 0;
   searchQuery = '';
   selectedCategory = '';
   calculatorOpen = false;
@@ -65,6 +69,24 @@ export class CustomerPlans implements OnInit {
       list = list.filter(p => p.name?.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q));
     }
     this.filteredPlans = list;
+    this.currentPage = 0;
+    this.updatePage();
+  }
+
+  updatePage() {
+    this.totalPages = Math.ceil(this.filteredPlans.length / this.pageSize);
+    const start = this.currentPage * this.pageSize;
+    this.pagedPlans = this.filteredPlans.slice(start, start + this.pageSize);
+  }
+
+  goToPage(p: number) {
+    if (p < 0 || p >= this.totalPages) return;
+    this.currentPage = p;
+    this.updatePage();
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i);
   }
 
   clearFilters() { this.searchQuery = ''; this.selectedCategory = ''; this.applyFilter(); }

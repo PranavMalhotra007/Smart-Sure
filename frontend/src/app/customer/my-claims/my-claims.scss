@@ -104,6 +104,33 @@
 .btn-danger { padding: 0.7rem 1.25rem; border-radius: 8px; border: none; background: #ef4444; color: #fff; font-weight: 700; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; &:hover:not(:disabled) { background: #dc2626; } &:disabled { opacity: 0.6; cursor: not-allowed; } }
 .error-msg { background: #fee2e2; color: #991b1b; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.875rem; }
 
+
+/* Pagination */
+.pagination-bar {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 0.375rem; margin-top: 0.5rem;
+}
+.pg-btn {
+  width: 36px; height: 36px; border-radius: 8px;
+  border: 1px solid #e5e7eb; background: #fff; color: #374151;
+  font-size: 1.1rem; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  &:hover:not(:disabled) { border-color: #00b4d8; color: #00b4d8; background: #f0f9ff; }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+.pg-num {
+  min-width: 36px; height: 36px; padding: 0 6px; border-radius: 8px;
+  border: 1px solid #e5e7eb; background: #fff; color: #374151;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  &:hover { border-color: #00b4d8; color: #00b4d8; background: #f0f9ff; }
+  &.active {
+    background: linear-gradient(135deg, #00b4d8, #0077b6);
+    border-color: #00b4d8; color: #fff;
+    box-shadow: 0 4px 12px rgba(0,180,216,0.35);
+  }
+}
+
 @media(max-width: 768px) {
   .table-header, .table-row { grid-template-columns: 70px 1fr 100px 110px; }
   .table-header span:nth-child(5), .table-row span:nth-child(5),
@@ -148,4 +175,9 @@
   .badge-warning { background: rgba(245,158,11,0.1); color: #fbbf24; }
   .badge-info    { background: rgba(59,130,246,0.1); color: #60a5fa; }
   .badge-default { background: rgba(107,114,128,0.1); color: #9ca3af; }
+  .pg-btn { background: #1f2937; border-color: #374151; color: #d1d5db; }
+  .pg-btn:hover:not(:disabled) { background: #0c2233; border-color: #0ea5e9; color: #38bdf8; }
+  .pg-num { background: #1f2937; border-color: #374151; color: #d1d5db; }
+  .pg-num:hover { background: #0c2233; border-color: #0ea5e9; color: #38bdf8; }
+  .pg-num.active { background: linear-gradient(135deg,#0ea5e9,#0077b6); border-color: #0ea5e9; color: #fff; }
 }

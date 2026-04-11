@@ -162,3 +162,30 @@ td {
   border-top: 0.5px solid var(--color-border-tertiary);
   text-align: right;
 }
+
+// Pagination
+.pagination-bar {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 0.375rem; margin-top: 14px; padding-bottom: 4px;
+}
+.pg-btn {
+  width: 32px; height: 32px; border-radius: 7px;
+  border: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-primary); color: var(--color-text-secondary);
+  font-size: 1rem; cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.pg-btn:hover:not(:disabled) { border-color: var(--color-brand-primary); color: var(--color-brand-primary); background: var(--color-brand-secondary); }
+.pg-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.pg-num {
+  min-width: 32px; height: 32px; padding: 0 5px; border-radius: 7px;
+  border: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-primary); color: var(--color-text-secondary);
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.pg-num:hover { border-color: var(--color-brand-primary); color: var(--color-brand-primary); background: var(--color-brand-secondary); }
+.pg-num.active {
+  background: var(--color-brand-primary); border-color: var(--color-brand-primary); color: #fff;
+  box-shadow: 0 3px 10px rgba(0,180,216,0.3);
+}

@@ -14,6 +14,10 @@ import { ClaimService } from '../../core/services/claim';
 export class Claims implements OnInit {
   claims: any[] = [];
   filteredClaims: any[] = [];
+  pagedClaims: any[] = [];
+  acPage = 0;
+  readonly acPageSize = 10;
+  acTotalPages = 0;
   activeTab = 'all';
   activeFilter = 'all';
   searchQuery = '';
@@ -137,6 +141,24 @@ export class Claims implements OnInit {
     }
 
     this.filteredClaims = base;
+    this.acPage = 0;
+    this.updateAcPage();
+  }
+
+  updateAcPage() {
+    this.acTotalPages = Math.ceil(this.filteredClaims.length / this.acPageSize);
+    const start = this.acPage * this.acPageSize;
+    this.pagedClaims = this.filteredClaims.slice(start, start + this.acPageSize);
+  }
+
+  goToAcPage(p: number) {
+    if (p < 0 || p >= this.acTotalPages) return;
+    this.acPage = p;
+    this.updateAcPage();
+  }
+
+  get acPageNums(): number[] {
+    return Array.from({ length: this.acTotalPages }, (_, i) => i);
   }
 
   // ── Detail view ────────────────────────────────────────────────────────

@@ -249,4 +249,6 @@ export class CustomerMyPolicies implements OnInit {
   formatCurrency(v: number): string { if (v == null) return '₹0'; return '₹' + Number(v).toLocaleString('en-IN'); }
   prevPage() { if (this.page > 0) { this.page--; this.loadPolicies(); } }
   nextPage() { if (this.page < this.totalPages - 1) { this.page++; this.loadPolicies(); } }
+  goToPage(p: number) { if (p >= 0 && p < this.totalPages) { this.page = p; this.loadPolicies(); } }
+  get pageNums(): number[] { return Array.from({ length: this.totalPages }, (_, i) => i); }
 }

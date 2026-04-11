@@ -14,6 +14,10 @@ import { forkJoin, map, switchMap, of, catchError } from 'rxjs';
 export class PaymentHistory implements OnInit {
   loading = true;
   history: any[] = [];
+  pagedHistory: any[] = [];
+  phPage = 0;
+  readonly phPageSize = 10;
+  phTotalPages = 0;
 
   constructor(
     private policyService: PolicyService,
@@ -71,6 +75,8 @@ export class PaymentHistory implements OnInit {
           // Sort overall by paid date descending
           combined.sort((a: any, b: any) => new Date(b.paidDate).getTime() - new Date(a.paidDate).getTime());
           this.history = combined;
+          this.phPage = 0;
+          this.updatePhPage();
           this.loading = false;
           this.cdr.detectChanges();
         });
@@ -78,11 +84,28 @@ export class PaymentHistory implements OnInit {
       error: () => {
         this.ngZone.run(() => {
           this.history = [];
+          this.pagedHistory = [];
           this.loading = false;
           this.cdr.detectChanges();
         });
       }
     });
+  }
+
+  updatePhPage() {
+    this.phTotalPages = Math.ceil(this.history.length / this.phPageSize);
+    const start = this.phPage * this.phPageSize;
+    this.pagedHistory = this.history.slice(start, start + this.phPageSize);
+  }
+
+  goToPhPage(p: number) {
+    if (p < 0 || p >= this.phTotalPages) return;
+    this.phPage = p;
+    this.updatePhPage();
+  }
+
+  get phPageNums(): number[] {
+    return Array.from({ length: this.phTotalPages }, (_, i) => i);
   }
 
   formatDate(d: string) {

@@ -14,6 +14,10 @@ import { AdminService } from '../../core/services/admin';
 export class AdminPolicies implements OnInit {
   policies: any[] = [];
   filteredPolicies: any[] = [];
+  pagedPolicies: any[] = [];
+  apPage = 0;
+  readonly apPageSize = 10;
+  apTotalPages = 0;
   isLoading = true;
   searchQuery = '';
   activeFilter = 'all';
@@ -74,6 +78,24 @@ export class AdminPolicies implements OnInit {
       );
     }
     this.filteredPolicies = base;
+    this.apPage = 0;
+    this.updateApPage();
+  }
+
+  updateApPage() {
+    this.apTotalPages = Math.ceil(this.filteredPolicies.length / this.apPageSize);
+    const start = this.apPage * this.apPageSize;
+    this.pagedPolicies = this.filteredPolicies.slice(start, start + this.apPageSize);
+  }
+
+  goToApPage(p: number) {
+    if (p < 0 || p >= this.apTotalPages) return;
+    this.apPage = p;
+    this.updateApPage();
+  }
+
+  get apPageNums(): number[] {
+    return Array.from({ length: this.apTotalPages }, (_, i) => i);
   }
 
   setFilter(f: string) { this.activeFilter = f; this.applyFilters(); }

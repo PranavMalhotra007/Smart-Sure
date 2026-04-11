@@ -12,6 +12,10 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 })
 export class PolicyTypes implements OnInit {
   policyTypes: any[] = [];
+  pagedPolicyTypes: any[] = [];
+  ptPage = 0;
+  readonly ptPageSize = 9;
+  ptTotalPages = 0;
   isLoading = true;
   showAddModal = false;
   showEditModal = false;
@@ -56,6 +60,8 @@ export class PolicyTypes implements OnInit {
       next: (res) => {
         this.ngZone.run(() => {
           this.policyTypes = res;
+          this.ptPage = 0;
+          this.updatePtPage();
           this.isLoading = false;
           this.cdr.detectChanges();
         });
@@ -68,6 +74,22 @@ export class PolicyTypes implements OnInit {
         });
       }
     });
+  }
+
+  updatePtPage() {
+    this.ptTotalPages = Math.ceil(this.policyTypes.length / this.ptPageSize);
+    const start = this.ptPage * this.ptPageSize;
+    this.pagedPolicyTypes = this.policyTypes.slice(start, start + this.ptPageSize);
+  }
+
+  goToPtPage(p: number) {
+    if (p < 0 || p >= this.ptTotalPages) return;
+    this.ptPage = p;
+    this.updatePtPage();
+  }
+
+  get ptPageNums(): number[] {
+    return Array.from({ length: this.ptTotalPages }, (_, i) => i);
   }
 
   openAddModal() {

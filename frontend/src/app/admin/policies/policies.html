@@ -52,7 +52,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let p of filteredPolicies" (click)="openDetail(p)">
+        <tr *ngFor="let p of pagedPolicies" (click)="openDetail(p)">
           <td class="td-policy">{{ p.policyNumber || '—' }}</td>
           <td class="td-type">{{ p.policyType?.name || p.policyTypeName || '—' }}</td>
           <td class="td-amount">{{ fmt(p.coverageAmount) }}</td>
@@ -80,6 +80,15 @@
       <div class="empty-sub">Try adjusting your filters or search.</div>
     </div>
   </div>
+
+    <!-- Pagination -->
+    <div class="pagination-bar" *ngIf="!isLoading && apTotalPages > 1">
+      <button class="pg-btn" (click)="goToApPage(apPage - 1)" [disabled]="apPage === 0">‹</button>
+      <ng-container *ngFor="let p of apPageNums">
+        <button class="pg-num" [class.active]="p === apPage" (click)="goToApPage(p)">{{ p + 1 }}</button>
+      </ng-container>
+      <button class="pg-btn" (click)="goToApPage(apPage + 1)" [disabled]="apPage >= apTotalPages - 1">›</button>
+    </div>
 </div>
 
 <!-- DETAIL VIEW -->

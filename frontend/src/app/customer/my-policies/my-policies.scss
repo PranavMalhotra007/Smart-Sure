@@ -54,14 +54,30 @@
 .meta-val   { display: block; font-size: 0.85rem; font-weight: 700; color: #1e293b; }
 
 // ─── Pagination ───────────────────────────────────────────────────────────────
-.pagination { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 0.5rem; }
-.page-btn {
-  padding: 0.5rem 1.25rem; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff;
-  font-size: 0.875rem; cursor: pointer; transition: all 0.2s;
-  &:hover:not(:disabled) { border-color: #00b4d8; color: #00b4d8; }
-  &:disabled { opacity: 0.4; cursor: not-allowed; }
+.pagination-bar {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 0.375rem; margin-top: 0.5rem;
 }
-.page-info { font-size: 0.875rem; color: #6b7280; }
+.pg-btn {
+  width: 36px; height: 36px; border-radius: 8px;
+  border: 1px solid #e5e7eb; background: #fff; color: #374151;
+  font-size: 1.1rem; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  &:hover:not(:disabled) { border-color: #00b4d8; color: #00b4d8; background: #f0f9ff; }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+.pg-num {
+  min-width: 36px; height: 36px; padding: 0 6px; border-radius: 8px;
+  border: 1px solid #e5e7eb; background: #fff; color: #374151;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  &:hover { border-color: #00b4d8; color: #00b4d8; background: #f0f9ff; }
+  &.active {
+    background: linear-gradient(135deg, #00b4d8, #0077b6);
+    border-color: #00b4d8; color: #fff;
+    box-shadow: 0 4px 12px rgba(0,180,216,0.35);
+  }
+}
 
 // ─── Detail Overlay & Panel ───────────────────────────────────────────────────
 .detail-overlay {
@@ -329,6 +345,8 @@
   .prem-amount { color: #f9fafb; }
 
   .page-btn { background: #1f2937; border-color: #374151; color: #f9fafb; }
+  .pg-btn { background: #1f2937; border-color: #374151; color: #d1d5db; &:hover:not(:disabled) { background: #0c2233; border-color: #0ea5e9; color: #38bdf8; } }
+  .pg-num { background: #1f2937; border-color: #374151; color: #d1d5db; &:hover { background: #0c2233; border-color: #0ea5e9; color: #38bdf8; } &.active { background: linear-gradient(135deg,#0ea5e9,#0077b6); border-color: #0ea5e9; color: #fff; } }
 
   .modal-card { background: #1f2937; }
   .modal-hdr  { border-color: #374151; h3 { color: #f9fafb; } }

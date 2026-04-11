@@ -15,6 +15,10 @@ export class MyClaims implements OnInit {
   loading = true;
   claims: any[] = [];
   filteredClaims: any[] = [];
+  pagedClaims: any[] = [];
+  claimPage = 0;
+  readonly claimPageSize = 10;
+  claimTotalPages = 0;
   selectedClaim: any = null;
   filterStatus = '';
   error = '';
@@ -58,6 +62,24 @@ export class MyClaims implements OnInit {
     this.filteredClaims = this.filterStatus
       ? this.claims.filter(c => c.status === this.filterStatus)
       : [...this.claims];
+    this.claimPage = 0;
+    this.updateClaimsPage();
+  }
+
+  updateClaimsPage() {
+    this.claimTotalPages = Math.ceil(this.filteredClaims.length / this.claimPageSize);
+    const start = this.claimPage * this.claimPageSize;
+    this.pagedClaims = this.filteredClaims.slice(start, start + this.claimPageSize);
+  }
+
+  goToClaimPage(p: number) {
+    if (p < 0 || p >= this.claimTotalPages) return;
+    this.claimPage = p;
+    this.updateClaimsPage();
+  }
+
+  get claimPageNums(): number[] {
+    return Array.from({ length: this.claimTotalPages }, (_, i) => i);
   }
 
   countByStatus(s: string): number {

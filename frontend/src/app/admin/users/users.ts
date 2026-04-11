@@ -14,6 +14,10 @@ export class Users implements OnInit {
   isLoading = signal(true);
   users = signal<any[]>([]);
   filteredUsers = signal<any[]>([]);
+  pagedUsers: any[] = [];
+  uPage = 0;
+  readonly uPageSize = 10;
+  uTotalPages = 0;
   searchQuery = '';
   roleFilter = 'all';
   errorMsg = '';
@@ -71,6 +75,24 @@ export class Users implements OnInit {
     }
 
     this.filteredUsers.set(base);
+    this.uPage = 0;
+    this.updateUPage();
+  }
+
+  updateUPage() {
+    this.uTotalPages = Math.ceil(this.filteredUsers().length / this.uPageSize);
+    const start = this.uPage * this.uPageSize;
+    this.pagedUsers = this.filteredUsers().slice(start, start + this.uPageSize);
+  }
+
+  goToUPage(p: number) {
+    if (p < 0 || p >= this.uTotalPages) return;
+    this.uPage = p;
+    this.updateUPage();
+  }
+
+  get uPageNums(): number[] {
+    return Array.from({ length: this.uTotalPages }, (_, i) => i);
   }
 
   // ── GET /api/admin/users/{userId} ─────────────────────────────────────

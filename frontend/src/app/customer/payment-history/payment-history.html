@@ -28,7 +28,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of history">
+        <tr *ngFor="let item of pagedHistory">
           <td class="date-cell">{{ formatDate(item.paidDate) }}</td>
           <td><span class="type-badge">{{ item.type }}</span></td>
           <td>
@@ -41,5 +41,14 @@
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-bar" *ngIf="!loading && phTotalPages > 1">
+    <button class="pg-btn" (click)="goToPhPage(phPage - 1)" [disabled]="phPage === 0">‹</button>
+    <ng-container *ngFor="let p of phPageNums">
+      <button class="pg-num" [class.active]="p === phPage" (click)="goToPhPage(p)">{{ p + 1 }}</button>
+    </ng-container>
+    <button class="pg-btn" (click)="goToPhPage(phPage + 1)" [disabled]="phPage >= phTotalPages - 1">›</button>
   </div>
 </div>

@@ -43,7 +43,7 @@
 
   <!-- Plans Grid -->
   <div class="plans-grid" *ngIf="!loading && filteredPlans.length > 0">
-    <div class="plan-card" *ngFor="let plan of filteredPlans">
+    <div class="plan-card" *ngFor="let plan of pagedPlans">
       <div class="plan-top">
         <div class="plan-cat-badge" [style.background]="(categoryColors[plan.category]||'#00b4d8') + '20'" [style.color]="categoryColors[plan.category]||'#00b4d8'">
           {{ categoryIcons[plan.category] || '📋' }} {{ plan.category }}
@@ -87,6 +87,15 @@
         </a>
       </div>
     </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-bar" *ngIf="!loading && totalPages > 1">
+    <button class="pg-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 0">‹</button>
+    <ng-container *ngFor="let p of pageNumbers">
+      <button class="pg-num" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p + 1 }}</button>
+    </ng-container>
+    <button class="pg-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage >= totalPages - 1">›</button>
   </div>
 </div>
 

@@ -49,7 +49,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let c of filteredClaims" (click)="openDetail(c)">
+          <tr *ngFor="let c of pagedClaims" (click)="openDetail(c)">
             <td class="td-id">#C-{{ c.id ?? c.claimId }}</td>
             <td class="td-policy">{{ c.policy?.policyNumber || '—' }}</td>
             <td class="td-customer">
@@ -72,6 +72,15 @@
         <div class="empty-title">No claims found</div>
         <div class="empty-sub">Try adjusting your filters or search.</div>
       </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-bar" *ngIf="!isLoading && acTotalPages > 1">
+      <button class="pg-btn" (click)="goToAcPage(acPage - 1)" [disabled]="acPage === 0">‹</button>
+      <ng-container *ngFor="let p of acPageNums">
+        <button class="pg-num" [class.active]="p === acPage" (click)="goToAcPage(p)">{{ p + 1 }}</button>
+      </ng-container>
+      <button class="pg-btn" (click)="goToAcPage(acPage + 1)" [disabled]="acPage >= acTotalPages - 1">›</button>
     </div>
   </div>
 </div>

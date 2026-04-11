@@ -38,7 +38,7 @@
     <div class="table-header">
       <span>Claim ID</span><span>Policy</span><span>Amount</span><span>Status</span><span>Filed On</span><span>Docs</span><span></span>
     </div>
-    <div class="table-row" *ngFor="let c of filteredClaims" (click)="selectClaim(c)" [class.selected]="selectedClaim?.id === c.id">
+    <div class="table-row" *ngFor="let c of pagedClaims" (click)="selectClaim(c)" [class.selected]="selectedClaim?.id === c.id">
       <span class="claim-id">#{{ c.id }}</span>
       <span class="claim-policy">Policy #{{ c.policyId }}</span>
       <span class="claim-amount">{{ formatCurrency(c.amount) }}</span>
@@ -51,6 +51,15 @@
       </span>
       <span class="row-arrow">›</span>
     </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-bar" *ngIf="!loading && claimTotalPages > 1">
+    <button class="pg-btn" (click)="goToClaimPage(claimPage - 1)" [disabled]="claimPage === 0">‹</button>
+    <ng-container *ngFor="let p of claimPageNums">
+      <button class="pg-num" [class.active]="p === claimPage" (click)="goToClaimPage(p)">{{ p + 1 }}</button>
+    </ng-container>
+    <button class="pg-btn" (click)="goToClaimPage(claimPage + 1)" [disabled]="claimPage >= claimTotalPages - 1">›</button>
   </div>
 </div>
 
