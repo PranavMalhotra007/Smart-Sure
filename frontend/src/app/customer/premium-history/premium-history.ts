@@ -28,7 +28,7 @@ export class PremiumHistory implements OnInit {
         if (policies.length === 0) return of([]);
         const reqs = policies.map((p: any) => 
           this.policyService.getPremiumsByPolicy(p.id).pipe(
-            map(premiums => premiums.map((pr: any) => ({ ...pr, policyNumber: p.policyNumber, policyTypeName: p.policyTypeName }))),
+            map(premiums => premiums.map((pr: any) => ({ ...pr, policyNumber: p.policyNumber, policyTypeName: p.policyType?.name || 'Insurance Policy' }))),
             catchError(() => of([]))
           )
         );

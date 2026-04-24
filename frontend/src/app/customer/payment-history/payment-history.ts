@@ -14,6 +14,8 @@ import { forkJoin, map, switchMap, of, catchError } from 'rxjs';
 export class PaymentHistory implements OnInit {
   loading = true;
   history: any[] = [];
+  filteredHistory: any[] = [];
+  filterType: string = 'all';
   pagedHistory: any[] = [];
   phPage = 0;
   readonly phPageSize = 10;
@@ -39,7 +41,7 @@ export class PaymentHistory implements OnInit {
           .map((p: any) => ({
             type: 'Policy Purchase',
             policyNumber: p.policyNumber,
-            policyTypeName: p.policyTypeName,
+            policyTypeName: p.policyType?.name || 'Insurance Policy',
             amount: p.premiumAmount,
             paidDate: p.startDate, // approximate date of payment
             status: 'PAID',
@@ -52,7 +54,7 @@ export class PaymentHistory implements OnInit {
             map(premiums => premiums.map((pr: any) => ({ 
               type: 'Premium Payment',
               policyNumber: p.policyNumber, 
-              policyTypeName: p.policyTypeName,
+              policyTypeName: p.policyType?.name || 'Insurance Policy',
               amount: pr.amount,
               paidDate: pr.paidDate,
               status: pr.status,
@@ -75,8 +77,7 @@ export class PaymentHistory implements OnInit {
           // Sort overall by paid date descending
           combined.sort((a: any, b: any) => new Date(b.paidDate).getTime() - new Date(a.paidDate).getTime());
           this.history = combined;
-          this.phPage = 0;
-          this.updatePhPage();
+          this.applyFilter('all');
           this.loading = false;
           this.cdr.detectChanges();
         });
@@ -84,6 +85,7 @@ export class PaymentHistory implements OnInit {
       error: () => {
         this.ngZone.run(() => {
           this.history = [];
+          this.filteredHistory = [];
           this.pagedHistory = [];
           this.loading = false;
           this.cdr.detectChanges();
@@ -92,10 +94,21 @@ export class PaymentHistory implements OnInit {
     });
   }
 
+  applyFilter(type: string) {
+    this.filterType = type;
+    if (type === 'all') {
+      this.filteredHistory = [...this.history];
+    } else {
+      this.filteredHistory = this.history.filter(h => h.type === type);
+    }
+    this.phPage = 0;
+    this.updatePhPage();
+  }
+
   updatePhPage() {
-    this.phTotalPages = Math.ceil(this.history.length / this.phPageSize);
+    this.phTotalPages = Math.ceil(this.filteredHistory.length / this.phPageSize);
     const start = this.phPage * this.phPageSize;
-    this.pagedHistory = this.history.slice(start, start + this.phPageSize);
+    this.pagedHistory = this.filteredHistory.slice(start, start + this.phPageSize);
   }
 
   goToPhPage(p: number) {

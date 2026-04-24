@@ -4,6 +4,12 @@
     <p class="page-subtitle">View all your successful policy purchases and premium payments</p>
   </div>
 
+  <div class="filter-bar" *ngIf="!loading && history.length > 0">
+    <button class="filter-pill" [class.active]="filterType === 'all'" (click)="applyFilter('all')">All</button>
+    <button class="filter-pill" [class.active]="filterType === 'Policy Purchase'" (click)="applyFilter('Policy Purchase')">Policy Purchase</button>
+    <button class="filter-pill" [class.active]="filterType === 'Premium Payment'" (click)="applyFilter('Premium Payment')">Premium Payment</button>
+  </div>
+
   <div class="loading-wrap" *ngIf="loading">
     <div class="spinner"></div> Loading history...
   </div>

@@ -17,6 +17,37 @@
     }
   }
 
+  .filter-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+
+    .filter-pill {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 6px 16px;
+      border-radius: 20px;
+      color: var(--text-color);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(0, 180, 216, 0.1);
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      &.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: white;
+      }
+    }
+  }
+
   .loading-wrap {
     text-align: center;
     padding: 64px 20px;

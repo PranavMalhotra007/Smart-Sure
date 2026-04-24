@@ -26,15 +26,15 @@ export class CustomerPlans implements OnInit {
   calcResult: any = null;
   calcLoading = false;
 
-  categories = ['LIFE','HEALTH','VEHICLE','PROPERTY','HOME','TRAVEL','BUSINESS','AUTO'];
+  categories = ['LIFE','HEALTH','HOME','TRAVEL','BUSINESS','AUTO'];
 
   categoryIcons: Record<string,string> = {
-    LIFE:'❤️', HEALTH:'🏥', VEHICLE:'🚗', PROPERTY:'🏠',
+    LIFE:'❤️', HEALTH:'🏥', 
     HOME:'🏡', TRAVEL:'✈️', BUSINESS:'💼', AUTO:'🚘'
   };
   categoryColors: Record<string,string> = {
-    LIFE:'#ef4444', HEALTH:'#06d6a0', VEHICLE:'#f77f00',
-    PROPERTY:'#a855f7', HOME:'#3b82f6', TRAVEL:'#00b4d8', BUSINESS:'#6366f1', AUTO:'#f59e0b'
+    LIFE:'#ef4444', HEALTH:'#06d6a0', 
+    HOME:'#3b82f6', TRAVEL:'#00b4d8', BUSINESS:'#6366f1', AUTO:'#f59e0b'
   };
 
   constructor(
