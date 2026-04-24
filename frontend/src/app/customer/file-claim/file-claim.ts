@@ -71,22 +71,11 @@ export class FileClaim implements OnInit {
     // Initial load
     this.loadPoliciesAndPreFill();
 
-    // Check if we are resuming a claim
     const cId = this.route.snapshot.queryParamMap.get('claimId');
     if (cId) {
       this.loadDraftClaim(Number(cId));
-    } else {
-      // Auto-detect if there is already an unfinished draft claim
-      this.claimService.getMyClaims().subscribe({
-        next: (claims) => {
-          const draft = claims.find((c: any) => c.status === 'DRAFT');
-          if (draft) {
-            const draftId = draft.claimId || (draft as any).id;
-            this.loadDraftClaim(Number(draftId));
-          }
-        }
-      });
     }
+    // If no claimId param: always start a fresh new claim (do NOT auto-resume drafts)
   }
 
   loadPoliciesAndPreFill() {

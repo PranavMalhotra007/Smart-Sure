@@ -19,7 +19,7 @@ export class CustomerMyPolicies implements OnInit {
   premiums: any[] = [];
   premiumsLoading = false;
   filterStatus = '';
-  page = 0; size = 10; total = 0; totalPages = 0;
+  page = 0; size = 9; total = 0; totalPages = 0;
 
   // Pay premium modal
   payModalOpen      = false;

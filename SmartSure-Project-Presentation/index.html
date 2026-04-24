@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartSure — Project Architecture Presentation</title>
+  <meta name="description" content="Interactive presentation of the SmartSure microservices insurance platform — architecture, security, and services."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════ NAV ═══════════════════════════════════ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">🛡️</span>
+      <span class="brand-text">SmartSure</span>
+      <span class="brand-tag">Architecture</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#overview" class="nav-link" id="nav-overview">Overview</a></li>
+      <li><a href="#folder" class="nav-link" id="nav-folder">Structure</a></li>
+      <li><a href="#flow" class="nav-link" id="nav-flow">Project Flow</a></li>
+      <li><a href="#security" class="nav-link" id="nav-security">Security</a></li>
+      <li><a href="#services" class="nav-link" id="nav-services">Services</a></li>
+    </ul>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+  </nav>
+
+  <!-- ═══════════════════════════════════ HERO ═══════════════════════════════════ -->
+  <section class="hero" id="overview">
+    <div class="hero-bg">
+      <div class="hero-orb orb1"></div>
+      <div class="hero-orb orb2"></div>
+      <div class="hero-orb orb3"></div>
+      <div class="grid-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge animate-fade-in">
+        <span class="badge-dot"></span>
+        Spring Boot · Angular · Microservices
+      </div>
+      <h1 class="hero-title animate-fade-in-delay1">
+        <span class="gradient-text">SmartSure</span>
+        <br/>Insurance Platform
+      </h1>
+      <p class="hero-subtitle animate-fade-in-delay2">
+        A production-ready microservices architecture for digital insurance management — 
+        featuring JWT-secured API gateway, event-driven messaging, Razorpay payments, 
+        and full observability stack.
+      </p>
+      <div class="hero-stats animate-fade-in-delay3">
+        <div class="stat-item">
+          <span class="stat-num" data-target="7">0</span>
+          <span class="stat-label">Microservices</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num" data-target="5">0</span>
+          <span class="stat-label">Databases / Infra</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num" data-target="3">0</span>
+          <span class="stat-label">Security Layers</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-num" data-target="4">0</span>
+          <span class="stat-label">Observability Tools</span>
+        </div>
+      </div>
+      <div class="hero-tech-tags animate-fade-in-delay3">
+        <span class="tech-tag">Spring Boot 3.x</span>
+        <span class="tech-tag">Spring Cloud</span>
+        <span class="tech-tag">Angular 18+</span>
+        <span class="tech-tag">MySQL 8</span>
+        <span class="tech-tag">Redis 7</span>
+        <span class="tech-tag">RabbitMQ 3</span>
+        <span class="tech-tag">JWT / RSA</span>
+        <span class="tech-tag">Docker Compose</span>
+        <span class="tech-tag">Razorpay</span>
+        <span class="tech-tag">Prometheus + Grafana</span>
+        <span class="tech-tag">Zipkin</span>
+        <span class="tech-tag">SonarQube</span>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-mouse"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════ FOLDER STRUCTURE ═══════════════════════════════════ -->
+  <section class="section" id="folder">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">📁 Project Structure</span>
+        <h2 class="section-title">Folder <span class="gradient-text">Architecture</span></h2>
+        <p class="section-desc">Complete directory layout of the SmartSure monorepo — every service, config, and tooling file in one place.</p>
+      </div>
+
+      <div class="folder-tree-card">
+        <div class="card-header-bar">
+          <div class="traffic-lights">
+            <span class="tl red"></span>
+            <span class="tl yellow"></span>
+            <span class="tl green"></span>
+          </div>
+          <span class="card-title-bar">Smart Sure /</span>
+        </div>
+        <div class="folder-tree">
+          <div class="tree-root">
+            <div class="tree-item root-item">
+              <span class="tree-icon folder-icon">📦</span>
+              <span class="tree-name">Smart Sure</span>
+              <span class="tree-desc">Monorepo Root</span>
+            </div>
+
+            <!-- Infrastructure -->
+            <div class="tree-group">
+              <div class="tree-item group-label"><span>🏗️</span> Infrastructure Layer</div>
+
+              <div class="tree-item level1">
+                <span class="tree-icon">🐋</span>
+                <span class="tree-name">docker-compose.yml</span>
+                <span class="tree-desc">Orchestrates all 12+ containers (services, MySQL, Redis, RabbitMQ, Zipkin, Prometheus, Grafana, SonarQube)</span>
+              </div>
+              <div class="tree-item level1">
+                <span class="tree-icon">📊</span>
+                <span class="tree-name">prometheus/</span>
+                <span class="tree-desc">prometheus.yml — scrape configs for all services</span>
+              </div>
+              <div class="tree-item level1">
+                <span class="tree-icon">📈</span>
+                <span class="tree-name">grafana/</span>
+                <span class="tree-desc">Provisioning dashboards for real-time metrics visualization</span>
+              </div>
+            </div>
+
+            <!-- Config & Discovery -->
+            <div class="tree-group">
+              <div class="tree-item group-label"><span>⚙️</span> Config & Discovery</div>
+
+              <div class="tree-item level1 clickable" onclick="toggleTree('config-server')">
+                <span class="tree-icon">🔧</span>
+                <span class="tree-name">config-server-smart-sure/</span>
+                <span class="tree-desc">Spring Cloud Config Server — reads from GitHub repo</span>
+                <span class="expand-icon">▶</span>
+              </div>
+              <div class="tree-children" id="config-server">
+                <div class="tree-item level2"><span class="tree-icon mono">📄</span> Application.java — @EnableConfigServer</div>
+                <div class="tree-item level2"><span class="tree-icon mono">📄</span> application.properties — GitHub URI + branch config</div>
+                <div class="tree-item level2"><span class="tree-icon mono">🐋</span> Dockerfile — Port 8888</div>
+              </div>
+
+              <div class="tree-item level1 clickable" onclick="toggleTree('service-registry')">
+                <span class="tree-icon">🗂️</span>
+                <span class="tree-name">ServiceRegistrySmartSure/</span>
+                <span class="tree-desc">Eureka Server — service discovery for all microservices</span>
+                <span class="expand-icon">▶</span>
+              </div>
+              <div class="tree-children" id="service-registry">
+                <div class="tree-item level2"><span class="tree-icon mono">📄</span> Application.java — @EnableEurekaServer</div>
+                <div class="tree-item level2"><span class="tree-icon mono">🐋</span> Dockerfile — Port 8761</div>
+              </div>
+            </div>
+
+            <!-- API Gateway -->
+            <div class="tree-group">
+              <div class="tree-item group-label"><span>🚪</span> API Gateway</div>
+              <div class="tree-item level1 clickable" onclick="toggleTree('api-gateway')">
+                <span class="tree-icon">🔀</span>
+                <span class="tree-name">ApiGatewaySmartSure/</span>
+                <span class="tree-desc">Spring Cloud Gateway (reactive) — JWT validation + header injection</span>
+                <span class="expand-icon">▶</span>
+              </div>
+              <div class="tree-children" id="api-gateway">
+                <div class="tree-item level2 folder-only">📁 src/main/java/com/smartSure/ApiGatewaySmartSure/</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🔒</span> security/JwtAuthFilter.java — validates JWT, extracts userId+role, injects X-User-Id / X-User-Role / X-Internal-Secret headers</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🔒</span> security/JwtUtil.java — HMAC-SHA256 token parsing</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> config/SecurityConfig.java — reactive security chain, permit /api/auth/** public</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🚀</span> Application.java — Port 8080</div>
+                <div class="tree-item level2"><span class="tree-icon mono">📄</span> application.yml — route definitions per service, Eureka registration</div>
+                <div class="tree-item level2"><span class="tree-icon mono">🐋</span> Dockerfile</div>
+              </div>
+            </div>
+
+            <!-- Auth Service -->
+            <div class="tree-group">
+              <div class="tree-item group-label"><span>🔑</span> Auth Service</div>
+              <div class="tree-item level1 clickable" onclick="toggleTree('auth-service')">
+                <span class="tree-icon">👤</span>
+                <span class="tree-name">AuthService/</span>
+                <span class="tree-desc">User registration/login, JWT issuance, Redis sessions, email via RabbitMQ</span>
+                <span class="expand-icon">▶</span>
+              </div>
+              <div class="tree-children" id="auth-service">
+                <div class="tree-item level2 folder-only">📁 src/main/java/com/smartSure/authService/</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🎮</span> controller/AuthController.java — /api/auth/register, /login, /change-password</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🎮</span> controller/UserController.java — /api/users/**, /api/users/internal/**</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🎮</span> controller/InternalAuthController.java — inter-service calls</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/AuthService.java — register (BCrypt hash) + login (JWT gen)</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/UserService.java — CRUD, pagination</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/AddressService.java</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🔒</span> security/JwtUtil.java — token generation (userId as subject)</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🔒</span> security/HeaderAuthenticationFilter.java — reads X-User-Id / X-User-Role</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🔒</span> security/InternalRequestFilter.java — X-Internal-Secret guard on /internal/**</div>
+                <div class="tree-item level3"><span class="tree-icon mono">📨</span> messaging/EmailPublisher.java — publishes to RabbitMQ</div>
+                <div class="tree-item level3"><span class="tree-icon mono">📨</span> messaging/EmailConsumer.java — consumes and sends email</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> config/RedisConfig.java, RabbitMQConfig.java, SecurityConfig.java</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🌱</span> config/AdminSeeder.java — seeds default admin on startup</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🏷️</span> entity/User.java, Role.java, Address.java</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🔍</span> aop/LoggingAspectAuth.java, LoggingAspectUser.java — AOP request logging</div>
+                <div class="tree-item level2"><span class="tree-icon mono">🐋</span> Dockerfile — Port 8081</div>
+              </div>
+            </div>
+
+            <!-- Policy Service -->
+            <div class="tree-group">
+              <div class="tree-item group-label"><span>📋</span> Policy Service</div>
+              <div class="tree-item level1 clickable" onclick="toggleTree('policy-service')">
+                <span class="tree-icon">📋</span>
+                <span class="tree-name">PolicyService/</span>
+                <span class="tree-desc">Purchase, renew, cancel policy; premium schedule; schedulers; audit log</span>
+                <span class="expand-icon">▶</span>
+              </div>
+              <div class="tree-children" id="policy-service">
+                <div class="tree-item level2 folder-only">📁 src/main/java/com/smartSure/PolicyService/</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/PolicyService.java — purchasePolicy, cancelPolicy, renewPolicy, payPremium, deductCoverage</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/PremiumCalculator.java — risk-based calculation (age, coverage, frequency)</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/PolicyTypeService.java — CRUD for insurance product types</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/NotificationPublisher.java — publishes events via RabbitMQ</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/NotificationConsumer.java — consumes & routes events to email</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🔒</span> security/HeaderAuthenticationFilter.java + InternalRequestFilter.java</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🏷️</span> entity/Policy.java, PolicyType.java, Premium.java, AuditLog.java</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🎮</span> Schedulers: expirePolicies (01:00), markOverdue (08:00), sendReminders (09:00-09:05)</div>
+                <div class="tree-item level2"><span class="tree-icon mono">🐋</span> Dockerfile — Port 8082</div>
+              </div>
+            </div>
+
+            <!-- Claim Service -->
+            <div class="tree-group">
+              <div class="tree-item group-label"><span>📝</span> Claim Service</div>
+              <div class="tree-item level1 clickable" onclick="toggleTree('claim-service')">
+                <span class="tree-icon">📝</span>
+                <span class="tree-name">claimService/</span>
+                <span class="tree-desc">File claims, upload documents (Aadhaar, evidence, PDF), admin approval workflow</span>
+                <span class="expand-icon">▶</span>
+              </div>
+              <div class="tree-children" id="claim-service">
+                <div class="tree-item level2 folder-only">📁 src/main/java/com/smartSure/claimService/</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/ClaimService.java — createClaim, submitClaim, moveToStatus (APPROVED/REJECTED)</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/ClaimFormPdfGenerator.java — generates signed PDF from multipart</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🌐</span> client/PolicyClient.java — Feign to PolicyService (ownership + deductCoverage)</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🌐</span> client/UserClient.java — Feign to AuthService</div>
+                <div class="tree-item level3"><span class="tree-icon mono">📨</span> messaging/ClaimDecisionListener.java — emails on approve/reject via RabbitMQ</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🏷️</span> entity/Claim.java, FileData.java, Status.java (DRAFT→SUBMITTED→UNDER_REVIEW→APPROVED/REJECTED)</div>
+                <div class="tree-item level2"><span class="tree-icon mono">🐋</span> Dockerfile — Port 8083</div>
+              </div>
+            </div>
+
+            <!-- Admin Service -->
+            <div class="tree-group">
+              <div class="tree-item group-label"><span>🛡️</span> Admin Service</div>
+              <div class="tree-item level1 clickable" onclick="toggleTree('admin-service')">
+                <span class="tree-icon">🛡️</span>
+                <span class="tree-name">adminService/</span>
+                <span class="tree-desc">Admin dashboard, user/policy/claim management, audit log aggregation</span>
+                <span class="expand-icon">▶</span>
+              </div>
+              <div class="tree-children" id="admin-service">
+                <div class="tree-item level2 folder-only">📁 src/main/java/com/smartSure/adminService/</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/AdminService.java — aggregates data via Feign clients</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/AuditLogService.java — persists audit events from RabbitMQ</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🌐</span> Feign: ClaimFeignClient, PolicyFeignClient, UserFeignClient</div>
+                <div class="tree-item level3"><span class="tree-icon mono">📨</span> messaging/AuditEventListener.java — listens to ClaimDecisionEvent, PremiumPaidEvent</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> config/AdminCacheConfig.java — Redis cache setup</div>
+                <div class="tree-item level2"><span class="tree-icon mono">🐋</span> Dockerfile — Port 8084</div>
+              </div>
+            </div>
+
+            <!-- Payment Service -->
+            <div class="tree-group">
+              <div class="tree-item group-label"><span>💳</span> Payment Service</div>
+              <div class="tree-item level1 clickable" onclick="toggleTree('payment-service')">
+                <span class="tree-icon">💳</span>
+                <span class="tree-name">paymentService/</span>
+                <span class="tree-desc">Razorpay integration — create orders, verify HMAC signature, persist payment records</span>
+                <span class="expand-icon">▶</span>
+              </div>
+              <div class="tree-children" id="payment-service">
+                <div class="tree-item level2 folder-only">📁 src/main/java/com/smartSure/paymentService/</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> service/PaymentService.java — createRazorpayOrder(), verifyAndRecordPayment() (HMAC-SHA256)</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🎮</span> controller/PaymentController.java — /api/payment/order, /api/payment/verify</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🏷️</span> entity/Payment.java, PaymentStatus.java</div>
+                <div class="tree-item level3"><span class="tree-icon mono">📨</span> messaging/PaymentEventListener.java — SAGA RabbitMQ flow</div>
+                <div class="tree-item level2"><span class="tree-icon mono">🐋</span> Dockerfile — Port 8085</div>
+              </div>
+            </div>
+
+            <!-- Frontend -->
+            <div class="tree-group">
+              <div class="tree-item group-label"><span>🎨</span> Frontend (Angular)</div>
+              <div class="tree-item level1 clickable" onclick="toggleTree('frontend')">
+                <span class="tree-icon">🅰️</span>
+                <span class="tree-name">frontend/</span>
+                <span class="tree-desc">Angular 18+ SPA with standalone components, lazy routes, SCSS, dark mode</span>
+                <span class="expand-icon">▶</span>
+              </div>
+              <div class="tree-children" id="frontend">
+                <div class="tree-item level2 folder-only">📁 src/app/</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🔑</span> auth/login, auth/register — JWT-based login & registration</div>
+                <div class="tree-item level3"><span class="tree-icon mono">👤</span> customer/dashboard — My policies, premiums, payments</div>
+                <div class="tree-item level3"><span class="tree-icon mono">👤</span> customer/my-policies — View & cancel policies</div>
+                <div class="tree-item level3"><span class="tree-icon mono">👤</span> customer/purchase, plans — Browse & buy policy types</div>
+                <div class="tree-item level3"><span class="tree-icon mono">👤</span> customer/file-claim — File and manage claims</div>
+                <div class="tree-item level3"><span class="tree-icon mono">👤</span> customer/account, help, about</div>
+                <div class="tree-item level3"><span class="tree-icon mono">🛡️</span> admin/dashboard, users, policies, claims, policy-types</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> core/interceptors/auth-interceptor.ts — attaches JWT to every request</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> core/guards/auth-guard.ts, customer-guard.ts — route protection</div>
+                <div class="tree-item level3"><span class="tree-icon mono">⚙️</span> core/services/ — auth, policy, claim, payment, admin, theme</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════ PROJECT FLOW ═══════════════════════════════════ -->
+  <section class="section section-alt" id="flow">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">🔄 System Flow</span>
+        <h2 class="section-title">Project <span class="gradient-text">Architecture Flow</span></h2>
+        <p class="section-desc">End-to-end request flow — from the Angular frontend through the API Gateway to each microservice and back.</p>
+      </div>
+
+      <!-- Flow Tabs -->
+      <div class="flow-tabs">
+        <button class="flow-tab active" onclick="showFlow('login')">Login Flow</button>
+        <button class="flow-tab" onclick="showFlow('policy')">Policy Purchase</button>
+        <button class="flow-tab" onclick="showFlow('claim')">Claim Flow</button>
+        <button class="flow-tab" onclick="showFlow('payment')">Payment Flow</button>
+      </div>
+
+      <!-- Login Flow -->
+      <div class="flow-diagram active" id="flow-login">
+        <div class="flow-title">🔑 Authentication Flow</div>
+        <div class="flow-steps">
+          <div class="flow-node client"><div class="node-icon">🌐</div><div class="node-label">Angular\nFrontend</div></div>
+          <div class="flow-arrow"><div class="arrow-label">POST /api/auth/login</div><div class="arrow-line"><div class="arrow-dot"></div></div></div>
+          <div class="flow-node gateway"><div class="node-icon">🔀</div><div class="node-label">API Gateway\n:8080</div><div class="node-sub">Bypass JWT\n(public route)</div></div>
+          <div class="flow-arrow"><div class="arrow-label">Forward to auth-service</div><div class="arrow-line"><div class="arrow-dot"></div></div></div>
+          <div class="flow-node service"><div class="node-icon">👤</div><div class="node-label">Auth Service\n:8081</div><div class="node-sub">BCrypt verify\nJWT generate</div></div>
+          <div class="flow-arrow"><div class="arrow-label">JWT token</div><div class="arrow-line arrow-return"><div class="arrow-dot"></div></div></div>
+          <div class="flow-node infra"><div class="node-icon">🗄️</div><div class="node-label">MySQL +\nRedis</div><div class="node-sub">Session cached\nin Redis</div></div>
+        </div>
+        <div class="flow-detail-cards">
+          <div class="detail-card">
+            <div class="detail-icon">1️⃣</div>
+            <div class="detail-content">
+              <strong>Request arrives at API Gateway (:8080)</strong>
+              <p>JwtAuthFilter checks the path. <code>/api/auth/**</code> is whitelisted — no JWT required. Request passes directly through.</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">2️⃣</div>
+            <div class="detail-content">
+              <strong>Auth Service validates credentials</strong>
+              <p>AuthService looks up user by email, verifies BCrypt hash, then calls <code>JwtUtil.generateToken(userId, role)</code> — userId is the JWT subject, role is a claim.</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">3️⃣</div>
+            <div class="detail-content">
+              <strong>Events fired via RabbitMQ</strong>
+              <p>On login/register, EmailPublisher publishes an EmailMessage to RabbitMQ. EmailConsumer picks it up and sends the email asynchronously — fully decoupled.</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">4️⃣</div>
+            <div class="detail-content">
+              <strong>Token stored client-side</strong>
+              <p>Angular stores the JWT in localStorage. The <code>AuthInterceptor</code> automatically attaches <code>Authorization: Bearer &lt;token&gt;</code> to all subsequent requests.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Policy Purchase Flow -->
+      <div class="flow-diagram" id="flow-policy">
+        <div class="flow-title">📋 Policy Purchase Flow</div>
+        <div class="flow-steps">
+          <div class="flow-node client"><div class="node-icon">🌐</div><div class="node-label">Angular\nCustomer</div></div>
+          <div class="flow-arrow"><div class="arrow-label">POST /api/policy/purchase + JWT</div><div class="arrow-line"><div class="arrow-dot"></div></div></div>
+          <div class="flow-node gateway"><div class="node-icon">🔀</div><div class="node-label">API Gateway\n:8080</div><div class="node-sub">Validate JWT\nInject headers</div></div>
+          <div class="flow-arrow"><div class="arrow-label">X-User-Id + X-User-Role + X-Internal-Secret</div><div class="arrow-line"><div class="arrow-dot"></div></div></div>
+          <div class="flow-node service"><div class="node-icon">📋</div><div class="node-label">Policy Service\n:8082</div><div class="node-sub">Calculate premium\nSave + schedule</div></div>
+          <div class="flow-arrow"><div class="arrow-label">Event: PolicyPurchased</div><div class="arrow-line"><div class="arrow-dot"></div></div></div>
+          <div class="flow-node infra"><div class="node-icon">🐇</div><div class="node-label">RabbitMQ\nQueue</div><div class="node-sub">Async notification</div></div>
+        </div>
+        <div class="flow-detail-cards">
+          <div class="detail-card">
+            <div class="detail-icon">1️⃣</div>
+            <div class="detail-content">
+              <strong>Premium Calculation</strong>
+              <p><code>PremiumCalculator</code> applies risk-based formula: base rate × coverage factor × frequency multiplier × age adjustment. Returns annual/monthly/quarterly premium.</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">2️⃣</div>
+            <div class="detail-content">
+              <strong>Policy saved + Audit logged</strong>
+              <p>Policy entity saved with unique <code>POL-YYYYMMDD-XXXXX</code> number. AuditLog records actor, action, fromStatus→toStatus, and reason.</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">3️⃣</div>
+            <div class="detail-content">
+              <strong>Premium Schedule generated</strong>
+              <p>Based on term months and payment frequency, a full installment schedule is written to the <code>premiums</code> table — each with a due date and PENDING status.</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">4️⃣</div>
+            <div class="detail-content">
+              <strong>Notification event published</strong>
+              <p><code>NotificationPublisher.publishPolicyPurchased()</code> sends a <code>PolicyPurchasedEvent</code> to RabbitMQ. NotificationConsumer calls AuthService to get the email, then sends confirmation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Claim Flow -->
+      <div class="flow-diagram" id="flow-claim">
+        <div class="flow-title">📝 Claim Lifecycle Flow</div>
+        <div class="flow-steps">
+          <div class="flow-node client"><div class="node-icon">👤</div><div class="node-label">Customer</div><div class="node-sub">Files claim</div></div>
+          <div class="flow-arrow"><div class="arrow-label">Feign: validate policy</div><div class="arrow-line"><div class="arrow-dot"></div></div></div>
+          <div class="flow-node service"><div class="node-icon">📝</div><div class="node-label">Claim Service\n:8083</div><div class="node-sub">DRAFT → UNDER_REVIEW</div></div>
+          <div class="flow-arrow"><div class="arrow-label">Admin: APPROVE / REJECT</div><div class="arrow-line"><div class="arrow-dot"></div></div></div>
+          <div class="flow-node service" style="--color: #f59e0b"><div class="node-icon">🛡️</div><div class="node-label">Admin Panel</div><div class="node-sub">Feign deductCoverage</div></div>
+          <div class="flow-arrow"><div class="arrow-label">ClaimDecisionEvent</div><div class="arrow-line"><div class="arrow-dot"></div></div></div>
+          <div class="flow-node infra"><div class="node-icon">📧</div><div class="node-label">Email\nNotification</div></div>
+        </div>
+        <div class="flow-detail-cards">
+          <div class="detail-card">
+            <div class="detail-icon">1️⃣</div>
+            <div class="detail-content">
+              <strong>Claim Created (DRAFT)</strong>
+              <p>ClaimService checks policy ownership via Feign (PolicyClient) and verifies the policy is ACTIVE. Validates claim amount ≤ leftoverCoverageAmount.</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">2️⃣</div>
+            <div class="detail-content">
+              <strong>Document Upload</strong>
+              <p>Customer must upload 3 docs: Claim Form (auto-generated PDF with digital sig), Aadhaar Card, and Evidence. Stored as BLOB in <code>file_data</code> columns.</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">3️⃣</div>
+            <div class="detail-content">
+              <strong>Submit → Under Review</strong>
+              <p>Customer submits claim. Status transitions: DRAFT → SUBMITTED → UNDER_REVIEW in one call. All 3 docs must be present or exception thrown.</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">4️⃣</div>
+            <div class="detail-content">
+              <strong>Admin Decision + Coverage Deduction</strong>
+              <p>On APPROVED, Claim Service calls <code>PolicyClient.deductCoverage()</code> with optimistic locking (3 retries). Then publishes <code>ClaimDecisionEvent</code> to RabbitMQ for email notification.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Flow -->
+      <div class="flow-diagram" id="flow-payment">
+        <div class="flow-title">💳 Razorpay Payment Flow</div>
+        <div class="flow-steps">
+          <div class="flow-node client"><div class="node-icon">🌐</div><div class="node-label">Angular\nFrontend</div></div>
+          <div class="flow-arrow"><div class="arrow-label">POST /api/payment/order</div><div class="arrow-line"><div class="arrow-dot"></div></div></div>
+          <div class="flow-node service"><div class="node-icon">💳</div><div class="node-label">Payment\nService :8085</div><div class="node-sub">Razorpay API</div></div>
+          <div class="flow-arrow"><div class="arrow-label">razorpayOrderId returned</div><div class="arrow-line arrow-return"><div class="arrow-dot"></div></div></div>
+          <div class="flow-node infra"><div class="node-icon">🏦</div><div class="node-label">Razorpay\nCheckout</div><div class="node-sub">User pays</div></div>
+          <div class="flow-arrow"><div class="arrow-label">POST /api/payment/verify (HMAC)</div><div class="arrow-line"><div class="arrow-dot"></div></div></div>
+          <div class="flow-node service" style="--color: #10b981"><div class="node-icon">✅</div><div class="node-label">Verify &\nRecord</div></div>
+        </div>
+        <div class="flow-detail-cards">
+          <div class="detail-card">
+            <div class="detail-icon">1️⃣</div>
+            <div class="detail-content">
+              <strong>Order Creation</strong>
+              <p>Frontend calls <code>POST /api/payment/order</code>. PaymentService uses Razorpay Java SDK to create an order with amount in paise (INR × 100). Returns orderId + keyId.</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">2️⃣</div>
+            <div class="detail-content">
+              <strong>Razorpay Checkout</strong>
+              <p>Angular opens Razorpay's checkout modal with the orderId. User completes payment through their bank/UPI. Razorpay returns paymentId + signature.</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">3️⃣</div>
+            <div class="detail-content">
+              <strong>HMAC-SHA256 Verification</strong>
+              <p><code>Utils.verifyPaymentSignature()</code> validates <code>orderId|paymentId</code> hash against the Razorpay secret. Only verified payments are persisted as SUCCESS.</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">4️⃣</div>
+            <div class="detail-content">
+              <strong>Policy premium marked PAID</strong>
+              <p>After verification, Angular calls <code>PolicyService.payPremium()</code> with the transactionId as the paymentReference. Premium status updated, PremiumPaidEvent fired.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════ SECURITY FLOW ═══════════════════════════════════ -->
+  <section class="section" id="security">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">🔒 Security Architecture</span>
+        <h2 class="section-title">Security <span class="gradient-text">Flow Diagram</span></h2>
+        <p class="section-desc">Multi-layer defense — JWT at the gateway, header propagation to services, internal secret for service-to-service calls, and BCrypt at rest.</p>
+      </div>
+
+      <!-- Security layers visual -->
+      <div class="security-diagram">
+
+        <div class="sec-layer" id="sec-l1">
+          <div class="sec-layer-label">Layer 1 — Gateway JWT Filter</div>
+          <div class="sec-layer-inner">
+            <div class="sec-box client">
+              <div class="sec-icon">🌐</div>
+              <div class="sec-title">Client Request</div>
+              <div class="sec-desc">Authorization: Bearer &lt;JWT&gt;</div>
+            </div>
+            <div class="sec-connector">
+              <div class="sec-arrow-line"></div>
+              <div class="sec-check">✔ JWT valid?</div>
+            </div>
+            <div class="sec-box gateway">
+              <div class="sec-icon">🔀</div>
+              <div class="sec-title">JwtAuthFilter</div>
+              <div class="sec-desc">HMAC-SHA256 verify · Extract userId + role</div>
+              <div class="sec-code"><code>jwtUtil.validateToken(token)</code><br/><code>extractUserIdAsLong(token)</code><br/><code>extractRole(token)</code></div>
+            </div>
+            <div class="sec-reject">
+              <div class="sec-arrow-line red"></div>
+              <div class="sec-check danger">✗ Invalid → pass-through (unauthenticated)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec-arrow-down">↓ Inject custom headers into mutated request</div>
+
+        <div class="sec-layer" id="sec-l2">
+          <div class="sec-layer-label">Layer 2 — Downstream Header Injection</div>
+          <div class="sec-headers">
+            <div class="sec-header-chip">
+              <span class="chip-key">X-User-Id</span>
+              <span class="chip-val">Long userId from JWT subject</span>
+            </div>
+            <div class="sec-header-chip">
+              <span class="chip-key">X-User-Role</span>
+              <span class="chip-val">CUSTOMER or ADMIN</span>
+            </div>
+            <div class="sec-header-chip">
+              <span class="chip-key">X-Internal-Secret</span>
+              <span class="chip-val">Shared-secret for inter-service calls</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec-arrow-down">↓ Each microservice reads injected headers</div>
+
+        <div class="sec-layer" id="sec-l3">
+          <div class="sec-layer-label">Layer 3 — Service-Level Filters (all microservices)</div>
+          <div class="sec-filters-grid">
+            <div class="sec-filter-card">
+              <div class="filter-name">InternalRequestFilter</div>
+              <div class="filter-desc">Guards <code>/internal/**</code> endpoints. Checks X-Internal-Secret matches configured value. Returns 403 if missing or wrong.</div>
+              <div class="filter-applies">Applies to: Auth, Policy, Admin, Payment, Claim</div>
+            </div>
+            <div class="sec-filter-card">
+              <div class="filter-name">HeaderAuthenticationFilter</div>
+              <div class="filter-desc">Reads X-User-Id + X-User-Role headers. Creates <code>UsernamePasswordAuthenticationToken</code> with <code>ROLE_CUSTOMER</code>/<code>ROLE_ADMIN</code> and sets it in SecurityContext.</div>
+              <div class="filter-applies">Enables method-level <code>@PreAuthorize</code> checks</div>
+            </div>
+            <div class="sec-filter-card">
+              <div class="filter-name">Method Security</div>
+              <div class="filter-desc"><code>@EnableMethodSecurity</code> on all services. Controllers use <code>@PreAuthorize("hasRole('ADMIN')")</code> or check role programmatically via SecurityUtils.</div>
+              <div class="filter-applies">Ownership checks in PolicyService, ClaimService</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec-arrow-down">↓ Data-level security</div>
+
+        <div class="sec-layer" id="sec-l4">
+          <div class="sec-layer-label">Layer 4 — Data & Endpoint Security</div>
+          <div class="sec-data-grid">
+            <div class="sec-data-card">
+              <div class="data-icon">🔐</div>
+              <div class="data-title">BCrypt Password Hashing</div>
+              <div class="data-desc">All passwords stored as BCrypt hashes. BCryptPasswordEncoder is the only PasswordEncoder bean — no plaintext ever stored.</div>
+            </div>
+            <div class="sec-data-card">
+              <div class="data-icon">⏱️</div>
+              <div class="data-title">JWT Expiration</div>
+              <div class="data-desc">Tokens have configurable expiry via <code>jwt.expiration</code> property. Expired tokens fail validateToken() and are not propagated.</div>
+            </div>
+            <div class="sec-data-card">
+              <div class="data-icon">🔒</div>
+              <div class="data-title">CSRF Disabled (Stateless)</div>
+              <div class="data-desc">All services use <code>SessionCreationPolicy.STATELESS</code>. CSRF disabled because token-based auth makes it irrelevant.</div>
+            </div>
+            <div class="sec-data-card">
+              <div class="data-icon">🏦</div>
+              <div class="data-title">Razorpay HMAC Signature</div>
+              <div class="data-desc">Payment verification uses Razorpay's <code>Utils.verifyPaymentSignature()</code> with HMAC-SHA256 to confirm payment authenticity before recording.</div>
+            </div>
+            <div class="sec-data-card">
+              <div class="data-icon">🔑</div>
+              <div class="data-title">Ownership Enforcement</div>
+              <div class="data-desc">PolicyService and ClaimService verify <code>policy.getCustomerId().equals(currentUserId)</code> before any mutation. Admins bypass via role check.</div>
+            </div>
+            <div class="sec-data-card">
+              <div class="data-icon">🔄</div>
+              <div class="data-title">Optimistic Locking</div>
+              <div class="data-desc">Policy entity uses <code>@Version</code> for optimistic locking. <code>deductCoverage()</code> retries up to 3 times on <code>ObjectOptimisticLockingFailureException</code>.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security flow summary -->
+        <div class="sec-summary">
+          <div class="sec-summary-title">Complete Security Chain</div>
+          <div class="sec-steps-line">
+            <div class="sec-step">
+              <div class="step-num">1</div>
+              <div class="step-name">JWT Issued</div>
+            </div>
+            <div class="step-connector"></div>
+            <div class="sec-step">
+              <div class="step-num">2</div>
+              <div class="step-name">Gateway Validates JWT</div>
+            </div>
+            <div class="step-connector"></div>
+            <div class="sec-step">
+              <div class="step-num">3</div>
+              <div class="step-name">Headers Injected</div>
+            </div>
+            <div class="step-connector"></div>
+            <div class="sec-step">
+              <div class="step-num">4</div>
+              <div class="step-name">Service Reads Headers</div>
+            </div>
+            <div class="step-connector"></div>
+            <div class="sec-step">
+              <div class="step-num">5</div>
+              <div class="step-name">SecurityContext Set</div>
+            </div>
+            <div class="step-connector"></div>
+            <div class="sec-step">
+              <div class="step-num">6</div>
+              <div class="step-name">Method Auth</div>
+            </div>
+            <div class="step-connector"></div>
+            <div class="sec-step">
+              <div class="step-num">7</div>
+              <div class="step-name">Ownership Verified</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════ SERVICES ═══════════════════════════════════ -->
+  <section class="section section-alt" id="services">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">⚙️ Microservices</span>
+        <h2 class="section-title">Services <span class="gradient-text">Deep Dive</span></h2>
+        <p class="section-desc">Click any service to expand its full technical details — APIs, patterns, databases, and design decisions.</p>
+      </div>
+
+      <div class="services-grid">
+
+        <!-- Auth Service -->
+        <div class="service-card" id="svc-auth" onclick="toggleService('auth')">
+          <div class="svc-header">
+            <div class="svc-icon-wrap auth-color">👤</div>
+            <div class="svc-meta">
+              <div class="svc-name">Auth Service</div>
+              <div class="svc-port">:8081</div>
+            </div>
+            <div class="svc-tags">
+              <span class="svc-tag">Spring Security</span>
+              <span class="svc-tag">JWT</span>
+              <span class="svc-tag">Redis</span>
+              <span class="svc-tag">RabbitMQ</span>
+            </div>
+            <div class="svc-expand-icon">▼</div>
+          </div>
+          <div class="svc-summary">User authentication, JWT issuance, profile management, and async email notifications</div>
+          <div class="svc-detail" id="svc-detail-auth">
+            <div class="detail-grid">
+              <div class="detail-section">
+                <h4>🎯 Responsibilities</h4>
+                <ul>
+                  <li>User registration with BCrypt password hashing</li>
+                  <li>Login with JWT generation (userId as subject, role as claim)</li>
+                  <li>Change password with session invalidation</li>
+                  <li>CRUD on User entities with address management</li>
+                  <li>Admin seeding on first startup (AdminSeeder)</li>
+                  <li>AOP-based request logging (LoggingAspect)</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>📡 API Endpoints</h4>
+                <div class="endpoint-list">
+                  <div class="endpoint"><span class="method post">POST</span> /api/auth/register</div>
+                  <div class="endpoint"><span class="method post">POST</span> /api/auth/login</div>
+                  <div class="endpoint"><span class="method post">POST</span> /api/auth/change-password</div>
+                  <div class="endpoint"><span class="method get">GET</span> /api/users</div>
+                  <div class="endpoint"><span class="method get">GET</span> /api/users/{id}</div>
+                  <div class="endpoint"><span class="method put">PUT</span> /api/users/{id}</div>
+                  <div class="endpoint"><span class="method del">DELETE</span> /api/users/{id}</div>
+                  <div class="endpoint"><span class="method get">GET</span> /user/internal/{id} (internal)</div>
+                </div>
+              </div>
+              <div class="detail-section">
+                <h4>🏗️ Key Design Decisions</h4>
+                <ul>
+                  <li><strong>userId (not email) as JWT subject</strong> — userId is stable and enables direct DB lookups without an extra query</li>
+                  <li><strong>RabbitMQ for emails</strong> — login/register emails are fully async; auth flow never waits on SMTP</li>
+                  <li><strong>InternalRequestFilter</strong> — prevents external clients from calling /internal/** by checking X-Internal-Secret header</li>
+                  <li><strong>HeaderAuthFilter</strong> — stateless; trusts headers injected by API Gateway</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>🗄️ Database / Cache</h4>
+                <div class="db-info">
+                  <div class="db-item"><span class="db-icon">🗄️</span><strong>MySQL</strong> — users, addresses tables</div>
+                  <div class="db-item"><span class="db-icon">⚡</span><strong>Redis</strong> — session cache (via RedisConfig)</div>
+                  <div class="db-item"><span class="db-icon">🐇</span><strong>RabbitMQ</strong> — email message queue</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Policy Service -->
+        <div class="service-card" id="svc-policy" onclick="toggleService('policy')">
+          <div class="svc-header">
+            <div class="svc-icon-wrap policy-color">📋</div>
+            <div class="svc-meta">
+              <div class="svc-name">Policy Service</div>
+              <div class="svc-port">:8082</div>
+            </div>
+            <div class="svc-tags">
+              <span class="svc-tag">Scheduler</span>
+              <span class="svc-tag">AuditLog</span>
+              <span class="svc-tag">Feign</span>
+              <span class="svc-tag">RabbitMQ</span>
+            </div>
+            <div class="svc-expand-icon">▼</div>
+          </div>
+          <div class="svc-summary">Full policy lifecycle management — purchase, renew, cancel, premium scheduling, coverage deduction, and automated reminders</div>
+          <div class="svc-detail" id="svc-detail-policy">
+            <div class="detail-grid">
+              <div class="detail-section">
+                <h4>🎯 Responsibilities</h4>
+                <ul>
+                  <li>Policy purchase with premium calculation and schedule generation</li>
+                  <li>Policy renewal (creates new policy, expires old)</li>
+                  <li>Policy cancellation (waives all pending premiums)</li>
+                  <li>Premium payment marking and reference tracking</li>
+                  <li>Coverage deduction on claim approval (with optimistic locking)</li>
+                  <li>Admin status override with audit trail</li>
+                  <li>3 daily schedulers: expire, overdue, reminders</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>📡 API Endpoints</h4>
+                <div class="endpoint-list">
+                  <div class="endpoint"><span class="method post">POST</span> /api/policy/purchase</div>
+                  <div class="endpoint"><span class="method post">POST</span> /api/policy/renew</div>
+                  <div class="endpoint"><span class="method post">POST</span> /api/policy/{id}/cancel</div>
+                  <div class="endpoint"><span class="method get">GET</span> /api/policy/my?page=&size=</div>
+                  <div class="endpoint"><span class="method get">GET</span> /api/policy/all (admin)</div>
+                  <div class="endpoint"><span class="method post">POST</span> /api/policy/premium/pay</div>
+                  <div class="endpoint"><span class="method post">POST</span> /api/policy/calculate</div>
+                  <div class="endpoint"><span class="method put">PUT</span> /api/policy/{id}/status (admin)</div>
+                  <div class="endpoint"><span class="method post">POST</span> /internal/policy/{id}/deduct-coverage</div>
+                </div>
+              </div>
+              <div class="detail-section">
+                <h4>🏗️ Key Design Decisions</h4>
+                <ul>
+                  <li><strong>PremiumCalculator</strong> — isolated bean for testable risk-based pricing; age, coverage, and frequency all factor in</li>
+                  <li><strong>AuditLog entity</strong> — every state change is audited with actor, fromStatus, toStatus, and reason</li>
+                  <li><strong>Optimistic locking on deductCoverage</strong> — prevents race conditions when multiple claims approved simultaneously</li>
+                  <li><strong>Scheduler at 08:00/01:00/09:00/09:05</strong> — auto-expires policies, marks overdue premiums, sends 7-day and 30-day reminders</li>
+                  <li><strong>Duplicate guard</strong> — max 4 active policies per customer per policy type</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>🗄️ Database</h4>
+                <div class="db-info">
+                  <div class="db-item"><span class="db-icon">🗄️</span><strong>MySQL</strong> — policies, policy_types, premiums, audit_logs</div>
+                  <div class="db-item"><span class="db-icon">⚡</span><strong>Redis</strong> — caching policy responses</div>
+                  <div class="db-item"><span class="db-icon">🐇</span><strong>RabbitMQ</strong> — notification events (purchase, cancel, reminder, paid)</div>
+                  <div class="db-item"><span class="db-icon">🌐</span><strong>Feign</strong> — AuthServiceClient for customer email lookups</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Claim Service -->
+        <div class="service-card" id="svc-claim" onclick="toggleService('claim')">
+          <div class="svc-header">
+            <div class="svc-icon-wrap claim-color">📝</div>
+            <div class="svc-meta">
+              <div class="svc-name">Claim Service</div>
+              <div class="svc-port">:8083</div>
+            </div>
+            <div class="svc-tags">
+              <span class="svc-tag">Feign</span>
+              <span class="svc-tag">PDF Generator</span>
+              <span class="svc-tag">File Upload</span>
+              <span class="svc-tag">RabbitMQ</span>
+            </div>
+            <div class="svc-expand-icon">▼</div>
+          </div>
+          <div class="svc-summary">End-to-end claim filing with document management, PDF generation, admin workflow, and automatic email notifications</div>
+          <div class="svc-detail" id="svc-detail-claim">
+            <div class="detail-grid">
+              <div class="detail-section">
+                <h4>🎯 Responsibilities</h4>
+                <ul>
+                  <li>Create claims (validate policy ownership + ACTIVE status)</li>
+                  <li>Upload 3 mandatory documents (claim form, Aadhaar, evidence)</li>
+                  <li>Auto-generate signed claim form PDF from multipart data</li>
+                  <li>Submit claim: DRAFT → SUBMITTED → UNDER_REVIEW</li>
+                  <li>Admin approval: deduct coverage from PolicyService via Feign</li>
+                  <li>Email notification on APPROVED / REJECTED via RabbitMQ</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>📡 API Endpoints</h4>
+                <div class="endpoint-list">
+                  <div class="endpoint"><span class="method post">POST</span> /api/claims</div>
+                  <div class="endpoint"><span class="method post">POST</span> /api/claims/{id}/submit</div>
+                  <div class="endpoint"><span class="method get">GET</span> /api/claims/my</div>
+                  <div class="endpoint"><span class="method get">GET</span> /api/claims/all (admin)</div>
+                  <div class="endpoint"><span class="method post">POST</span> /api/claims/{id}/upload/claim-form</div>
+                  <div class="endpoint"><span class="method post">POST</span> /api/claims/{id}/upload/aadhaar</div>
+                  <div class="endpoint"><span class="method post">POST</span> /api/claims/{id}/upload/evidence</div>
+                  <div class="endpoint"><span class="method put">PUT</span> /api/claims/{id}/status (admin)</div>
+                  <div class="endpoint"><span class="method get">GET</span> /api/claims/{id}/download/*</div>
+                </div>
+              </div>
+              <div class="detail-section">
+                <h4>🏗️ Key Design Decisions</h4>
+                <ul>
+                  <li><strong>FileData embedded</strong> — documents stored as BLOB in DB for simplicity; no S3 dependency</li>
+                  <li><strong>Status state machine</strong> — Status.moveTo() enforces valid transitions, throws InvalidStatusTransitionException on illegal moves</li>
+                  <li><strong>PDF generation on-the-fly</strong> — ClaimFormPdfGenerator takes user data + digital signature image and produces a proper PDF claim form</li>
+                  <li><strong>Coverage deduction with Feign</strong> — calls PolicyService internal endpoint after APPROVED; retry handled upstream with optimistic locking</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>🗄️ Database</h4>
+                <div class="db-info">
+                  <div class="db-item"><span class="db-icon">🗄️</span><strong>MySQL</strong> — claims table (with file_data BLOBs)</div>
+                  <div class="db-item"><span class="db-icon">🐇</span><strong>RabbitMQ</strong> — ClaimDecisionEvent (APPROVED/REJECTED)</div>
+                  <div class="db-item"><span class="db-icon">🌐</span><strong>Feign</strong> — PolicyClient, UserClient for ownership + notifications</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Service -->
+        <div class="service-card" id="svc-admin" onclick="toggleService('admin')">
+          <div class="svc-header">
+            <div class="svc-icon-wrap admin-color">🛡️</div>
+            <div class="svc-meta">
+              <div class="svc-name">Admin Service</div>
+              <div class="svc-port">:8084</div>
+            </div>
+            <div class="svc-tags">
+              <span class="svc-tag">Feign Aggregator</span>
+              <span class="svc-tag">AuditLog</span>
+              <span class="svc-tag">Redis Cache</span>
+              <span class="svc-tag">Dashboard</span>
+            </div>
+            <div class="svc-expand-icon">▼</div>
+          </div>
+          <div class="svc-summary">Centralized admin dashboard — aggregates data from all services via Feign, manages users/policies/claims, persists audit events from RabbitMQ</div>
+          <div class="svc-detail" id="svc-detail-admin">
+            <div class="detail-grid">
+              <div class="detail-section">
+                <h4>🎯 Responsibilities</h4>
+                <ul>
+                  <li>Dashboard stats: total users, policies, claims, premium collected</li>
+                  <li>View and manage all users (via UserFeignClient)</li>
+                  <li>View and manage all policies (via PolicyFeignClient)</li>
+                  <li>Review and approve/reject claims (via ClaimFeignClient)</li>
+                  <li>Persist audit events from RabbitMQ (ClaimDecision, PremiumPaid)</li>
+                  <li>Redis-cached admin responses for fast dashboards</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>📡 API Endpoints</h4>
+                <div class="endpoint-list">
+                  <div class="endpoint"><span class="method get">GET</span> /admin/dashboard</div>
+                  <div class="endpoint"><span class="method get">GET</span> /admin/users</div>
+                  <div class="endpoint"><span class="method del">DELETE</span> /admin/users/{id}</div>
+                  <div class="endpoint"><span class="method get">GET</span> /admin/policies</div>
+                  <div class="endpoint"><span class="method put">PUT</span> /admin/policies/{id}/status</div>
+                  <div class="endpoint"><span class="method get">GET</span> /admin/claims</div>
+                  <div class="endpoint"><span class="method put">PUT</span> /admin/claims/{id}/status</div>
+                  <div class="endpoint"><span class="method get">GET</span> /admin/audit-logs</div>
+                </div>
+              </div>
+              <div class="detail-section">
+                <h4>🏗️ Key Design Decisions</h4>
+                <ul>
+                  <li><strong>Pure aggregator</strong> — Admin Service has no domain entities of its own (except AuditLog). All data comes from Feign clients</li>
+                  <li><strong>FeignInterceptor</strong> — auto-injects X-Internal-Secret and X-User-* headers on all inter-service Feign calls</li>
+                  <li><strong>AuditEventListener</strong> — listens on RabbitMQ queues for business events and persists them to local audit_log table</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>🗄️ Database</h4>
+                <div class="db-info">
+                  <div class="db-item"><span class="db-icon">🗄️</span><strong>MySQL</strong> — audit_logs (local copy)</div>
+                  <div class="db-item"><span class="db-icon">⚡</span><strong>Redis</strong> — AdminCacheConfig for dashboard caching</div>
+                  <div class="db-item"><span class="db-icon">🐇</span><strong>RabbitMQ</strong> — Listens to ClaimDecisionEvent, PremiumPaidEvent</div>
+                  <div class="db-item"><span class="db-icon">🌐</span><strong>Feign</strong> — UserFeignClient, PolicyFeignClient, ClaimFeignClient</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Service -->
+        <div class="service-card" id="svc-payment" onclick="toggleService('payment')">
+          <div class="svc-header">
+            <div class="svc-icon-wrap payment-color">💳</div>
+            <div class="svc-meta">
+              <div class="svc-name">Payment Service</div>
+              <div class="svc-port">:8085</div>
+            </div>
+            <div class="svc-tags">
+              <span class="svc-tag">Razorpay</span>
+              <span class="svc-tag">HMAC-SHA256</span>
+              <span class="svc-tag">SAGA</span>
+              <span class="svc-tag">RabbitMQ</span>
+            </div>
+            <div class="svc-expand-icon">▼</div>
+          </div>
+          <div class="svc-summary">Razorpay payment gateway integration — order creation, HMAC signature verification, payment persistence, and SAGA orchestration</div>
+          <div class="svc-detail" id="svc-detail-payment">
+            <div class="detail-grid">
+              <div class="detail-section">
+                <h4>🎯 Responsibilities</h4>
+                <ul>
+                  <li>Create Razorpay orders (amount in paise)</li>
+                  <li>Verify payment via HMAC-SHA256 signature</li>
+                  <li>Persist payment records (SUCCESS/FAILED)</li>
+                  <li>Support both premium payments and claim disbursements</li>
+                  <li>SAGA pattern via RabbitMQ for async payment orchestration</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>📡 API Endpoints</h4>
+                <div class="endpoint-list">
+                  <div class="endpoint"><span class="method post">POST</span> /api/payment/order</div>
+                  <div class="endpoint"><span class="method post">POST</span> /api/payment/verify</div>
+                  <div class="endpoint"><span class="method get">GET</span> /api/payment/{transactionId}</div>
+                </div>
+              </div>
+              <div class="detail-section">
+                <h4>🏗️ Key Design Decisions</h4>
+                <ul>
+                  <li><strong>Razorpay SDK</strong> — uses official Java SDK; amount multiplied by 100 for paise conversion</li>
+                  <li><strong>Signature verification first</strong> — payment only recorded AFTER signature is validated; prevents replay/fraud</li>
+                  <li><strong>paymentFor field</strong> — single table stores Premium payments and Claim disbursements with discriminator field</li>
+                  <li><strong>SAGA fallback</strong> — legacy RabbitMQ-based SAGA flow kept alongside Razorpay for multi-channel support</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>🗄️ Database</h4>
+                <div class="db-info">
+                  <div class="db-item"><span class="db-icon">🗄️</span><strong>MySQL</strong> — payments table</div>
+                  <div class="db-item"><span class="db-icon">⚡</span><strong>Redis</strong> — payment lookup cache</div>
+                  <div class="db-item"><span class="db-icon">🐇</span><strong>RabbitMQ</strong> — PaymentEventListener for SAGA flow</div>
+                  <div class="db-item"><span class="db-icon">🏦</span><strong>Razorpay</strong> — external payment gateway API</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Config + Registry -->
+        <div class="service-card" id="svc-infra" onclick="toggleService('infra')">
+          <div class="svc-header">
+            <div class="svc-icon-wrap infra-color">🏗️</div>
+            <div class="svc-meta">
+              <div class="svc-name">Config + Eureka</div>
+              <div class="svc-port">:8888 / :8761</div>
+            </div>
+            <div class="svc-tags">
+              <span class="svc-tag">Spring Cloud Config</span>
+              <span class="svc-tag">Eureka</span>
+              <span class="svc-tag">GitHub</span>
+            </div>
+            <div class="svc-expand-icon">▼</div>
+          </div>
+          <div class="svc-summary">Centralized configuration via GitHub-backed Config Server and Eureka-based service discovery for all microservices</div>
+          <div class="svc-detail" id="svc-detail-infra">
+            <div class="detail-grid">
+              <div class="detail-section">
+                <h4>🎯 Config Server (:8888)</h4>
+                <ul>
+                  <li>@EnableConfigServer — serves configs from GitHub repo</li>
+                  <li>Repo: SmartSure-Config-Server on GitHub</li>
+                  <li>All services fetch their application.properties from here on startup</li>
+                  <li>Supports per-service and environment-specific configs</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>🎯 Service Registry (:8761)</h4>
+                <ul>
+                  <li>@EnableEurekaServer — Eureka Server</li>
+                  <li>All microservices register as Eureka clients on startup</li>
+                  <li>API Gateway uses Eureka for load-balanced routing via service names</li>
+                  <li>Startup order: Config → Eureka → Gateway → Services (enforced by Docker health checks)</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>🏗️ Startup Orchestration</h4>
+                <ul>
+                  <li>MySQL health check → Config Server starts</li>
+                  <li>Config Server health → Eureka starts</li>
+                  <li>Eureka health → API Gateway + all microservices start</li>
+                  <li>All services additionally depend on MySQL, Redis health</li>
+                  <li>Auth and Policy additionally wait for RabbitMQ health</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>📊 Observability Stack</h4>
+                <div class="db-info">
+                  <div class="db-item"><span class="db-icon">📊</span><strong>Zipkin (:9411)</strong> — distributed tracing across all services</div>
+                  <div class="db-item"><span class="db-icon">📈</span><strong>Prometheus (:9090)</strong> — metrics scraping from Actuator endpoints</div>
+                  <div class="db-item"><span class="db-icon">📉</span><strong>Grafana (:3000)</strong> — dashboards for real-time visualization</div>
+                  <div class="db-item"><span class="db-icon">🔍</span><strong>SonarQube (:9010)</strong> — static code analysis and quality gates</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Frontend -->
+        <div class="service-card" id="svc-frontend" onclick="toggleService('frontend-svc')">
+          <div class="svc-header">
+            <div class="svc-icon-wrap frontend-color">🅰️</div>
+            <div class="svc-meta">
+              <div class="svc-name">Angular Frontend</div>
+              <div class="svc-port">SPA</div>
+            </div>
+            <div class="svc-tags">
+              <span class="svc-tag">Angular 18+</span>
+              <span class="svc-tag">Standalone</span>
+              <span class="svc-tag">SCSS</span>
+              <span class="svc-tag">Dark Mode</span>
+            </div>
+            <div class="svc-expand-icon">▼</div>
+          </div>
+          <div class="svc-summary">Modern Angular 18+ SPA with standalone components, lazy loading, JWT auth interceptor, and full responsive design with dark mode</div>
+          <div class="svc-detail" id="svc-detail-frontend-svc">
+            <div class="detail-grid">
+              <div class="detail-section">
+                <h4>🎯 Customer Features</h4>
+                <ul>
+                  <li>Login / Register with JWT flow</li>
+                  <li>Dashboard: active policies, pending premiums, claim status</li>
+                  <li>Browse and purchase policy types with premium calculator</li>
+                  <li>View premium schedule and pay via Razorpay checkout</li>
+                  <li>File claims with document uploads and PDF signing</li>
+                  <li>Payment history, account settings, change password</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>🎯 Admin Features</h4>
+                <ul>
+                  <li>Admin dashboard with system-wide stats</li>
+                  <li>User management (view, delete)</li>
+                  <li>Policy management (view all, update status)</li>
+                  <li>Claim review: APPROVE / REJECT with status updates</li>
+                  <li>Policy type management (create, activate/deactivate)</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>🏗️ Architecture</h4>
+                <ul>
+                  <li><strong>Standalone components</strong> — no NgModule, fully tree-shakeable</li>
+                  <li><strong>AuthInterceptor</strong> — auto-attaches Bearer token to every HTTP request</li>
+                  <li><strong>AuthGuard + CustomerGuard</strong> — role-based route protection</li>
+                  <li><strong>ThemeService</strong> — dark/light mode persisted in localStorage</li>
+                  <li><strong>Lazy loading</strong> — customer and admin modules loaded on demand</li>
+                  <li><strong>SCSS with glassmorphism</strong> — modern UI with micro-animations</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <h4>🗂️ Route Structure</h4>
+                <div class="db-info">
+                  <div class="db-item"><span class="db-icon">🔑</span>/login, /register (public)</div>
+                  <div class="db-item"><span class="db-icon">👤</span>/customer/dashboard, /my-policies, /purchase, /plans</div>
+                  <div class="db-item"><span class="db-icon">👤</span>/customer/my-claims, /file-claim, /premium-history</div>
+                  <div class="db-item"><span class="db-icon">👤</span>/customer/account, /help, /about, /payment-history</div>
+                  <div class="db-item"><span class="db-icon">🛡️</span>/admin/dashboard, /users, /policies, /claims, /policy-types</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════ FOOTER ═══════════════════════════════════ -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <span>🛡️ SmartSure</span>
+        <span class="footer-sub">Production-Ready Microservices Architecture</span>
+      </div>
+      <div class="footer-tech">
+        <span>Spring Boot 3</span> · <span>Angular 18</span> · <span>Spring Cloud</span> · <span>RabbitMQ</span> · <span>Redis</span> · <span>Docker</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

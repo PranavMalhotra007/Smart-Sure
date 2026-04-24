@@ -1,25 +1,33 @@
 // SmartSure — Environment Configuration
-// All API calls go via the API Gateway (port 8080)
+//
+// LOCAL DEV  → run `ng serve`, set apiGatewayUrl = 'http://localhost:8080'
+// DOCKER     → Nginx serves the app on :4200 and proxies /api/* → api-gateway:8080
+//              Use RELATIVE paths (empty string prefix) so the Nginx proxy takes over.
+//
 // Refer to: documents/API_Endpoints_Reference.md for full endpoint list
 
 export const environment = {
   production: false,
-  apiGatewayUrl: 'http://localhost:8080',
 
-  // Auth Service — via Gateway
-  authApi: 'http://localhost:8080/api/auth',
-  userApi: 'http://localhost:8080/user',
+  // ── Base URL ──────────────────────────────────────────────────────────────
+  // Empty string = relative → works in both Docker (Nginx proxy) and local dev
+  // (Angular dev-server proxy configured in proxy.conf.json)
+  apiGatewayUrl: '',
 
-  // Policy Service — via Gateway
-  policiesApi: 'http://localhost:8080/api/policies',
-  policyTypesApi: 'http://localhost:8080/api/policy-types',
+  // ── Auth Service — via Gateway ────────────────────────────────────────────
+  authApi: '/api/auth',
+  userApi: '/user',
 
-  // Claim Service — via Gateway
-  claimsApi: 'http://localhost:8080/api/claims',
+  // ── Policy Service — via Gateway ──────────────────────────────────────────
+  policiesApi: '/api/policies',
+  policyTypesApi: '/api/policy-types',
 
-  // Admin Service — via Gateway
-  adminApi: 'http://localhost:8080/api/admin',
+  // ── Claim Service — via Gateway ───────────────────────────────────────────
+  claimsApi: '/api/claims',
 
-  // Payment Service — via Gateway
-  paymentsApi: 'http://localhost:8080/api/payments',
+  // ── Admin Service — via Gateway ───────────────────────────────────────────
+  adminApi: '/api/admin',
+
+  // ── Payment Service — via Gateway ─────────────────────────────────────────
+  paymentsApi: '/api/payments',
 };

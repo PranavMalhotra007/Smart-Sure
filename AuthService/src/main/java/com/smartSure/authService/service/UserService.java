@@ -9,8 +9,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.smartSure.authService.dto.auth.ChangePasswordRequestDto;
 import com.smartSure.authService.dto.pagination.PageResponse;
 import com.smartSure.authService.dto.user.UserRequestDto;
 import com.smartSure.authService.dto.user.UserResponseDto;
@@ -26,21 +28,35 @@ public class UserService {
 	
 	private final UserRepository repo;
 	private final ModelMapper modelMapper;
+	private final PasswordEncoder passwordEncoder;
 	
-	public UserResponseDto add(UserRequestDto reqDto) {
+	public UserResponseDto add(Long userId, UserRequestDto reqDto) {
 		
-		User user = repo.findByEmail(reqDto.getEmail()).orElseThrow(() -> new UserNotFoundException("This email is not registered"));
-		modelMapper.map(reqDto, user);
-		repo.save(user);
-		
-		return modelMapper.map(user, UserResponseDto.class);
+		return update(reqDto, userId);
 	}
 	
 	@CacheEvict(value = "users", key = "#userId")
 	public UserResponseDto update(UserRequestDto reqDto, Long userId) {
 		
 		User user = repo.findById(userId).orElseThrow(() -> new UserNotFoundException("This user is not present"));
-		modelMapper.map(reqDto, user);
+		
+		// Safe partial update — never overwrite email / password / role
+		if (reqDto.getFirstName() != null && !reqDto.getFirstName().isBlank()) {
+			user.setFirstName(reqDto.getFirstName());
+		}
+		if (reqDto.getLastName() != null && !reqDto.getLastName().isBlank()) {
+			user.setLastName(reqDto.getLastName());
+		}
+		if (reqDto.getPhone() != null) {
+			user.setPhone(reqDto.getPhone());
+		}
+		if (reqDto.getDateOfBirth() != null && !reqDto.getDateOfBirth().isBlank()) {
+			user.setDateOfBirth(reqDto.getDateOfBirth());
+		}
+		if (reqDto.getGender() != null && !reqDto.getGender().isBlank()) {
+			user.setGender(reqDto.getGender());
+		}
+
 		repo.save(user);
 		
 		return modelMapper.map(user, UserResponseDto.class);
@@ -81,5 +97,25 @@ public class UserService {
 				userPage.getTotalElements(),
 				userPage.getTotalPages()
 			);
+	}
+
+	@CacheEvict(value = "users", key = "#userId")
+	public String changePassword(Long userId, ChangePasswordRequestDto reqDto) {
+
+		User user = repo.findById(userId)
+				.orElseThrow(() -> new UserNotFoundException("User not found"));
+
+		if (!passwordEncoder.matches(reqDto.getCurrentPassword(), user.getPassword())) {
+			throw new RuntimeException("Current password is incorrect");
+		}
+
+		if (!reqDto.getNewPassword().equals(reqDto.getConfirmPassword())) {
+			throw new RuntimeException("New passwords do not match");
+		}
+
+		user.setPassword(passwordEncoder.encode(reqDto.getNewPassword()));
+		repo.save(user);
+
+		return "Password changed successfully";
 	}
 }

@@ -40,13 +40,38 @@
 
 /* Form */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-grid-single { grid-template-columns: 1fr; }
 @media(max-width: 480px) { .form-grid { grid-template-columns: 1fr; } }
 .form-row { display: flex; flex-direction: column; gap: 0.4rem; label { font-size: 0.825rem; font-weight: 600; color: #374151; } }
+
+/* Input row with eye toggle */
+.input-wrap { position: relative; display: flex; align-items: center; }
+.input-wrap .form-input { flex: 1; padding-right: 2.75rem; }
+.eye-btn {
+  position: absolute; right: 0.75rem; background: none; border: none; cursor: pointer;
+  color: #9ca3af; padding: 0; display: flex; align-items: center; transition: color 0.2s;
+  &:hover { color: #00b4d8; }
+}
+
+/* Field-level validation error */
+.field-error { font-size: 0.775rem; color: #dc2626; margin-top: 2px; }
+
 .form-input {
   padding: 0.625rem 0.875rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.875rem;
-  outline: none; background: #fafafa; font-family: inherit;
+  outline: none; background: #fafafa; font-family: inherit; width: 100%; box-sizing: border-box;
   &:focus { border-color: #00b4d8; background: #fff; box-shadow: 0 0 0 3px rgba(0,180,216,0.1); }
 }
+
+/* Security info banner */
+.sec-info-banner {
+  display: flex; align-items: center; gap: 0.75rem;
+  background: rgba(0,180,216,0.08); border: 1px solid rgba(0,180,216,0.2);
+  border-radius: 10px; padding: 0.875rem 1rem; font-size: 0.85rem; color: #0077b6;
+  svg { flex-shrink: 0; stroke: #0077b6; }
+}
+
+/* Button row — adds spacing between form and button */
+.btn-row { margin-top: 0.75rem; }
 
 /* Save Button */
 .btn-save {
@@ -58,44 +83,42 @@
   &:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,180,216,0.35); }
   &:disabled { opacity: 0.6; cursor: not-allowed; }
 }
-
-/* Security */
-.security-cards { display: flex; flex-direction: column; gap: 0.875rem; }
-.sec-card { display: flex; align-items: center; justify-content: space-between; padding: 1.125rem 1.25rem; border: 1px solid #f0f4f8; border-radius: 12px; background: #f8fafc; }
-.sec-left { display: flex; align-items: center; gap: 0.875rem; }
-.sec-title { font-size: 0.9rem; font-weight: 600; color: #0f2027; }
-.sec-sub { font-size: 0.775rem; color: #9ca3af; margin-top: 2px; }
-.sec-badge { padding: 0.25rem 0.75rem; border-radius: 20px; background: #d1fae5; color: #065f46; font-size: 0.75rem; font-weight: 700; }
-.info-card { background: #fffbeb; border-color: #fde68a; gap: 0.875rem; align-items: flex-start; }
-.info-card p { font-size: 0.875rem; color: #92400e; line-height: 1.5; }
+.btn-danger {
+  background: linear-gradient(135deg,#ef4444,#b91c1c);
+  &:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(239,68,68,0.35); }
+}
 
 /* Dark Mode Overrides */
 :host-context(html.dark) {
   .page-title { color: #f9fafb; }
   .page-subtitle, .loading-wrap { color: #9ca3af; }
-  
+
   .tab-sidebar { background: #1f2937; border-color: #374151; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
   .tab-btn {
     color: #d1d5db;
     &:hover { background: #374151; color: #f9fafb; }
     &.active { background: rgba(0,180,216,0.15); color: #00b4d8; }
   }
-  
+
   .tab-panel { background: #1f2937; border-color: #374151; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
   .panel-hdr { border-color: #374151; }
   .panel-hdr h2 { color: #f9fafb; }
-  
+  .panel-hdr p { color: #9ca3af; }
+
   .form-row label { color: #d1d5db; }
   .form-input {
     background: #111827; border-color: #374151; color: #f9fafb;
     &:focus { border-color: #00b4d8; background: #1f2937; box-shadow: 0 0 0 3px rgba(0,180,216,0.2); }
   }
-  
-  .sec-card { background: #111827; border-color: #374151; }
-  .sec-title { color: #f9fafb; }
-  .sec-sub { color: #9ca3af; }
-  .sec-badge { background: rgba(16,185,129,0.1); color: #34d399; }
-  
-  .info-card { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); }
-  .info-card p { color: #fbbf24; }
+  .eye-btn { color: #6b7280; &:hover { color: #00b4d8; } }
+  .field-error { color: #f87171; }
+
+  .sec-info-banner {
+    background: rgba(0,180,216,0.1); border-color: rgba(0,180,216,0.2);
+    color: #7dd3fc;
+    svg { stroke: #7dd3fc; }
+  }
+
+  .success-msg { background: rgba(16,185,129,0.15); color: #34d399; }
+  .error-msg { background: rgba(239,68,68,0.15); color: #f87171; }
 }

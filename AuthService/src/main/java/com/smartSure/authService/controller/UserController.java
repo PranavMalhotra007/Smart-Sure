@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.smartSure.authService.dto.address.AddressRequestDto;
 import com.smartSure.authService.dto.address.AddressResponseDto;
+import com.smartSure.authService.dto.auth.ChangePasswordRequestDto;
 import com.smartSure.authService.dto.pagination.PageResponse;
 import com.smartSure.authService.dto.user.UserRequestDto;
 import com.smartSure.authService.dto.user.UserResponseDto;
@@ -24,7 +26,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,13 +50,13 @@ public class UserController {
 	    return "UserId: " + userId + ", Role: " + role;
 	}
 	
-	@PostMapping("/addInfo")
+	@PostMapping("/addInfo/{userId}")
 	@Operation(summary = "Adding information", description="Adding information to registered user row")
 	@ApiResponse(responseCode = "202", description = "Information added successfully")
-	@PreAuthorize("hasRole('ADMIN') or hasRole('CUSTOMER')")
-	public ResponseEntity<UserResponseDto> addInfo(@RequestBody @Valid UserRequestDto reqDto){
+	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal")
+	public ResponseEntity<UserResponseDto> addInfo(@RequestBody @Valid UserRequestDto reqDto, @PathVariable Long userId){
 		
-		UserResponseDto resDto = service.add(reqDto);
+		UserResponseDto resDto = service.add(userId, reqDto);
 		
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(resDto);
 	}
@@ -150,5 +152,17 @@ public class UserController {
 		PageResponse<UserResponseDto> users = service.getUsers(page, size, sortBy, direction);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(users);
+	}
+
+	@PutMapping("/changePassword/{userId}")
+	@Operation(summary = "Change Password", description = "Change the password of an authenticated user")
+	@ApiResponse(responseCode = "200", description = "Password changed successfully")
+	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal")
+	public ResponseEntity<String> changePassword(
+			@RequestBody @Valid ChangePasswordRequestDto reqDto,
+			@PathVariable Long userId) {
+
+		String result = service.changePassword(userId, reqDto);
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 }

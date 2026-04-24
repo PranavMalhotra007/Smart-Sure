@@ -22,6 +22,9 @@
 		<java.version>17</java.version>
 		<spring-cloud.version>2025.0.1</spring-cloud.version>
 		<sonar.host.url>http://localhost:9010</sonar.host.url>
+		<sonar.projectKey>smartsure-admin-service</sonar.projectKey>
+		<sonar.projectName>SmartSure Admin Service</sonar.projectName>
+		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
 
 	<dependencies>
@@ -195,6 +198,28 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<!-- SonarQube Maven Plugin -->
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>4.0.0.4121</version>
+			</plugin>
+			<!-- JaCoCo Code Coverage -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version>
+				<executions>
+					<execution>
+						<goals><goal>prepare-agent</goal></goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals><goal>report</goal></goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

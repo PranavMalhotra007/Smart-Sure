@@ -59,10 +59,12 @@
               </select>
             </div>
           </div>
-          <button type="submit" class="btn-save" [disabled]="profileForm.invalid || profileLoading">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            {{ profileLoading ? 'Saving...' : 'Save Changes' }}
-          </button>
+          <div class="btn-row">
+            <button type="submit" class="btn-save" [disabled]="profileForm.invalid || profileLoading">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              {{ profileLoading ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
         </form>
       </div>
 
@@ -94,35 +96,89 @@
               <input type="text" formControlName="country" class="form-input">
             </div>
           </div>
-          <button type="submit" class="btn-save" [disabled]="addressForm.invalid || addressLoading">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            {{ addressLoading ? 'Saving...' : hasAddress ? 'Update Address' : 'Save Address' }}
-          </button>
+          <div class="btn-row">
+            <button type="submit" class="btn-save" [disabled]="addressForm.invalid || addressLoading">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              {{ addressLoading ? 'Saving...' : hasAddress ? 'Update Address' : 'Save Address' }}
+            </button>
+          </div>
         </form>
       </div>
 
       <!-- Security Tab -->
       <div class="tab-panel" *ngIf="activeTab==='security'">
-        <div class="panel-hdr"><div class="panel-icon">🔒</div><div><h2>Security</h2><p>Account security information</p></div></div>
-        <div class="security-cards">
-          <div class="sec-card">
-            <div class="sec-left">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00b4d8" stroke-width="2" width="22" height="22"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <div><div class="sec-title">Password</div><div class="sec-sub">Last changed: contact support to reset</div></div>
-            </div>
-          </div>
-          <div class="sec-card">
-            <div class="sec-left">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#06d6a0" stroke-width="2" width="22" height="22"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <div><div class="sec-title">Account Protected</div><div class="sec-sub">JWT-secured session active</div></div>
-            </div>
-            <span class="sec-badge">Active</span>
-          </div>
-          <div class="sec-card info-card">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <p>To change your password, please contact SmartSure support at <strong>support&#64;smartsure.in</strong> or call 1800-XXX-XXXX.</p>
-          </div>
+        <div class="panel-hdr"><div class="panel-icon">🔒</div><div><h2>Change Password</h2><p>Update your account password securely</p></div></div>
+
+        <!-- Info card -->
+        <div class="sec-info-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>After changing your password, you will be automatically logged out for security.</span>
         </div>
+
+        <div class="success-msg" *ngIf="passwordSuccess">✅ {{ passwordSuccess }}</div>
+        <div class="error-msg" *ngIf="passwordError">⚠️ {{ passwordError }}</div>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+          <div class="form-grid form-grid-single">
+            <!-- Current Password -->
+            <div class="form-row">
+              <label>Current Password *</label>
+              <div class="input-wrap">
+                <input [type]="showCurrentPwd ? 'text' : 'password'"
+                       formControlName="currentPassword"
+                       class="form-input"
+                       placeholder="Enter current password">
+                <button type="button" class="eye-btn" (click)="showCurrentPwd = !showCurrentPwd"
+                        [attr.aria-label]="showCurrentPwd ? 'Hide password' : 'Show password'">
+                  <svg *ngIf="!showCurrentPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg *ngIf="showCurrentPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+              <span class="field-error" *ngIf="passwordForm.get('currentPassword')?.touched && passwordForm.get('currentPassword')?.errors?.['minlength']">Minimum 8 characters required</span>
+            </div>
+
+            <!-- New Password -->
+            <div class="form-row">
+              <label>New Password *</label>
+              <div class="input-wrap">
+                <input [type]="showNewPwd ? 'text' : 'password'"
+                       formControlName="newPassword"
+                       class="form-input"
+                       placeholder="Enter new password (min. 8 chars)">
+                <button type="button" class="eye-btn" (click)="showNewPwd = !showNewPwd"
+                        [attr.aria-label]="showNewPwd ? 'Hide password' : 'Show password'">
+                  <svg *ngIf="!showNewPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg *ngIf="showNewPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+              <span class="field-error" *ngIf="passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.errors?.['minlength']">Minimum 8 characters required</span>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="form-row">
+              <label>Confirm New Password *</label>
+              <div class="input-wrap">
+                <input [type]="showConfirmPwd ? 'text' : 'password'"
+                       formControlName="confirmPassword"
+                       class="form-input"
+                       placeholder="Re-enter new password">
+                <button type="button" class="eye-btn" (click)="showConfirmPwd = !showConfirmPwd"
+                        [attr.aria-label]="showConfirmPwd ? 'Hide password' : 'Show password'">
+                  <svg *ngIf="!showConfirmPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg *ngIf="showConfirmPwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+              <span class="field-error" *ngIf="passwordForm.get('confirmPassword')?.touched && passwordForm.errors?.['passwordMismatch']">Passwords do not match</span>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button type="submit" id="changePasswordBtn" class="btn-save btn-danger" [disabled]="passwordForm.invalid || passwordLoading">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              {{ passwordLoading ? 'Changing...' : 'Change Password' }}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

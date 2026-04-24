@@ -50,3 +50,32 @@
 }
 .cc-icon { font-size: 2.5rem; }
 .cc-sub { font-size: 0.775rem !important; color: #9ca3af !important; font-weight: 400 !important; margin-top: 4px; }
+
+/* ── Dark Mode ────────────────────────────────────────────────── */
+:host-context(html.dark) {
+  /* Quick links */
+  .quick-link {
+    background: #1f2937; border-color: #374151;
+    strong { color: #f9fafb; }
+    p { color: #9ca3af; }
+    &:hover { border-color: #00b4d8; box-shadow: 0 8px 25px rgba(0,180,216,0.2); }
+  }
+
+  /* Section titles */
+  .section-title { color: #f9fafb; }
+
+  /* FAQ items */
+  .faq-item { background: #1f2937; border-color: #374151; &:hover { border-color: #00b4d8; } }
+  .faq-question span { color: #f9fafb; }
+  .faq-chevron { color: #6b7280; }
+  .faq-answer p { color: #d1d5db; }
+
+  /* Contact cards */
+  .contact-card {
+    background: #1f2937; border-color: #374151;
+    h3 { color: #f9fafb; }
+    p { color: #d1d5db; }
+    &:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+  }
+  .cc-sub { color: #6b7280!important; }
+}

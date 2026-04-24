@@ -70,6 +70,12 @@ services:
       - sonarqube-data:/opt/sonarqube/data
       - sonarqube-logs:/opt/sonarqube/logs
       - sonarqube-extensions:/opt/sonarqube/extensions
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9000/api/system/status | grep -q UP || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
 
   zipkin:
     image: openzipkin/zipkin:2.27
@@ -240,6 +246,19 @@ services:
         condition: service_healthy
     networks:
       - smartsure-net
+
+  # ==================== Frontend ====================
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - api-gateway
+    networks:
+      - smartsure-net
+    restart: unless-stopped
 
 # ==================== Volumes ====================
 volumes:

@@ -51,6 +51,12 @@ export interface AddressRequest {
   country: string;
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export interface AddressResponse {
   addressId: number;
   street: string;
@@ -200,9 +206,9 @@ export class AuthService {
     });
   }
 
-  // ── USER ENDPOINTS: POST /user/addInfo ────────────────────────────────
-  addUserInfo(data: UserRequest): Observable<UserResponse> {
-    return this.http.post<UserResponse>(`${this.userApi}/addInfo`, data);
+  // ── USER ENDPOINTS: POST /user/addInfo/{userId} ───────────────────────
+  addUserInfo(userId: number, data: UserRequest): Observable<UserResponse> {
+    return this.http.post<UserResponse>(`${this.userApi}/addInfo/${userId}`, data);
   }
 
   // ── USER ENDPOINTS: GET /user/getInfo/{userId} ────────────────────────
@@ -250,5 +256,12 @@ export class AuthService {
     return this.http.get<PageResponse<UserResponse>>(
       `${this.userApi}/getAll?page=${page}&size=${size}&sortBy=${sortBy}&direction=${direction}`
     );
+  }
+
+  // ── USER ENDPOINTS: PUT /user/changePassword/{userId} ─────────────────
+  changePassword(userId: number, data: ChangePasswordRequest): Observable<string> {
+    return this.http.put<string>(`${this.userApi}/changePassword/${userId}`, data, {
+      responseType: 'text' as 'json'
+    });
   }
 }
