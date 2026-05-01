@@ -1,0 +1,249 @@
+services:
+  # ==================== Infrastructure ====================
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: database
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - smartsure-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    volumes:
+      - redis-data:/data
+    networks:
+      - smartsure-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - smartsure-net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  # ==================== Observability ====================
+
+  zipkin:
+    image: openzipkin/zipkin:2.27
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - smartsure-net
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - /home/ubuntu/smartsure/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - smartsure-net
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    depends_on:
+      - prometheus
+    networks:
+      - smartsure-net
+    restart: unless-stopped
+
+  # ==================== Config & Discovery ====================
+
+  config-server-smart-sure:
+    image: ${ECR_BASE}/smartsure/config-server:latest
+    container_name: config-server-smart-sure
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8888/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+    restart: unless-stopped
+
+  service-registry-smart-sure:
+    image: ${ECR_BASE}/smartsure/service-registry:latest
+    container_name: service-registry-smart-sure
+    ports:
+      - "8761:8761"
+    depends_on:
+      config-server-smart-sure:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8761/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+    restart: unless-stopped
+
+  # ==================== API Gateway ====================
+
+  api-gateway:
+    image: ${ECR_BASE}/smartsure/api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      service-registry-smart-sure:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry-smart-sure:8761/eureka
+    restart: unless-stopped
+
+  # ==================== Microservices ====================
+
+  auth-service:
+    image: ${ECR_BASE}/smartsure/auth-service:latest
+    container_name: auth-service
+    depends_on:
+      service-registry-smart-sure:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+    restart: unless-stopped
+
+  policy-service:
+    image: ${ECR_BASE}/smartsure/policy-service:latest
+    container_name: policy-service
+    depends_on:
+      service-registry-smart-sure:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+    restart: unless-stopped
+
+  claim-service:
+    image: ${ECR_BASE}/smartsure/claim-service:latest
+    container_name: claim-service
+    depends_on:
+      service-registry-smart-sure:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+    restart: unless-stopped
+
+  admin-service:
+    image: ${ECR_BASE}/smartsure/admin-service:latest
+    container_name: admin-service
+    depends_on:
+      service-registry-smart-sure:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+    restart: unless-stopped
+
+  payment-service:
+    image: ${ECR_BASE}/smartsure/payment-service:latest
+    container_name: payment-service
+    depends_on:
+      service-registry-smart-sure:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - smartsure-net
+    restart: unless-stopped
+
+  # ==================== Frontend ====================
+
+  frontend:
+    image: ${ECR_BASE}/smartsure/frontend:latest
+    container_name: frontend
+    ports:
+      - "80:4200"
+    depends_on:
+      - api-gateway
+    networks:
+      - smartsure-net
+    restart: unless-stopped
+
+# ==================== Volumes ====================
+volumes:
+  mysql-data:
+  redis-data:
+  rabbitmq-data:
+  grafana-data:
+
+# ==================== Networks ====================
+networks:
+  smartsure-net:
+    driver: bridge
