@@ -163,47 +163,56 @@ jobs:
           strip_components: 1    # Remove the "deploy/" prefix on EC2
 
       # ── SSH into EC2: authenticate ECR, pull images, restart ─────────────
-      - name: 🔄 Pull images & restart containers on EC2
+      - name: Pull images and restart containers on EC2
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION:    ${{ secrets.AWS_REGION }}
+          ECR_BASE:              ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          MYSQL_ROOT_PASSWORD:   ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          RABBITMQ_USER:         ${{ secrets.RABBITMQ_USER }}
+          RABBITMQ_PASS:         ${{ secrets.RABBITMQ_PASS }}
+          GRAFANA_PASSWORD:      ${{ secrets.GRAFANA_PASSWORD }}
         with:
           host:     ${{ secrets.EC2_HOST }}
           username: ubuntu
           key:      ${{ secrets.EC2_SSH_KEY }}
           timeout:  15m
+          envs:     AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,ECR_BASE,MYSQL_ROOT_PASSWORD,RABBITMQ_USER,RABBITMQ_PASS,GRAFANA_PASSWORD
+
           script: |
             set -e
 
-            ECR_BASE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com"
-            REGION="${{ secrets.AWS_REGION }}"
+            echo "=== Authenticating Docker to ECR ==="
+            aws ecr get-login-password --region "$AWS_DEFAULT_REGION" \
+              | docker login --username AWS --password-stdin "$ECR_BASE"
 
-            echo "━━━ Authenticating Docker to ECR ━━━"
-            aws ecr get-login-password --region $REGION \
-              | docker login --username AWS --password-stdin $ECR_BASE
-
-            echo "━━━ Moving to deployment directory ━━━"
+            echo "=== Moving to deployment directory ==="
             mkdir -p /home/ubuntu/smartsure
             cd /home/ubuntu/smartsure
 
-            echo "━━━ Writing .env file ━━━"
+            echo "=== Writing .env file ==="
             cat > .env << ENVEOF
-            ECR_BASE=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-            RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
-            RABBITMQ_PASS=${{ secrets.RABBITMQ_PASS }}
-            GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }}
-            ENVEOF
+ECR_BASE=${ECR_BASE}
+MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+RABBITMQ_USER=${RABBITMQ_USER}
+RABBITMQ_PASS=${RABBITMQ_PASS}
+GRAFANA_PASSWORD=${GRAFANA_PASSWORD}
+ENVEOF
 
-            echo "━━━ Pulling latest images from ECR ━━━"
+            echo "=== Pulling latest images from ECR ==="
             docker compose -f docker-compose.prod.yml --env-file .env pull
 
-            echo "━━━ Restarting all services ━━━"
+            echo "=== Restarting all services ==="
             docker compose -f docker-compose.prod.yml --env-file .env up -d --remove-orphans
 
-            echo "━━━ Container Status ━━━"
+            echo "=== Container Status ==="
             docker compose -f docker-compose.prod.yml ps
 
             echo ""
-            echo "✅ Deployment complete!"
-            echo "   Frontend  → http://$(curl -s ifconfig.me)"
-            echo "   Gateway   → http://$(curl -s ifconfig.me):8080"
-            echo "   Eureka    → http://$(curl -s ifconfig.me):8761"
+            echo "Deployment complete!"
+            echo "Frontend -> http://$(curl -s ifconfig.me)"
+            echo "Gateway  -> http://$(curl -s ifconfig.me):8080"
+            echo "Eureka   -> http://$(curl -s ifconfig.me):8761"
+
