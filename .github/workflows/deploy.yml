@@ -179,12 +179,15 @@ jobs:
           username: ubuntu
           key:      ${{ secrets.EC2_SSH_KEY }}
           timeout:  15m
-          envs:     AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,ECR_BASE,MYSQL_ROOT_PASSWORD,RABBITMQ_USER,RABBITMQ_PASS,GRAFANA_PASSWORD
-
           script: |
             set -e
 
             echo "=== Authenticating Docker to ECR ==="
+            export AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}"
+            export AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+            export AWS_DEFAULT_REGION="${{ secrets.AWS_REGION }}"
+            ECR_BASE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com"
+
             aws ecr get-login-password --region "$AWS_DEFAULT_REGION" \
               | docker login --username AWS --password-stdin "$ECR_BASE"
 
@@ -194,12 +197,12 @@ jobs:
 
             echo "=== Writing .env file ==="
             cat > .env << ENVEOF
-ECR_BASE=${ECR_BASE}
-MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-RABBITMQ_USER=${RABBITMQ_USER}
-RABBITMQ_PASS=${RABBITMQ_PASS}
-GRAFANA_PASSWORD=${GRAFANA_PASSWORD}
-ENVEOF
+            ECR_BASE=$ECR_BASE
+            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+            RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
+            RABBITMQ_PASS=${{ secrets.RABBITMQ_PASS }}
+            GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }}
+            ENVEOF
 
             echo "=== Pulling latest images from ECR ==="
             docker compose -f docker-compose.prod.yml --env-file .env pull
